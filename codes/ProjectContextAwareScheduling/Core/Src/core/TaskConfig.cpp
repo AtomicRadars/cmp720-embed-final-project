@@ -1,0 +1,126 @@
+#include "core/TaskConfig.h"
+#include "main.h"
+
+#include <cstring>
+
+//extern float Read_ADC_Channel(); // Hardware abstraction
+
+// Task prototypes for FreeRTOS tasks, defined in TaskInits.cpp
+extern UART_HandleTypeDef huart2;
+
+TaskConfig::TaskConfig() 
+{
+    xTask1Handle = nullptr;
+    xTask2Handle = nullptr;
+    xTask3Handle = nullptr;
+}
+
+void TaskConfig::Task1_MotorControl(void *pvParameters) 
+{
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    const TickType_t xFrequency = pdMS_TO_TICKS(TASK1_PERIOD_MS); // High frequency
+
+    float setpoint = 100.0f;
+    float measured_value = 0.0f;
+    float error = 0.0f, integral = 0.0f, derivative = 0.0f, previous_error = 0.0f;
+    const float Kp = 1.0f, Ki = 0.1f, Kd = 0.05f;
+
+    while (true) 
+    {
+        // Computation-dominant floating-point updates [1]
+        error = setpoint - measured_value;
+        integral += error;
+        derivative = error - previous_error;
+        
+        float output = (Kp * error) + (Ki * integral) + (Kd * derivative);
+        previous_error = error;
+
+        // Ensure synchronous periodic releases [5]
+        const char* cpMsg = "Task1_MotorControl!\r\n";
+	    HAL_UART_Transmit(&huart2, (uint8_t*)cpMsg, static_cast<uint16_t>(std::strlen(cpMsg)), HAL_MAX_DELAY);
+
+        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+    }
+}
+
+/**
+ * Task 2 (τ2): Sensor Data Acquisition 
+ * Profile: Low Memory Intensity, periodic ADC sampling/filtering [2].
+ */
+void TaskConfig::Task2_SensorAcquisition(void *pvParameters) 
+{
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    const TickType_t xFrequency = pdMS_TO_TICKS(TASK2_PERIOD_MS); 
+
+    uint16_t raw_adc_value = 0;
+    uint16_t filtered_value = 0;
+
+    while (true) 
+    {
+        raw_adc_value = 1;//Read_ADC_Channel(); 
+        
+        // Simple filter used by the control pipeline [2]
+        filtered_value = (filtered_value * 3 + raw_adc_value) / 4;
+
+        const char* cpMsg = "Task2_SensorAcquisition!\r\n";
+	    HAL_UART_Transmit(&huart2, (uint8_t*)cpMsg, static_cast<uint16_t>(std::strlen(cpMsg)), HAL_MAX_DELAY);
+
+        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+    }
+}
+
+/**
+ * Task 3 (τ3): Cryptographic Encryption 
+ * Profile: High Memory Intensity, lower-frequency, heavy shared memory access [2].
+ */
+void TaskConfig::Task3_CryptoEncryption(void *pvParameters) 
+{
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    const TickType_t xFrequency = pdMS_TO_TICKS(TASK3_PERIOD_MS); 
+
+    while (true) 
+    {
+        // Emulate matrix-style operations and AES-like transformations [1]
+        for (size_t i = 0; i < CRYPTO_BUFFER_SIZE; i++) 
+        {
+            crypto_buffer[i] = crypto_buffer[i] ^ 0xAA; 
+            if (i > 0) 
+            {
+                crypto_buffer[i] += crypto_buffer[i-1]; 
+            }
+        }
+
+        const char* cpMsg = "Task3_CryptoEncryption!\r\n";
+	    HAL_UART_Transmit(&huart2, (uint8_t*)cpMsg, static_cast<uint16_t>(std::strlen(cpMsg)), HAL_MAX_DELAY);
+
+        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+    }
+}
+
+bool TaskConfig::CreateTasks()
+{
+    // Task 1: Motor Control (High frequency, Low memory)
+    xTask1Handle = xTaskCreateStatic(
+        Task1_MotorControl, "MotorCtrl", STACK_SIZE, NULL, 3, xTask1Stack, &xTask1TCB
+    );
+
+    // Task 2: Sensor Data Acquisition (Medium frequency, Low memory)
+    xTask2Handle = xTaskCreateStatic(
+        Task2_SensorAcquisition, "SensorAcq", STACK_SIZE, NULL, 2, xTask2Stack, &xTask2TCB
+    );
+
+    // Task 3: Cryptographic Encryption (Low frequency, High memory)
+    xTask3Handle = xTaskCreateStatic(
+        Task3_CryptoEncryption, "CryptoEnc", STACK_SIZE, NULL, 1, xTask3Stack, &xTask3TCB
+    );
+
+    return (xTask1Handle != nullptr) && (xTask2Handle != nullptr) && (xTask3Handle != nullptr);
+}
+
+// DWT (Data Watchpoint and Trace) initialization for cycle counting
+void TaskConfig::DWT_Init(void) 
+{
+    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+    DWT->CYCCNT = 0;
+    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+}
