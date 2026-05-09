@@ -1,0 +1,10 @@
+{
+  "source": {
+    "sourceType": "STM32CubeMX"
+  },
+  "board": "NUCLEO-L452RE-P",
+  "device": "STM32L452RET6P",
+  "core": "Cortex-M4",
+  "order": 0,
+  "toolchain": "CLANG"
+}
