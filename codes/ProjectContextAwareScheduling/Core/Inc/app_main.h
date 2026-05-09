@@ -5,8 +5,10 @@
 extern "C" {
 #endif
 
-// This function will be called from main.c
-void app_main(void);
+// This functions will be called from main.c
+void ClearConsole();
+
+void TaskInit(void);
 
 #ifdef __cplusplus
 }
