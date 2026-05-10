@@ -46,9 +46,9 @@ static StackType_t xTask3Stack[STACK_SIZE];
 constexpr size_t CRYPTO_BUFFER_SIZE = 8192; 
 static uint8_t crypto_buffer[CRYPTO_BUFFER_SIZE];
 
-constexpr uint32_t TASK1_PERIOD_MS = 1000;  // High frequency
-constexpr uint32_t TASK2_PERIOD_MS = 2000;  // Medium frequency
-constexpr uint32_t TASK3_PERIOD_MS = 3000;  // Low frequency
+constexpr uint32_t TASK1_PERIOD_MS = 10;  // High frequency
+constexpr uint32_t TASK2_PERIOD_MS = 50;  // Medium frequency
+constexpr uint32_t TASK3_PERIOD_MS = 500;  // Low frequency
 
 class IScheduler;
 

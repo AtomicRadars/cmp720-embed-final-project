@@ -52,11 +52,13 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/app_main.cpp
     Core/Src/core/TaskConfig.cpp
     Core/Src/core/EDFScheduler.cpp
+    Core/Src/test/SchedulerTest.cpp
 )
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
+    Core/Inc
     Core/Inc/core
 )
 
