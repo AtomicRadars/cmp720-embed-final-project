@@ -10,14 +10,15 @@ void EDFScheduler::Initialize()
 
 void EDFScheduler::RegisterTask(ETaskID task_id, TaskHandle_t handle, uint32_t period) 
 {
-    uint8_t id = static_cast<uint8_t>(task_id);
-    if (id < TASK_COUNT) 
+    if (task_id < TASK_COUNT) 
     {
-        tasks[id].handle = handle;
-        tasks[id].period = period;
+        tasks[task_id].handle = handle;
+        tasks[task_id].period = period;
         // Initial deadline is the first period
-        tasks[id].deadline = period;
-        tasks[id].is_registered = true;
+        tasks[task_id].deadline = period;
+        tasks[task_id].is_registered = true;
+        tasks[task_id].total_jobs = 0;
+        tasks[task_id].missed_deadlines = 0;
     }
 }
 
@@ -64,15 +65,25 @@ void EDFScheduler::UpdatePriorities()
 
 void EDFScheduler::DelayUntil(TickType_t *pxPreviousWakeTime, TickType_t xTimeIncrement, ETaskID task_id) 
 {
-    uint8_t id = static_cast<uint8_t>(task_id);
-    if (id < TASK_COUNT && tasks[id].is_registered) 
+    if ((task_id < TASK_COUNT) && tasks[task_id].is_registered) 
     {
-        TickType_t next_wake_time = *pxPreviousWakeTime + xTimeIncrement;
+        TickType_t current_time = xTaskGetTickCount();
+        TickType_t absolute_deadline = *pxPreviousWakeTime + xTimeIncrement;
+        
+        tasks[task_id].total_jobs++;
+
+        // If current time is strictly greater than the absolute deadline, it's a miss
+        if ((int32_t)(current_time - absolute_deadline) > 0)
+        {
+            tasks[task_id].missed_deadlines++;
+        }
+
+        TickType_t next_wake_time = absolute_deadline;
         
         vTaskSuspendAll(); // Disable context switches during priority calculation
         
         // The new absolute deadline is the next wake time + relative deadline (which is the period)
-        tasks[id].deadline = next_wake_time + tasks[id].period;
+        tasks[task_id].deadline = next_wake_time + tasks[task_id].period;
         
         UpdatePriorities();
         
@@ -81,4 +92,31 @@ void EDFScheduler::DelayUntil(TickType_t *pxPreviousWakeTime, TickType_t xTimeIn
     
     // Fall back to normal FreeRTOS blocking call
     vTaskDelayUntil(pxPreviousWakeTime, xTimeIncrement);
+}
+
+uint32_t EDFScheduler::GetTotalJobs(ETaskID task_id) const
+{
+    if ((task_id < TASK_COUNT) && (tasks[task_id].is_registered)) 
+    {
+        return tasks[task_id].total_jobs;
+    }
+    return 0;
+}
+
+uint32_t EDFScheduler::GetMissedDeadlines(ETaskID task_id) const
+{
+    if ((task_id < TASK_COUNT) && (tasks[task_id].is_registered)) 
+    {
+        return tasks[task_id].missed_deadlines;
+    }
+    return 0;
+}
+
+float EDFScheduler::GetDeadlineMissRatio(ETaskID task_id) const
+{
+    if ((task_id < TASK_COUNT) && (tasks[task_id].is_registered) && (tasks[task_id].total_jobs > 0)) 
+    {
+        return static_cast<float>(tasks[task_id].missed_deadlines) / static_cast<float>(tasks[task_id].total_jobs);
+    }
+    return 0.0f;
 }

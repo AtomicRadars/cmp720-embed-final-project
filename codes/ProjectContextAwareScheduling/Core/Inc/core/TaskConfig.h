@@ -9,7 +9,7 @@
 
 constexpr uint8_t TASK_COUNT = 3;
 
-enum class ETaskID : uint8_t
+enum ETaskID : uint8_t
 {
     eMotorControl = 0,
     eSensorAcquisition = 1,
@@ -22,6 +22,8 @@ struct TaskStruct
     TickType_t deadline;
     uint32_t period;
     bool is_registered;
+    uint32_t total_jobs;
+    uint32_t missed_deadlines;
 };
 
 // --- STATIC ALLOCATION STRUCTURES ---

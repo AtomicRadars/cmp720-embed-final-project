@@ -17,6 +17,10 @@ class EDFScheduler : public IScheduler
         void RegisterTask(ETaskID task_id, TaskHandle_t handle, uint32_t period) override;
         void DelayUntil(TickType_t *pxPreviousWakeTime, TickType_t xTimeIncrement, ETaskID task_id) override;
 
+        uint32_t GetTotalJobs(ETaskID task_id) const override;
+        uint32_t GetMissedDeadlines(ETaskID task_id) const override;
+        float GetDeadlineMissRatio(ETaskID task_id) const override;
+
     private:
         void UpdatePriorities();
         TaskStruct tasks[TASK_COUNT];
