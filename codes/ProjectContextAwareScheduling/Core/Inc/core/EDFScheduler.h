@@ -5,18 +5,21 @@
 #include "task.h"
 #include <stdint.h>
 
-#include "core/TaskConfig.h"
+#include "core/IScheduler.h"
 
-class EDFScheduler 
+class EDFScheduler : public IScheduler 
 {
     public:
-        static void Initialize();
-        static void RegisterTask(ETaskID task_id, TaskHandle_t handle, uint32_t period);
-        static void DelayUntil(TickType_t *pxPreviousWakeTime, TickType_t xTimeIncrement, ETaskID task_id);
+        EDFScheduler() = default;
+        virtual ~EDFScheduler() = default;
+
+        void Initialize() override;
+        void RegisterTask(ETaskID task_id, TaskHandle_t handle, uint32_t period) override;
+        void DelayUntil(TickType_t *pxPreviousWakeTime, TickType_t xTimeIncrement, ETaskID task_id) override;
 
     private:
-        static void UpdatePriorities();
-        static TaskStruct tasks[TASK_COUNT];
+        void UpdatePriorities();
+        TaskStruct tasks[TASK_COUNT];
 };
 
 #endif // EDF_SCHEDULER_H

@@ -3,15 +3,18 @@
 #include <cstring>
 
 #include "core/TaskConfig.h"
+#include "core/EDFScheduler.h"
 
 void ClearConsole();
 
 // Tell the compiler to look for this variable in the auto-generated C files
 extern UART_HandleTypeDef huart2;
 
-void TaskInit(void) {
+void TaskInit(void) 
+{
 	// Initialization code goes here
-	auto* pTaskConfig = new TaskConfig();
+    auto* pEdfScheduler = new EDFScheduler();
+	auto* pTaskConfig = new TaskConfig(pEdfScheduler);
 
 	// 1. Initialize hardware profiling (ARM DWT counter)
 	pTaskConfig->DWT_Init();

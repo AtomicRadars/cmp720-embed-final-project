@@ -1,7 +1,5 @@
 #include "core/EDFScheduler.h"
 
-TaskStruct EDFScheduler::tasks[TASK_COUNT];
-
 void EDFScheduler::Initialize() 
 {
     for (int i = 0; i < TASK_COUNT; ++i) 

@@ -48,10 +48,12 @@ constexpr uint32_t TASK1_PERIOD_MS = 1000;  // High frequency
 constexpr uint32_t TASK2_PERIOD_MS = 2000;  // Medium frequency
 constexpr uint32_t TASK3_PERIOD_MS = 3000;  // Low frequency
 
+class IScheduler;
+
 class TaskConfig 
 {
     public:
-        TaskConfig();
+        TaskConfig(IScheduler* p_pIScheduler);
 
         static void Task1_MotorControl(void *pvParameters);
         static void Task2_SensorAcquisition(void *pvParameters);
@@ -62,10 +64,12 @@ class TaskConfig
         static void DWT_Init(); 
 
     private:
+        IScheduler* m_pScheduler;
+        
         // Task Handles
-        TaskHandle_t xTask1Handle;
-        TaskHandle_t xTask2Handle;
-        TaskHandle_t xTask3Handle;
+        TaskHandle_t m_xTask1Handle;
+        TaskHandle_t m_xTask2Handle;
+        TaskHandle_t m_xTask3Handle;
 };
 
 #endif // TASK_CONFIG_H
