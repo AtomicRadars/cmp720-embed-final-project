@@ -7,6 +7,23 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+constexpr uint8_t TASK_COUNT = 3;
+
+enum class ETaskID : uint8_t
+{
+    eMotorControl = 0,
+    eSensorAcquisition = 1,
+    eCryptoEncryption = 2
+};
+
+struct TaskStruct
+{
+    TaskHandle_t handle;
+    TickType_t deadline;
+    uint32_t period;
+    bool is_registered;
+};
+
 // --- STATIC ALLOCATION STRUCTURES ---
 // Since dynamic allocation is avoided [2], we statically allocate memory 
 // for the Task Control Blocks (TCBs) and the Task Stacks.

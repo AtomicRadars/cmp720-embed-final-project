@@ -51,6 +51,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     Core/Src/app_main.cpp
     Core/Src/core/TaskConfig.cpp
+    Core/Src/core/EDFScheduler.cpp
 )
 
 # Add include paths

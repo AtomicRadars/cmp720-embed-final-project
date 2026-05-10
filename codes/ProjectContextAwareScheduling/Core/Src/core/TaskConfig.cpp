@@ -2,11 +2,11 @@
 #include "main.h"
 
 #include <cstring>
-
-//extern float Read_ADC_Channel(); // Hardware abstraction
+#include "core/EDFScheduler.h"
 
 // Task prototypes for FreeRTOS tasks, defined in TaskInits.cpp
 extern UART_HandleTypeDef huart2;
+//extern float Read_ADC_Channel(); // Hardware abstraction
 
 TaskConfig::TaskConfig() 
 {
@@ -39,7 +39,7 @@ void TaskConfig::Task1_MotorControl(void *pvParameters)
         const char* cpMsg = "Task1_MotorControl!\r\n";
 	    HAL_UART_Transmit(&huart2, (uint8_t*)cpMsg, static_cast<uint16_t>(std::strlen(cpMsg)), HAL_MAX_DELAY);
 
-        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+        EDFScheduler::DelayUntil(&xLastWakeTime, xFrequency, ETaskID::eMotorControl);
     }
 }
 
@@ -65,7 +65,7 @@ void TaskConfig::Task2_SensorAcquisition(void *pvParameters)
         const char* cpMsg = "Task2_SensorAcquisition!\r\n";
 	    HAL_UART_Transmit(&huart2, (uint8_t*)cpMsg, static_cast<uint16_t>(std::strlen(cpMsg)), HAL_MAX_DELAY);
 
-        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+        EDFScheduler::DelayUntil(&xLastWakeTime, xFrequency, ETaskID::eSensorAcquisition);
     }
 }
 
@@ -93,7 +93,7 @@ void TaskConfig::Task3_CryptoEncryption(void *pvParameters)
         const char* cpMsg = "Task3_CryptoEncryption!\r\n";
 	    HAL_UART_Transmit(&huart2, (uint8_t*)cpMsg, static_cast<uint16_t>(std::strlen(cpMsg)), HAL_MAX_DELAY);
 
-        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+        EDFScheduler::DelayUntil(&xLastWakeTime, xFrequency, ETaskID::eCryptoEncryption);
     }
 }
 
@@ -114,7 +114,17 @@ bool TaskConfig::CreateTasks()
         Task3_CryptoEncryption, "CryptoEnc", STACK_SIZE, NULL, 1, xTask3Stack, &xTask3TCB
     );
 
-    return (xTask1Handle != nullptr) && (xTask2Handle != nullptr) && (xTask3Handle != nullptr);
+    if ((xTask1Handle != nullptr) && (xTask2Handle != nullptr) && (xTask3Handle != nullptr)) 
+    {
+        EDFScheduler::Initialize();
+        EDFScheduler::RegisterTask(ETaskID::eMotorControl, xTask1Handle, TASK1_PERIOD_MS);
+        EDFScheduler::RegisterTask(ETaskID::eSensorAcquisition, xTask2Handle, TASK2_PERIOD_MS);
+        EDFScheduler::RegisterTask(ETaskID::eCryptoEncryption, xTask3Handle, TASK3_PERIOD_MS);
+        
+        return true;
+    }
+
+    return false;
 }
 
 // DWT (Data Watchpoint and Trace) initialization for cycle counting
