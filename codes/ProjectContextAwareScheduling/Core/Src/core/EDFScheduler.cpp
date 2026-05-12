@@ -1,27 +1,5 @@
 #include "core/EDFScheduler.h"
 
-void EDFScheduler::Initialize() 
-{
-    for (int i = 0; i < TASK_COUNT; ++i) 
-    {
-        tasks[i].is_registered = false;
-    }
-}
-
-void EDFScheduler::RegisterTask(ETaskID task_id, TaskHandle_t handle, uint32_t period) 
-{
-    if (task_id < TASK_COUNT) 
-    {
-        tasks[task_id].handle = handle;
-        tasks[task_id].period = period;
-        // Initial deadline is the first period
-        tasks[task_id].deadline = period;
-        tasks[task_id].is_registered = true;
-        tasks[task_id].total_jobs = 0;
-        tasks[task_id].missed_deadlines = 0;
-    }
-}
-
 void EDFScheduler::UpdatePriorities() 
 {
     // Sort registered tasks by deadline
@@ -94,29 +72,7 @@ void EDFScheduler::DelayUntil(TickType_t *pxPreviousWakeTime, TickType_t xTimeIn
     vTaskDelayUntil(pxPreviousWakeTime, xTimeIncrement);
 }
 
-uint32_t EDFScheduler::GetTotalJobs(ETaskID task_id) const
+const char* EDFScheduler::GetSchedulerName() const
 {
-    if ((task_id < TASK_COUNT) && (tasks[task_id].is_registered)) 
-    {
-        return tasks[task_id].total_jobs;
-    }
-    return 0;
-}
-
-uint32_t EDFScheduler::GetMissedDeadlines(ETaskID task_id) const
-{
-    if ((task_id < TASK_COUNT) && (tasks[task_id].is_registered)) 
-    {
-        return tasks[task_id].missed_deadlines;
-    }
-    return 0;
-}
-
-float EDFScheduler::GetDeadlineMissRatio(ETaskID task_id) const
-{
-    if ((task_id < TASK_COUNT) && (tasks[task_id].is_registered) && (tasks[task_id].total_jobs > 0)) 
-    {
-        return static_cast<float>(tasks[task_id].missed_deadlines) / static_cast<float>(tasks[task_id].total_jobs);
-    }
-    return 0.0f;
+    return "EDF Scheduler";
 }

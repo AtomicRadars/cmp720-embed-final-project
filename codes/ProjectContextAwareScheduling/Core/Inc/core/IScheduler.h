@@ -9,13 +9,17 @@ class IScheduler
 {
     public:
         virtual ~IScheduler() = default;
-        virtual void Initialize() = 0;
-        virtual void RegisterTask(ETaskID task_id, TaskHandle_t handle, uint32_t period) = 0;
+        virtual void Initialize();
+        virtual void RegisterTask(ETaskID task_id, TaskHandle_t handle, uint32_t period);
         virtual void DelayUntil(TickType_t *pxPreviousWakeTime, TickType_t xTimeIncrement, ETaskID task_id) = 0;
         
-        virtual uint32_t GetTotalJobs(ETaskID task_id) const = 0;
-        virtual uint32_t GetMissedDeadlines(ETaskID task_id) const = 0;
-        virtual float GetDeadlineMissRatio(ETaskID task_id) const = 0;
+        virtual uint32_t GetTotalJobs(ETaskID task_id) const;
+        virtual uint32_t GetMissedDeadlines(ETaskID task_id) const;
+        virtual float GetDeadlineMissRatio(ETaskID task_id) const;
+        virtual const char* GetSchedulerName() const = 0;
+
+    protected:
+        TaskStruct tasks[TASK_COUNT];
 };
 
 #endif // ISCHEDULER_H

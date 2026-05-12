@@ -1,5 +1,5 @@
-#ifndef EDF_SCHEDULER_H
-#define EDF_SCHEDULER_H
+#ifndef NATIVE_SCHEDULER_H
+#define NATIVE_SCHEDULER_H
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -7,17 +7,14 @@
 
 #include "core/IScheduler.h"
 
-class EDFScheduler : public IScheduler 
+class NativeScheduler : public IScheduler 
 {
     public:
-        EDFScheduler() = default;
-        virtual ~EDFScheduler() = default;
+        NativeScheduler() = default;
+        virtual ~NativeScheduler() = default;
 
         void DelayUntil(TickType_t *pxPreviousWakeTime, TickType_t xTimeIncrement, ETaskID task_id) override;
         const char* GetSchedulerName() const override;
-
-    private:
-        void UpdatePriorities();
 };
 
-#endif // EDF_SCHEDULER_H
+#endif // NATIVE_SCHEDULER_H

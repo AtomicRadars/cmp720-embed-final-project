@@ -39,8 +39,10 @@ void SchedulerTest::PrintTaskMetrics(IScheduler* pSched, ETaskID task_id)
         uint32_t misses = pSched->GetMissedDeadlines(task_id);
         float dmr = pSched->GetDeadlineMissRatio(task_id);
         
-        snprintf(msg, sizeof(msg), "[Metrics] Task %d - Jobs: %lu | Misses: %lu | DMR: %d%%\r\n", 
-                 static_cast<int>(task_id), total, misses, static_cast<int>(dmr * 100.0f));
+        uint32_t current_time = xTaskGetTickCount();
+        
+        snprintf(msg, sizeof(msg), "[TS: %lu ms] [Metrics] Task %d - Jobs: %lu | Misses: %lu | DMR: %d%%\r\n", 
+                 current_time, static_cast<int>(task_id), total, misses, static_cast<int>(dmr * 100.0f));
                  
         HAL_UART_Transmit(&huart2, (uint8_t*)msg, static_cast<uint16_t>(std::strlen(msg)), HAL_MAX_DELAY);
     }
@@ -48,10 +50,15 @@ void SchedulerTest::PrintTaskMetrics(IScheduler* pSched, ETaskID task_id)
 
 void SchedulerTest::SimulateHeavyWorkload(uint32_t duration_ms)
 {
-    // Busy-spin: burns CPU cycles without yielding — causes real deadline pressure
-    TickType_t start = xTaskGetTickCount();
+    // Busy-spin using a calibrated instruction loop. 
+    // This ensures the task demands TRUE CPU execution time, rather than 
+    // just wall-clock time (which would allow preempted tasks to "finish" early).
+    // Assuming 80 MHz core clock.
+    // A volatile loop on Cortex-M4 with flash wait states typically takes 15-20 cycles.
+    // 80,000 cycles per ms / 20 cycles per loop = ~4,000 iterations per millisecond.
+    uint32_t total_iterations = duration_ms * 4000;
     volatile uint32_t sink = 0;
-    while ((xTaskGetTickCount() - start) < pdMS_TO_TICKS(duration_ms))
+    for (uint32_t i = 0; i < total_iterations; i++)
     {
         sink++; // Prevent optimizer from removing the loop
     }

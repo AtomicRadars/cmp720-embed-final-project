@@ -59,7 +59,7 @@ void TaskConfig::Task1_MotorControl(void *pvParameters)
         if (pSched->GetTotalJobs(ETaskID::eMotorControl) % (1000 / TASK1_PERIOD_MS) == 0) 
         {
             char msg[128];
-            snprintf(msg, sizeof(msg), "Task1_MotorControl! SP: 100, MV: %d (x1000), OUT: %d (x1000)\r\n", 
+            snprintf(msg, sizeof(msg), "\r\nTask1_MotorControl! SP: 100, MV: %d (x1000), OUT: %d (x1000)\r\n", 
                      static_cast<int>(measured_value * 1000.0f), static_cast<int>(output * 1000.0f));
             HAL_UART_Transmit(&huart2, (uint8_t*)msg, static_cast<uint16_t>(std::strlen(msg)), HAL_MAX_DELAY);
         }

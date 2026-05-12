@@ -1,9 +1,11 @@
 #include "app_main.h"
 #include "main.h" // Gives you access to HAL functions and auto-generated pins
 #include <cstring>
+#include <cstdio>
 
 #include "core/TaskConfig.h"
 #include "core/EDFScheduler.h"
+#include "core/NativeScheduler.h"
 
 void ClearConsole();
 
@@ -13,8 +15,9 @@ extern UART_HandleTypeDef huart2;
 void TaskInit(void) 
 {
 	// Initialization code goes here
-    auto* pEdfScheduler = new EDFScheduler();
-	auto* pTaskConfig = new TaskConfig(pEdfScheduler);
+    IScheduler* pActiveScheduler = new EDFScheduler();
+    // IScheduler* pActiveScheduler = new NativeScheduler();
+	auto* pTaskConfig = new TaskConfig(pActiveScheduler);
 
 	// 1. Initialize hardware profiling (ARM DWT counter)
 	pTaskConfig->DWT_Init();
@@ -22,8 +25,9 @@ void TaskInit(void)
 	// 2. Register the mixed-criticality workload with the RTOS
 	if (pTaskConfig->CreateTasks())
 	{
-		const char* cpMsg = "Tasks created successfully. Activating scheduler...\r\n\r\n";
-		HAL_UART_Transmit(&huart2, (uint8_t*)cpMsg, static_cast<uint16_t>(std::strlen(cpMsg)), HAL_MAX_DELAY);
+		char msg[128];
+		snprintf(msg, sizeof(msg), "Tasks created successfully. Activating [%s]...\r\n\r\n", pActiveScheduler->GetSchedulerName());
+		HAL_UART_Transmit(&huart2, (uint8_t*)msg, static_cast<uint16_t>(std::strlen(msg)), HAL_MAX_DELAY);
 	}
 	else 
 	{

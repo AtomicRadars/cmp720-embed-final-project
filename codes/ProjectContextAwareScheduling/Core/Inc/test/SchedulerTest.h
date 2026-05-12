@@ -4,9 +4,9 @@
 #include "core/IScheduler.h"
 #include <stdint.h>
 
-constexpr uint32_t TASK1_HEAVY_WORKLOAD_MS = 8;   // Spin for 8ms (80% of 10ms period)
-constexpr uint32_t TASK2_HEAVY_WORKLOAD_MS = 40;  // Spin for 40ms (80% of 50ms period)
-constexpr uint32_t TASK3_HEAVY_WORKLOAD_MS = 400; // Spin for 400ms (80% of 500ms period)
+constexpr uint32_t TASK1_HEAVY_WORKLOAD_MS = (TASK1_PERIOD_MS * 60) / 100;
+constexpr uint32_t TASK2_HEAVY_WORKLOAD_MS = (TASK2_PERIOD_MS * 60) / 100;
+constexpr uint32_t TASK3_HEAVY_WORKLOAD_MS = (TASK3_PERIOD_MS * 60) / 100;
 
 constexpr uint32_t TASK1_PID_ITERATIONS   = 50;  // Extra PID compute passes per activation
 constexpr uint32_t TASK3_CRYPTO_PASSES    = 3;   // Number of full-buffer passes per activation
