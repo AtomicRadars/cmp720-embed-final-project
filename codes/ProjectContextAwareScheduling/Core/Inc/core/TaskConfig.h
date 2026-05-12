@@ -24,6 +24,9 @@ struct TaskStruct
     bool is_registered;
     uint32_t total_jobs;
     uint32_t missed_deadlines;
+    uint32_t wcet;
+    float memory_intensity;
+    TickType_t next_wake_time;
 };
 
 // --- STATIC ALLOCATION STRUCTURES ---

@@ -6,6 +6,7 @@
 #include "core/TaskConfig.h"
 #include "core/EDFScheduler.h"
 #include "core/NativeScheduler.h"
+#include "core/ContextAwareScheduler.h"
 
 void ClearConsole();
 
@@ -17,6 +18,7 @@ void TaskInit(void)
 	// Initialization code goes here
     IScheduler* pActiveScheduler = new EDFScheduler();
     // IScheduler* pActiveScheduler = new NativeScheduler();
+    //IScheduler* pActiveScheduler = new ContextAwareScheduler(1.0f, 0.15f, 2);
 	auto* pTaskConfig = new TaskConfig(pActiveScheduler);
 
 	// 1. Initialize hardware profiling (ARM DWT counter)

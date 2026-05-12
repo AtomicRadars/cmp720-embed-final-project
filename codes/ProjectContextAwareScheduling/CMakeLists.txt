@@ -54,6 +54,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/core/IScheduler.cpp
     Core/Src/core/EDFScheduler.cpp
     Core/Src/core/NativeScheduler.cpp
+    Core/Src/core/ContextAwareScheduler.cpp
     Core/Src/test/SchedulerTest.cpp
 )
 

@@ -10,7 +10,7 @@ class IScheduler
     public:
         virtual ~IScheduler() = default;
         virtual void Initialize();
-        virtual void RegisterTask(ETaskID task_id, TaskHandle_t handle, uint32_t period);
+        virtual void RegisterTask(ETaskID task_id, TaskHandle_t handle, uint32_t period, uint32_t wcet, float memory_intensity);
         virtual void DelayUntil(TickType_t *pxPreviousWakeTime, TickType_t xTimeIncrement, ETaskID task_id) = 0;
         
         virtual uint32_t GetTotalJobs(ETaskID task_id) const;

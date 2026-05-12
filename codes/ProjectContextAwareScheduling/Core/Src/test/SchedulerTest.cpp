@@ -39,10 +39,8 @@ void SchedulerTest::PrintTaskMetrics(IScheduler* pSched, ETaskID task_id)
         uint32_t misses = pSched->GetMissedDeadlines(task_id);
         float dmr = pSched->GetDeadlineMissRatio(task_id);
         
-        uint32_t current_time = xTaskGetTickCount();
-        
         snprintf(msg, sizeof(msg), "[TS: %lu ms] [Metrics] Task %d - Jobs: %lu | Misses: %lu | DMR: %d%%\r\n", 
-                 current_time, static_cast<int>(task_id), total, misses, static_cast<int>(dmr * 100.0f));
+                 xTaskGetTickCount(), static_cast<int>(task_id), total, misses, static_cast<int>(dmr * 100.0f));
                  
         HAL_UART_Transmit(&huart2, (uint8_t*)msg, static_cast<uint16_t>(std::strlen(msg)), HAL_MAX_DELAY);
     }

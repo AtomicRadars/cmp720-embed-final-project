@@ -170,9 +170,9 @@ bool TaskConfig::CreateTasks()
     if ((m_xTask1Handle != nullptr) && (m_xTask2Handle != nullptr) && (m_xTask3Handle != nullptr)) 
     {
         m_pScheduler->Initialize();
-        m_pScheduler->RegisterTask(ETaskID::eMotorControl, m_xTask1Handle, TASK1_PERIOD_MS);
-        m_pScheduler->RegisterTask(ETaskID::eSensorAcquisition, m_xTask2Handle, TASK2_PERIOD_MS);
-        m_pScheduler->RegisterTask(ETaskID::eCryptoEncryption, m_xTask3Handle, TASK3_PERIOD_MS);
+        m_pScheduler->RegisterTask(ETaskID::eMotorControl, m_xTask1Handle, TASK1_PERIOD_MS, TASK1_HEAVY_WORKLOAD_MS, 0.1f);
+        m_pScheduler->RegisterTask(ETaskID::eSensorAcquisition, m_xTask2Handle, TASK2_PERIOD_MS, TASK2_HEAVY_WORKLOAD_MS, 0.2f);
+        m_pScheduler->RegisterTask(ETaskID::eCryptoEncryption, m_xTask3Handle, TASK3_PERIOD_MS, TASK3_HEAVY_WORKLOAD_MS, 0.9f);
         
         return true;
     }

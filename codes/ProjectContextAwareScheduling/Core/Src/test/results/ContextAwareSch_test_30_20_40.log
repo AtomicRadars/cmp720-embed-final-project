@@ -1,0 +1,165 @@
+***
+@ EDF Scheduler Test - Log File
+@ Date: 2026-05-12
+@
+@ Test Parameters:
+
+TASK1_HEAVY_WORKLOAD_MS = 10
+TASK2_HEAVY_WORKLOAD_MS = 50
+TASK3_HEAVY_WORKLOAD_MS = 500
+
+TASK1_HEAVY_WORKLOAD_MS = (TASK1_PERIOD_MS * 30) / 100;
+TASK2_HEAVY_WORKLOAD_MS = (TASK2_PERIOD_MS * 20) / 100;
+TASK3_HEAVY_WORKLOAD_MS = (TASK3_PERIOD_MS * 40) / 100;
+***
+
+
+Tasks created successfully. Activating [Context-Aware Scheduler]...
+
+
+Task1_MotorControl! SP: 100, MV: -500 (x1000), OUT: 613050 (x1000)
+[TS: 8 ms] [Metrics] Task 0 - Jobs: 0 | Misses: 0 | DMR: 0%
+Task2_SensorAcquisition! RAW: 1030, FILTERED: 257
+[TS: 29 ms] [Metrics] Task 1 - Jobs: 0 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 296 ms] [Metrics] Task 2 - Jobs: 0 | Misses: 0 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 103026 (x1000), OUT: 66417 (x1000)
+[TS: 1008 ms] [Metrics] Task 0 - Jobs: 100 | Misses: 1 | DMR: 1%
+Task2_SensorAcquisition! RAW: 2020, FILTERED: 1890
+[TS: 1032 ms] [Metrics] Task 1 - Jobs: 20 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 1297 ms] [Metrics] Task 2 - Jobs: 2 | Misses: 0 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 102061 (x1000), OUT: 116 (x1000)
+[TS: 2008 ms] [Metrics] Task 0 - Jobs: 200 | Misses: 2 | DMR: 1%
+Task2_SensorAcquisition! RAW: 1112, FILTERED: 2434
+[TS: 2032 ms] [Metrics] Task 1 - Jobs: 40 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 2297 ms] [Metrics] Task 2 - Jobs: 4 | Misses: 0 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 100636 (x1000), OUT: 9371 (x1000)
+[TS: 3008 ms] [Metrics] Task 0 - Jobs: 300 | Misses: 3 | DMR: 1%
+Task2_SensorAcquisition! RAW: 2102, FILTERED: 1935
+[TS: 3032 ms] [Metrics] Task 1 - Jobs: 60 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 3297 ms] [Metrics] Task 2 - Jobs: 6 | Misses: 0 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 99712 (x1000), OUT: 13951 (x1000)
+[TS: 4008 ms] [Metrics] Task 0 - Jobs: 400 | Misses: 4 | DMR: 1%
+Task2_SensorAcquisition! RAW: 1093, FILTERED: 2421
+[TS: 4032 ms] [Metrics] Task 1 - Jobs: 80 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 4297 ms] [Metrics] Task 2 - Jobs: 8 | Misses: 0 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 98940 (x1000), OUT: 13279 (x1000)
+[TS: 5008 ms] [Metrics] Task 0 - Jobs: 500 | Misses: 5 | DMR: 1%
+Task2_SensorAcquisition! RAW: 2083, FILTERED: 1916
+[TS: 5032 ms] [Metrics] Task 1 - Jobs: 100 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 5297 ms] [Metrics] Task 2 - Jobs: 10 | Misses: 0 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 98514 (x1000), OUT: 8294 (x1000)
+[TS: 6008 ms] [Metrics] Task 0 - Jobs: 600 | Misses: 6 | DMR: 1%
+Task2_SensorAcquisition! RAW: 1074, FILTERED: 2402
+[TS: 6032 ms] [Metrics] Task 1 - Jobs: 120 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 6297 ms] [Metrics] Task 2 - Jobs: 12 | Misses: 0 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 98569 (x1000), OUT: 655 (x1000)
+[TS: 7008 ms] [Metrics] Task 0 - Jobs: 700 | Misses: 7 | DMR: 1%
+Task2_SensorAcquisition! RAW: 2064, FILTERED: 1932
+[TS: 7032 ms] [Metrics] Task 1 - Jobs: 140 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 7297 ms] [Metrics] Task 2 - Jobs: 14 | Misses: 0 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 99117 (x1000), OUT: -7192 (x1000)
+[TS: 8008 ms] [Metrics] Task 0 - Jobs: 800 | Misses: 8 | DMR: 1%
+Task2_SensorAcquisition! RAW: 1055, FILTERED: 2426
+[TS: 8032 ms] [Metrics] Task 1 - Jobs: 160 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 8297 ms] [Metrics] Task 2 - Jobs: 16 | Misses: 0 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 100036 (x1000), OUT: -12617 (x1000)
+[TS: 9008 ms] [Metrics] Task 0 - Jobs: 900 | Misses: 9 | DMR: 1%
+Task2_SensorAcquisition! RAW: 2045, FILTERED: 1922
+[TS: 9032 ms] [Metrics] Task 1 - Jobs: 180 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 9297 ms] [Metrics] Task 2 - Jobs: 18 | Misses: 0 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 101099 (x1000), OUT: -13499 (x1000)
+[TS: 10008 ms] [Metrics] Task 0 - Jobs: 1000 | Misses: 10 | DMR: 1%
+Task2_SensorAcquisition! RAW: 1036, FILTERED: 2407
+[TS: 10033 ms] [Metrics] Task 1 - Jobs: 200 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 10297 ms] [Metrics] Task 2 - Jobs: 20 | Misses: 0 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 102029 (x1000), OUT: -8823 (x1000)
+[TS: 11008 ms] [Metrics] Task 0 - Jobs: 1100 | Misses: 11 | DMR: 1%
+Task2_SensorAcquisition! RAW: 2026, FILTERED: 1903
+[TS: 11032 ms] [Metrics] Task 1 - Jobs: 220 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 11297 ms] [Metrics] Task 2 - Jobs: 22 | Misses: 0 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 101505 (x1000), OUT: 2045 (x1000)
+[TS: 12008 ms] [Metrics] Task 0 - Jobs: 1200 | Misses: 12 | DMR: 1%
+Task2_SensorAcquisition! RAW: 1118, FILTERED: 2435
+[TS: 12032 ms] [Metrics] Task 1 - Jobs: 240 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 12297 ms] [Metrics] Task 2 - Jobs: 24 | Misses: 0 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 100655 (x1000), OUT: 10568 (x1000)
+[TS: 13008 ms] [Metrics] Task 0 - Jobs: 1300 | Misses: 13 | DMR: 1%
+Task2_SensorAcquisition! RAW: 2108, FILTERED: 1941
+[TS: 13032 ms] [Metrics] Task 1 - Jobs: 260 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 13297 ms] [Metrics] Task 2 - Jobs: 26 | Misses: 0 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 99690 (x1000), OUT: 14870 (x1000)
+[TS: 14008 ms] [Metrics] Task 0 - Jobs: 1400 | Misses: 14 | DMR: 1%
+Task2_SensorAcquisition! RAW: 1099, FILTERED: 2427
+[TS: 14032 ms] [Metrics] Task 1 - Jobs: 280 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 14297 ms] [Metrics] Task 2 - Jobs: 28 | Misses: 0 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 98862 (x1000), OUT: 14112 (x1000)
+[TS: 15008 ms] [Metrics] Task 0 - Jobs: 1500 | Misses: 15 | DMR: 1%
+Task2_SensorAcquisition! RAW: 2089, FILTERED: 1922
+[TS: 15032 ms] [Metrics] Task 1 - Jobs: 300 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 15297 ms] [Metrics] Task 2 - Jobs: 30 | Misses: 0 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 98402 (x1000), OUT: 8768 (x1000)
+[TS: 16008 ms] [Metrics] Task 0 - Jobs: 1600 | Misses: 16 | DMR: 1%
+Task2_SensorAcquisition! RAW: 1080, FILTERED: 2408
+[TS: 16032 ms] [Metrics] Task 1 - Jobs: 320 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 16297 ms] [Metrics] Task 2 - Jobs: 32 | Misses: 0 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 98452 (x1000), OUT: 567 (x1000)
+[TS: 17008 ms] [Metrics] Task 0 - Jobs: 1700 | Misses: 17 | DMR: 1%
+Task2_SensorAcquisition! RAW: 2070, FILTERED: 1933
+[TS: 17032 ms] [Metrics] Task 1 - Jobs: 340 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 17297 ms] [Metrics] Task 2 - Jobs: 34 | Misses: 0 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 99026 (x1000), OUT: -7902 (x1000)
+[TS: 18008 ms] [Metrics] Task 0 - Jobs: 1800 | Misses: 18 | DMR: 1%
+Task2_SensorAcquisition! RAW: 1061, FILTERED: 2432
+[TS: 18032 ms] [Metrics] Task 1 - Jobs: 360 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 18297 ms] [Metrics] Task 2 - Jobs: 36 | Misses: 0 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 99996 (x1000), OUT: -13845 (x1000)
+[TS: 19008 ms] [Metrics] Task 0 - Jobs: 1900 | Misses: 19 | DMR: 1%
+Task2_SensorAcquisition! RAW: 2051, FILTERED: 1928
+[TS: 19032 ms] [Metrics] Task 1 - Jobs: 380 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 19297 ms] [Metrics] Task 2 - Jobs: 38 | Misses: 0 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 101124 (x1000), OUT: -14995 (x1000)
+[TS: 20008 ms] [Metrics] Task 0 - Jobs: 2000 | Misses: 20 | DMR: 1%
+Task2_SensorAcquisition! RAW: 1042, FILTERED: 2413
+[TS: 20033 ms] [Metrics] Task 1 - Jobs: 400 | Misses: 0 | DMR: 0%
+Task3_CryptoEncryption!
+[TS: 20297 ms] [Metrics] Task 2 - Jobs: 40 | Misses: 0 | DMR: 0%
