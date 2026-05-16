@@ -35,24 +35,24 @@ struct TaskStruct
 constexpr size_t TASK_STACK_SIZE = 256;
 
 // TCBs (Task Control Blocks)
-static StaticTask_t xTask1TCB{};
-static StaticTask_t xTask2TCB{};
-static StaticTask_t xTask3TCB{};
-static StaticTask_t xTask4TCB{};
+extern StaticTask_t xTask1TCB;
+extern StaticTask_t xTask2TCB;
+extern StaticTask_t xTask3TCB;
+extern StaticTask_t xTask4TCB;
 
 // Task Stacks
-static StackType_t xTask1Stack[TASK_STACK_SIZE];
-static StackType_t xTask2Stack[TASK_STACK_SIZE];
-static StackType_t xTask3Stack[TASK_STACK_SIZE];
-static StackType_t xTask4Stack[TASK_STACK_SIZE];
+extern StackType_t xTask1Stack[TASK_STACK_SIZE];
+extern StackType_t xTask2Stack[TASK_STACK_SIZE];
+extern StackType_t xTask3Stack[TASK_STACK_SIZE];
+extern StackType_t xTask4Stack[TASK_STACK_SIZE];
 
 // Target constraint: Use a large contiguous buffer (4-10 KB) allocated 
 // statically to avoid runtime dynamic allocation [3, 4].
 constexpr size_t CRYPTO_BUFFER_SIZE = 8192; 
-static uint8_t crypto_buffer[CRYPTO_BUFFER_SIZE];
+extern uint8_t crypto_buffer[CRYPTO_BUFFER_SIZE];
 
 constexpr size_t VISION_BUFFER_SIZE = 4096;
-static uint8_t vision_buffer[VISION_BUFFER_SIZE];
+extern uint8_t vision_buffer[VISION_BUFFER_SIZE];
 
 constexpr UBaseType_t TASK1_PRIORITY = 4;
 constexpr UBaseType_t TASK2_PRIORITY = 2;

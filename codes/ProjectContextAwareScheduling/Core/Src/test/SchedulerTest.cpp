@@ -36,7 +36,7 @@ void SchedulerTest::PrintTaskMetrics(IScheduler* p_pISched, ETaskID task_id)
             break;
     }
 
-    if (((total > 0) && ((total % print_interval) == 0)) 
+    if ((total > 0) && ((total % print_interval) == 0))
     {
         char msg[128];
         uint32_t misses = p_pISched->GetMissedDeadlines(task_id);

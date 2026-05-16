@@ -7,6 +7,19 @@
 #include <cstring>
 #include <cstdio>
 
+StaticTask_t xTask1TCB{};
+StaticTask_t xTask2TCB{};
+StaticTask_t xTask3TCB{};
+StaticTask_t xTask4TCB{};
+
+StackType_t xTask1Stack[TASK_STACK_SIZE]{};
+StackType_t xTask2Stack[TASK_STACK_SIZE]{};
+StackType_t xTask3Stack[TASK_STACK_SIZE]{};
+StackType_t xTask4Stack[TASK_STACK_SIZE]{};
+
+uint8_t crypto_buffer[CRYPTO_BUFFER_SIZE]{};
+uint8_t vision_buffer[VISION_BUFFER_SIZE]{};
+
 // Task prototypes for FreeRTOS tasks, defined in TaskInits.cpp
 extern UART_HandleTypeDef huart2;
 //extern float Read_ADC_Channel(); // Hardware abstraction
