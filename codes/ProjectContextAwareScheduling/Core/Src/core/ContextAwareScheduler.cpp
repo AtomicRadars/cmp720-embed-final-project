@@ -21,7 +21,10 @@ void ContextAwareScheduler::ApplyHeuristicAndUpdatePriorities()
         }
     }
 
-    if (count == 0) return;
+    if (count == 0)
+    {
+        return;
+    }
 
     // 2. Sort ALL tasks by absolute deadline (EDF base)
     for (uint8_t i = 0; i < count; ++i) 
@@ -70,7 +73,7 @@ void ContextAwareScheduler::ApplyHeuristicAndUpdatePriorities()
                         if (tasks[alt_task_id].memory_intensity < m_cand)
                         {
                             int32_t alt_slack = (int32_t)(tasks[alt_task_id].deadline - current_time) - (int32_t)tasks[alt_task_id].wcet;
-                            if (alt_slack > 0)
+                            if ((alt_slack > 0) && (tasks[alt_task_id].wcet < slack))
                             {
                                 // Swap cand_task_id and alt_task_id in the indices array
                                 indices[cand_ready_idx] = alt_task_id;
