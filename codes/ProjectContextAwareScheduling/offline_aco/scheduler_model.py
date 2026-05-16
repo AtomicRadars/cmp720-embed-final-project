@@ -86,6 +86,77 @@ class ScheduleEvaluation:
     total_smooth_memory_penalty: float
     total_cost: float
 
+@dataclass
+class RuntimeJob:
+    """
+    Runtime state of a job during preemptive simulation.
+
+    A normal Job is immutable: release, deadline, WCET, memory intensity.
+    RuntimeJob adds changing state:
+        - remaining_ms
+        - first_start_ms
+        - finish_ms
+        - whether contention penalty was already applied
+    """
+    job: Job
+    remaining_ms: int
+    started: bool = False
+    first_start_ms: Optional[int] = None
+    finish_ms: Optional[int] = None
+    contention_penalty_ms: int = 0
+    smooth_memory_penalty: float = 0.0
+
+
+@dataclass(frozen=True)
+class ExecutionSegment:
+    """
+    One continuous execution interval of a job.
+
+    In a preemptive system, a job can have multiple segments:
+        Crypto_0: 13 -> 20
+        Crypto_0: 26 -> 40
+        ...
+    """
+    job: Job
+    start_ms: int
+    end_ms: int
+
+
+@dataclass
+class PreemptiveScheduledJob:
+    """
+    Completion summary of a job in preemptive simulation.
+    """
+    order: int
+    job: Job
+    start_ms: int
+    finish_ms: int
+    contention_penalty_ms: int
+    smooth_memory_penalty: float
+    deadline_missed: bool
+    lateness_ms: int
+
+
+@dataclass
+class PreemptiveEvaluation:
+    """
+    Summary of a preemptive simulation run.
+
+    execution_segments:
+        Actual CPU execution intervals.
+
+    scheduled_jobs:
+        Job completion summaries.
+    """
+    scheduled_jobs: list[PreemptiveScheduledJob]
+    execution_segments: list[ExecutionSegment]
+    total_time_ms: int
+    deadline_misses: int
+    total_lateness_ms: int
+    total_contention_penalty_ms: int
+    total_smooth_memory_penalty: float
+    total_cost: float
+
 
 def lcm(a: int, b: int) -> int:
     return abs(a * b) // gcd(a, b)
@@ -346,6 +417,7 @@ def print_job_summary(jobs: list[Job], max_rows: int = 20) -> None:
         )
 
 
+"""
 def main() -> None:
     tasks = default_project_tasks()
     hyperperiod_ms = compute_hyperperiod_ms(tasks)
@@ -386,3 +458,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+"""
