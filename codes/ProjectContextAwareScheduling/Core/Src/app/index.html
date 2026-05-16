@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTOS Scheduler Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .accent-glow { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        input[type="range"] { accent-color: #6366f1; }
+        .terminal-bg { background: #020617; }
+        .btn-primary { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); transition: all 0.3s ease; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5); }
+    </style>
+</head>
+<body class="p-6 lg:p-10 min-h-screen">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+                    Scheduler Performance Lab
+                </h1>
+                <p class="text-slate-400 mt-1">Real-time Task Configuration & Benchmark Suite</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="saveParams()" class="flex items-center gap-2 px-5 py-2.5 glass rounded-xl hover:bg-slate-800 transition-all font-medium">
+                    <i data-lucide="save" class="w-4 h-4"></i> Save Changes
+                </button>
+                <button onclick="runTests()" id="runBtn" class="flex items-center gap-2 px-6 py-2.5 btn-primary rounded-xl font-semibold shadow-lg accent-glow">
+                    <i data-lucide="play" class="w-4 h-4"></i> Run Benchmarks
+                </button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Left Column: Global Config -->
+            <aside class="lg:col-span-3 space-y-6">
+                <div class="glass p-6 rounded-3xl">
+                    <div class="flex items-center gap-2 mb-6 text-indigo-400">
+                        <i data-lucide="settings-2" class="w-5 h-5"></i>
+                        <h2 class="text-lg font-semibold text-white">Global Parameters</h2>
+                    </div>
+                    
+                    <div class="space-y-8">
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <label class="text-sm font-medium text-slate-300">Alpha Coefficient</label>
+                                <span class="text-xs font-mono text-indigo-400" id="ALPHA_val">1.0</span>
+                            </div>
+                            <input type="range" id="ALPHA" min="0" max="2" step="0.1" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                            <p class="text-[10px] text-slate-500 mt-2 italic">Weight for context-aware heuristic penalty</p>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <label class="text-sm font-medium text-slate-300">Safety Margin (ms)</label>
+                                <span class="text-xs font-mono text-indigo-400" id="SAFETY_MARGIN_MS_val">2</span>
+                            </div>
+                            <input type="range" id="SAFETY_MARGIN_MS" min="0" max="20" step="1" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <label class="text-sm font-medium text-slate-300">Memory Threshold</label>
+                                <span class="text-xs font-mono text-indigo-400" id="MEMORY_INTENSITY_THRESHOLD_val">0.15</span>
+                            </div>
+                            <input type="range" id="MEMORY_INTENSITY_THRESHOLD" min="0" max="1" step="0.05" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass p-6 rounded-3xl border-indigo-500/20">
+                    <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Environment</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500">Port</span>
+                            <span class="text-indigo-300 font-mono">COM4</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500">Baud</span>
+                            <span class="text-indigo-300 font-mono">115200</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500">Duration</span>
+                            <span class="text-indigo-300 font-mono">10s / sched</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Middle/Right Column: Task Cards and Console -->
+            <main class="lg:col-span-9 space-y-8">
+                <!-- Task Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Task 1 -->
+                    <div class="glass p-6 rounded-3xl relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full -mr-8 -mt-8 group-hover:bg-indigo-500/10 transition-all"></div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="p-2.5 bg-indigo-500/20 rounded-xl text-indigo-400">
+                                <i data-lucide="cpu" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white">T1: Motor Control</h3>
+                                <span class="text-[10px] text-indigo-400/80 font-mono">HIGH PRIORITY</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Priority</label>
+                                <input type="number" id="TASK1_PRIORITY" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 transition-colors">
+                            </div>
+                            <div>
+                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Period (ms)</label>
+                                <input type="number" id="TASK1_PERIOD_MS" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 transition-colors">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Mem Intensity (0.0 - 1.0)</label>
+                                <input type="number" id="TASK1_MEMORY_INTENSITY" step="0.1" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 transition-colors">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Task 4 -->
+                    <div class="glass p-6 rounded-3xl relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full -mr-8 -mt-8 group-hover:bg-purple-500/10 transition-all"></div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="p-2.5 bg-purple-500/20 rounded-xl text-purple-400">
+                                <i data-lucide="eye" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white">T4: Vision Processing</h3>
+                                <span class="text-[10px] text-purple-400/80 font-mono">HIGH LOAD</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Priority</label>
+                                <input type="number" id="TASK4_PRIORITY" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors">
+                            </div>
+                            <div>
+                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Period (ms)</label>
+                                <input type="number" id="TASK4_PERIOD_MS" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Mem Intensity</label>
+                                <input type="number" id="TASK4_MEMORY_INTENSITY" step="0.1" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Task 2 -->
+                    <div class="glass p-6 rounded-3xl relative overflow-hidden group">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="p-2.5 bg-emerald-500/20 rounded-xl text-emerald-400">
+                                <i data-lucide="database" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white">T2: Sensor Acquisition</h3>
+                                <span class="text-[10px] text-emerald-400/80 font-mono">MEDIUM</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Priority</label>
+                                <input type="number" id="TASK2_PRIORITY" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
+                            </div>
+                            <div>
+                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Period (ms)</label>
+                                <input type="number" id="TASK2_PERIOD_MS" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Mem Intensity</label>
+                                <input type="number" id="TASK2_MEMORY_INTENSITY" step="0.1" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Task 3 -->
+                    <div class="glass p-6 rounded-3xl relative overflow-hidden group">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="p-2.5 bg-amber-500/20 rounded-xl text-amber-400">
+                                <i data-lucide="shield" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white">T3: Crypto Encryption</h3>
+                                <span class="text-[10px] text-amber-400/80 font-mono">COMPUTE INTENSIVE</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Priority</label>
+                                <input type="number" id="TASK3_PRIORITY" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition-colors">
+                            </div>
+                            <div>
+                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Period (ms)</label>
+                                <input type="number" id="TASK3_PERIOD_MS" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition-colors">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Mem Intensity</label>
+                                <input type="number" id="TASK3_MEMORY_INTENSITY" step="0.1" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition-colors">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Console -->
+                <div class="glass rounded-3xl overflow-hidden flex flex-col h-[400px]">
+                    <div class="bg-slate-800/50 px-6 py-3 flex justify-between items-center border-b border-white/5">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
+                            <span class="ml-3 text-xs font-mono text-slate-400 tracking-wider">OUTPUT_STREAM</span>
+                        </div>
+                        <button onclick="document.getElementById('console').innerHTML = ''" class="text-[10px] uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Clear</button>
+                    </div>
+                    <div id="console" class="terminal-bg p-6 font-mono text-xs overflow-y-auto flex-grow scrollbar-hide text-slate-300 leading-relaxed">
+                        <span class="text-indigo-500">system_kernel:</span> Waiting for benchmark signal...
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        
+        const params = [
+            'TASK1_PRIORITY', 'TASK2_PRIORITY', 'TASK3_PRIORITY', 'TASK4_PRIORITY',
+            'TASK1_PERIOD_MS', 'TASK2_PERIOD_MS', 'TASK3_PERIOD_MS', 'TASK4_PERIOD_MS',
+            'ALPHA', 'SAFETY_MARGIN_MS', 'MEMORY_INTENSITY_THRESHOLD',
+            'TASK1_MEMORY_INTENSITY', 'TASK2_MEMORY_INTENSITY', 'TASK3_MEMORY_INTENSITY', 'TASK4_MEMORY_INTENSITY'
+        ];
+
+        async function loadParams() {
+            const res = await fetch('/api/params');
+            const data = await res.json();
+            params.forEach(p => {
+                const el = document.getElementById(p);
+                if (el) {
+                    el.value = data[p];
+                    const valEl = document.getElementById(p + '_val');
+                    if (valEl) valEl.innerText = data[p];
+                }
+            });
+        }
+
+        // Update slider values real-time
+        ['ALPHA', 'SAFETY_MARGIN_MS', 'MEMORY_INTENSITY_THRESHOLD'].forEach(p => {
+            document.getElementById(p).oninput = function() {
+                document.getElementById(p + '_val').innerText = this.value;
+            };
+        });
+
+        async function saveParams() {
+            const body = {};
+            params.forEach(p => {
+                const el = document.getElementById(p);
+                body[p] = parseFloat(el.value);
+            });
+            
+            const res = await fetch('/api/params', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            
+            if (res.ok) {
+                log('System configuration updated successfully.', 'emerald-400');
+            }
+        }
+
+        function log(msg, color = 'slate-300') {
+            const consoleEl = document.getElementById('console');
+            const line = document.createElement('div');
+            line.className = `min-h-[1rem] mb-1 text-${color}`;
+            line.innerHTML = msg.trim() === "" ? "&nbsp;" : msg;
+            consoleEl.appendChild(line);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        async function runTests() {
+            const btn = document.getElementById('runBtn');
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            
+            log('Initiating test sequence...', 'indigo-400');
+            const eventSource = new EventSource('/api/run');
+            
+            eventSource.onmessage = function(event) {
+                if (event.data.includes('--- COMPLETED ---')) {
+                    eventSource.close();
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    log('Benchmark suite completed.', 'emerald-400');
+                } else {
+                    log(event.data);
+                }
+            };
+
+            eventSource.onerror = function() {
+                eventSource.close();
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                log('Error in execution stream.', 'red-400');
+            };
+        }
+
+        window.onload = loadParams;
+    </script>
+</body>
+</html>

@@ -148,12 +148,12 @@ def main():
                                         if clean_line.startswith("Task1_MotorControl!"):
                                             if first_task_printed:
                                                 f.write("\n")
-                                                print("")
+                                                print("", flush=True)
                                         
                                         f.write(clean_line + "\n")
                                         f.flush()
                                         try:
-                                            print(clean_line)
+                                            print(clean_line, flush=True)
                                         except UnicodeEncodeError:
                                             pass
                                         
