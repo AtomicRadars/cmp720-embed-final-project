@@ -7,13 +7,13 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-constexpr uint8_t TASK_COUNT = 3;
-
 enum ETaskID : uint8_t
 {
     eMotorControl = 0,
     eSensorAcquisition = 1,
-    eCryptoEncryption = 2
+    eCryptoEncryption = 2,
+    eVisionProcessing = 3,
+    TASK_COUNT
 };
 
 struct TaskStruct
@@ -32,26 +32,37 @@ struct TaskStruct
 // --- STATIC ALLOCATION STRUCTURES ---
 // Since dynamic allocation is avoided [2], we statically allocate memory 
 // for the Task Control Blocks (TCBs) and the Task Stacks.
-constexpr size_t STACK_SIZE = 256;
+constexpr size_t TASK_STACK_SIZE = 256;
 
 // TCBs (Task Control Blocks)
 static StaticTask_t xTask1TCB{};
 static StaticTask_t xTask2TCB{};
 static StaticTask_t xTask3TCB{};
+static StaticTask_t xTask4TCB{};
 
 // Task Stacks
-static StackType_t xTask1Stack[STACK_SIZE];
-static StackType_t xTask2Stack[STACK_SIZE];
-static StackType_t xTask3Stack[STACK_SIZE];
+static StackType_t xTask1Stack[TASK_STACK_SIZE];
+static StackType_t xTask2Stack[TASK_STACK_SIZE];
+static StackType_t xTask3Stack[TASK_STACK_SIZE];
+static StackType_t xTask4Stack[TASK_STACK_SIZE];
 
 // Target constraint: Use a large contiguous buffer (4-10 KB) allocated 
 // statically to avoid runtime dynamic allocation [3, 4].
 constexpr size_t CRYPTO_BUFFER_SIZE = 8192; 
 static uint8_t crypto_buffer[CRYPTO_BUFFER_SIZE];
 
+constexpr size_t VISION_BUFFER_SIZE = 4096;
+static uint8_t vision_buffer[VISION_BUFFER_SIZE];
+
+constexpr UBaseType_t TASK1_PRIORITY = 3;
+constexpr UBaseType_t TASK2_PRIORITY = 2;
+constexpr UBaseType_t TASK3_PRIORITY = 1;
+constexpr UBaseType_t TASK4_PRIORITY = 2;
+
 constexpr uint32_t TASK1_PERIOD_MS = 10;  // High frequency
 constexpr uint32_t TASK2_PERIOD_MS = 50;  // Medium frequency
-constexpr uint32_t TASK3_PERIOD_MS = 500;  // Low frequency
+constexpr uint32_t TASK3_PERIOD_MS = 500; // Low frequency
+constexpr uint32_t TASK4_PERIOD_MS = 20;  // High-Medium frequency
 
 class IScheduler;
 
@@ -63,6 +74,7 @@ class TaskConfig
         static void Task1_MotorControl(void *pvParameters);
         static void Task2_SensorAcquisition(void *pvParameters);
         static void Task3_CryptoEncryption(void *pvParameters);
+        static void Task4_VisionProcessing(void *pvParameters);
 
         bool CreateTasks();
 
@@ -75,6 +87,7 @@ class TaskConfig
         TaskHandle_t m_xTask1Handle;
         TaskHandle_t m_xTask2Handle;
         TaskHandle_t m_xTask3Handle;
+        TaskHandle_t m_xTask4Handle;
 };
 
 #endif // TASK_CONFIG_H

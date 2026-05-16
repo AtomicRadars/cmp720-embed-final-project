@@ -28,6 +28,9 @@ void SchedulerTest::PrintTaskMetrics(IScheduler* pSched, ETaskID task_id)
         case ETaskID::eCryptoEncryption: 
             print_interval = 1000 / TASK3_PERIOD_MS; 
             break;
+        case ETaskID::eVisionProcessing:
+            print_interval = 1000 / TASK4_PERIOD_MS;
+            break;
         default: 
             print_interval = 5; 
             break;

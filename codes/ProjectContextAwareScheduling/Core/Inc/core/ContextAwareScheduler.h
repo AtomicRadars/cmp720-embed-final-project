@@ -13,7 +13,7 @@ class ContextAwareScheduler : public IScheduler
         ContextAwareScheduler(float alpha = 1.0f, float threshold = 0.15f, uint32_t safety_margin = 2);
         virtual ~ContextAwareScheduler() = default;
 
-        void DelayUntil(TickType_t *pxPreviousWakeTime, TickType_t xTimeIncrement, ETaskID task_id) override;
+        virtual void DelayUntil(TickType_t *pxPreviousWakeTime, TickType_t xTimeIncrement, ETaskID task_id) override;
         const char* GetSchedulerName() const override;
 
     private:

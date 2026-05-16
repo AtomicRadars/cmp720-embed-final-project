@@ -13,7 +13,7 @@ class EDFScheduler : public IScheduler
         EDFScheduler() = default;
         virtual ~EDFScheduler() = default;
 
-        void DelayUntil(TickType_t *pxPreviousWakeTime, TickType_t xTimeIncrement, ETaskID task_id) override;
+        virtual void DelayUntil(TickType_t *pxPreviousWakeTime, TickType_t xTimeIncrement, ETaskID task_id) override;
         const char* GetSchedulerName() const override;
 
     private:

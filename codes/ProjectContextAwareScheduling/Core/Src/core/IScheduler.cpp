@@ -50,3 +50,12 @@ float IScheduler::GetDeadlineMissRatio(ETaskID task_id) const
     }
     return 0.0f;
 }
+
+float IScheduler::GetLastExecutedMemoryIntensity() const
+{
+    if (tasks[m_last_executed_task].is_registered)
+    {
+        return tasks[m_last_executed_task].memory_intensity;
+    }
+    return 0.0f;
+}

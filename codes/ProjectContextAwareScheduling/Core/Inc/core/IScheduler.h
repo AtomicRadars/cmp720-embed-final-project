@@ -16,10 +16,12 @@ class IScheduler
         virtual uint32_t GetTotalJobs(ETaskID task_id) const;
         virtual uint32_t GetMissedDeadlines(ETaskID task_id) const;
         virtual float GetDeadlineMissRatio(ETaskID task_id) const;
+        virtual float GetLastExecutedMemoryIntensity() const;
         virtual const char* GetSchedulerName() const = 0;
 
     protected:
         TaskStruct tasks[TASK_COUNT];
+        ETaskID m_last_executed_task{eMotorControl};
 };
 
 #endif // ISCHEDULER_H

@@ -15,6 +15,7 @@ TaskConfig::TaskConfig(IScheduler* p_pIScheduler) : m_pScheduler(p_pIScheduler)
     m_xTask1Handle = nullptr;
     m_xTask2Handle = nullptr;
     m_xTask3Handle = nullptr;
+    m_xTask4Handle = nullptr;
 }
 
 void TaskConfig::Task1_MotorControl(void *pvParameters) 
@@ -121,7 +122,15 @@ void TaskConfig::Task3_CryptoEncryption(void *pvParameters)
 
     while (true) 
     {
-        // Strategy 1: Multiple passes over the crypto buffer (memory-bound, matching τ3 profile)
+        // Cache-contention model: if the previous task was memory-intensive, our
+        // 8 KB crypto_buffer working set was evicted from the STM32 D-cache.
+        // We simulate this with an explicit penalty, representing real cache-miss overhead.
+        if (pSched->GetLastExecutedMemoryIntensity() > CONTENTION_THRESHOLD)
+        {
+            SchedulerTest::SimulateHeavyWorkload(CONTENTION_PENALTY_MS);
+        }
+
+        // Multiple passes over the crypto buffer (memory-bound)
         for (uint32_t pass = 0; pass < TASK3_CRYPTO_PASSES; pass++)
         {
             for (size_t i = 0; i < CRYPTO_BUFFER_SIZE; i++) 
@@ -134,7 +143,6 @@ void TaskConfig::Task3_CryptoEncryption(void *pvParameters)
             }
         }
 
-        // Strategy 2: Busy-spin to fill remaining period budget
         SchedulerTest::SimulateHeavyWorkload(TASK3_HEAVY_WORKLOAD_MS);
 
         if (pSched->GetTotalJobs(ETaskID::eCryptoEncryption) % (1000 / TASK3_PERIOD_MS) == 0) 
@@ -143,10 +151,54 @@ void TaskConfig::Task3_CryptoEncryption(void *pvParameters)
             HAL_UART_Transmit(&huart2, (uint8_t*)cpMsg, static_cast<uint16_t>(std::strlen(cpMsg)), HAL_MAX_DELAY);
         }
 
-        // Print testing telemetry
         SchedulerTest::PrintTaskMetrics(pSched, ETaskID::eCryptoEncryption);
 
         pSched->DelayUntil(&xLastWakeTime, xFrequency, ETaskID::eCryptoEncryption);
+    }
+}
+
+/**
+ * Task 4 (τ4): Vision Processing 
+ * Profile: High Memory Intensity, short period.
+ */
+void TaskConfig::Task4_VisionProcessing(void *pvParameters) 
+{
+    IScheduler* pSched = static_cast<IScheduler*>(pvParameters);
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    const TickType_t xFrequency = pdMS_TO_TICKS(TASK4_PERIOD_MS); 
+
+    while (true) 
+    {
+        // Cache-contention model: if the previous task was memory-intensive,
+        // our 4 KB vision_buffer working set was evicted from the D-cache.
+        if (pSched->GetLastExecutedMemoryIntensity() > CONTENTION_THRESHOLD)
+        {
+            SchedulerTest::SimulateHeavyWorkload(CONTENTION_PENALTY_MS);
+        }
+
+        for (uint32_t pass = 0; pass < TASK4_VISION_PASSES; pass++)
+        {
+            for (size_t i = 0; i < VISION_BUFFER_SIZE; i++) 
+            {
+                vision_buffer[i] = vision_buffer[i] ^ 0x55; 
+                if (i > 0) 
+                {
+                    vision_buffer[i] += vision_buffer[i-1]; 
+                }
+            }
+        }
+
+        SchedulerTest::SimulateHeavyWorkload(TASK4_HEAVY_WORKLOAD_MS);
+
+        if (pSched->GetTotalJobs(ETaskID::eVisionProcessing) % (1000 / TASK4_PERIOD_MS) == 0) 
+        {
+            const char* cpMsg = "Task4_VisionProcessing!\r\n";
+            HAL_UART_Transmit(&huart2, (uint8_t*)cpMsg, static_cast<uint16_t>(std::strlen(cpMsg)), HAL_MAX_DELAY);
+        }
+
+        SchedulerTest::PrintTaskMetrics(pSched, ETaskID::eVisionProcessing);
+
+        pSched->DelayUntil(&xLastWakeTime, xFrequency, ETaskID::eVisionProcessing);
     }
 }
 
@@ -154,25 +206,31 @@ bool TaskConfig::CreateTasks()
 {
     // Task 1: Motor Control (High frequency, Low memory)
     m_xTask1Handle = xTaskCreateStatic(
-        Task1_MotorControl, "MotorCtrl", STACK_SIZE, m_pScheduler, 3, xTask1Stack, &xTask1TCB
+        Task1_MotorControl, "MotorCtrl", TASK_STACK_SIZE, m_pScheduler, TASK1_PRIORITY, xTask1Stack, &xTask1TCB
     );
 
     // Task 2: Sensor Data Acquisition (Medium frequency, Low memory)
     m_xTask2Handle = xTaskCreateStatic(
-        Task2_SensorAcquisition, "SensorAcq", STACK_SIZE, m_pScheduler, 2, xTask2Stack, &xTask2TCB
+        Task2_SensorAcquisition, "SensorAcq", TASK_STACK_SIZE, m_pScheduler, TASK2_PRIORITY, xTask2Stack, &xTask2TCB
     );
 
     // Task 3: Cryptographic Encryption (Low frequency, High memory)
     m_xTask3Handle = xTaskCreateStatic(
-        Task3_CryptoEncryption, "CryptoEnc", STACK_SIZE, m_pScheduler, 1, xTask3Stack, &xTask3TCB
+        Task3_CryptoEncryption, "CryptoEnc", TASK_STACK_SIZE, m_pScheduler, TASK3_PRIORITY, xTask3Stack, &xTask3TCB
     );
 
-    if ((m_xTask1Handle != nullptr) && (m_xTask2Handle != nullptr) && (m_xTask3Handle != nullptr)) 
+    // Task 4: Vision Processing (Medium frequency, High memory)
+    m_xTask4Handle = xTaskCreateStatic(
+        Task4_VisionProcessing, "VisionProc", TASK_STACK_SIZE, m_pScheduler, TASK4_PRIORITY, xTask4Stack, &xTask4TCB
+    );
+
+    if ((m_xTask1Handle != nullptr) && (m_xTask2Handle != nullptr) && (m_xTask3Handle != nullptr) && (m_xTask4Handle != nullptr)) 
     {
         m_pScheduler->Initialize();
         m_pScheduler->RegisterTask(ETaskID::eMotorControl, m_xTask1Handle, TASK1_PERIOD_MS, TASK1_HEAVY_WORKLOAD_MS, 0.1f);
         m_pScheduler->RegisterTask(ETaskID::eSensorAcquisition, m_xTask2Handle, TASK2_PERIOD_MS, TASK2_HEAVY_WORKLOAD_MS, 0.2f);
         m_pScheduler->RegisterTask(ETaskID::eCryptoEncryption, m_xTask3Handle, TASK3_PERIOD_MS, TASK3_HEAVY_WORKLOAD_MS, 0.9f);
+        m_pScheduler->RegisterTask(ETaskID::eVisionProcessing, m_xTask4Handle, TASK4_PERIOD_MS, TASK4_HEAVY_WORKLOAD_MS, 0.8f);
         
         return true;
     }

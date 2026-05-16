@@ -57,16 +57,19 @@ void EDFScheduler::DelayUntil(TickType_t *pxPreviousWakeTime, TickType_t xTimeIn
         }
 
         TickType_t next_wake_time = absolute_deadline;
+        tasks[task_id].next_wake_time = next_wake_time;
         
         vTaskSuspendAll(); // Disable context switches during priority calculation
         
         // The new absolute deadline is the next wake time + relative deadline (which is the period)
         tasks[task_id].deadline = next_wake_time + tasks[task_id].period;
+        m_last_executed_task = task_id; // Track for contention model
         
         UpdatePriorities();
         
         xTaskResumeAll(); // Re-enable context switches (preemption may happen here)
     }
+
     
     // Fall back to normal FreeRTOS blocking call
     vTaskDelayUntil(pxPreviousWakeTime, xTimeIncrement);
