@@ -6,14 +6,14 @@
 
 extern UART_HandleTypeDef huart2;
 
-void SchedulerTest::PrintTaskMetrics(IScheduler* pSched, ETaskID task_id)
+void SchedulerTest::PrintTaskMetrics(IScheduler* p_pISched, ETaskID task_id)
 {
-    if (pSched == nullptr)
+    if (p_pISched == nullptr)
     {
         return;
     }
 
-    uint32_t total = pSched->GetTotalJobs(task_id);
+    uint32_t total = p_pISched->GetTotalJobs(task_id);
     
     // Determine print interval based on task to achieve ~1 sec interval
     uint32_t print_interval = 1;
@@ -39,8 +39,8 @@ void SchedulerTest::PrintTaskMetrics(IScheduler* pSched, ETaskID task_id)
     if (((total > 0) && (total % print_interval)) == 0) 
     {
         char msg[128];
-        uint32_t misses = pSched->GetMissedDeadlines(task_id);
-        float dmr = pSched->GetDeadlineMissRatio(task_id);
+        uint32_t misses = p_pISched->GetMissedDeadlines(task_id);
+        float dmr = p_pISched->GetDeadlineMissRatio(task_id);
         
         snprintf(msg, sizeof(msg), "[TS: %lu ms] [Metrics] Task %d - Jobs: %lu | Misses: %lu | DMR: %d%%\r\n", 
                  xTaskGetTickCount(), static_cast<int>(task_id), total, misses, static_cast<int>(dmr * 100.0f));

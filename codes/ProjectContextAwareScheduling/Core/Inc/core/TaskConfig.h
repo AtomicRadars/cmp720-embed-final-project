@@ -71,17 +71,17 @@ class TaskConfig
     public:
         TaskConfig(IScheduler* p_pIScheduler);
 
-        static void Task1_MotorControl(void *pvParameters);
-        static void Task2_SensorAcquisition(void *pvParameters);
-        static void Task3_CryptoEncryption(void *pvParameters);
-        static void Task4_VisionProcessing(void *pvParameters);
+        static void Task1_MotorControl(IScheduler* p_pISched);
+        static void Task2_SensorAcquisition(IScheduler* p_pISched);
+        static void Task3_CryptoEncryption(IScheduler* p_pISched);
+        static void Task4_VisionProcessing(IScheduler* p_pISched);
 
         bool CreateTasks();
 
         static void DWT_Init(); 
 
     private:
-        IScheduler* m_pScheduler;
+        IScheduler* m_pIScheduler;
         
         // Task Handles
         TaskHandle_t m_xTask1Handle;
