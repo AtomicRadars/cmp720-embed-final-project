@@ -66,9 +66,16 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
 )
 
 # Add project symbols (macros)
-target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined symbols
-)
+if(ACTIVE_SCHEDULER STREQUAL "NATIVE")
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE SCHEDULER_NATIVE)
+elseif(ACTIVE_SCHEDULER STREQUAL "EDF")
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE SCHEDULER_EDF)
+elseif(ACTIVE_SCHEDULER STREQUAL "CONTEXT_AWARE")
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE SCHEDULER_CONTEXT_AWARE)
+else()
+    # Default to Context Aware if not specified via command line
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE SCHEDULER_CONTEXT_AWARE)
+endif()
 
 # Remove wrong libob.a library dependency when using cpp files
 list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
@@ -79,3 +86,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 
     # Add user defined libraries
 )
+
+# Enable float support for printf/snprintf
+target_link_options(${CMAKE_PROJECT_NAME} PRIVATE "-u" "_printf_float")
