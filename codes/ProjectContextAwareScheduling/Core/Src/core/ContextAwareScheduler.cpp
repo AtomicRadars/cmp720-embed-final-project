@@ -1,7 +1,7 @@
 #include "core/ContextAwareScheduler.h"
 
 ContextAwareScheduler::ContextAwareScheduler(float alpha, float threshold, uint32_t safety_margin)
-    : m_alpha(alpha), m_threshold(threshold), m_safety_margin(safety_margin), m_last_executed_task(eMotorControl)
+    : m_alpha(alpha), m_threshold(threshold), m_safety_margin(safety_margin)
 {
 }
 

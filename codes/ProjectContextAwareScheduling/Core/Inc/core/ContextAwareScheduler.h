@@ -27,7 +27,6 @@ class ContextAwareScheduler : public IScheduler
         float m_alpha;
         float m_threshold;
         uint32_t m_safety_margin;
-        ETaskID m_last_executed_task;
 };
 
 #endif // CONTEXT_AWARE_SCHEDULER_H

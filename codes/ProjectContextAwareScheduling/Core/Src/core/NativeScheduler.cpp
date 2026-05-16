@@ -18,6 +18,8 @@ void NativeScheduler::DelayUntil(TickType_t *pxPreviousWakeTime, TickType_t xTim
         // We DO NOT update the absolute deadline or update task priorities here
         // like we do in EDFScheduler. We just fall back to native FreeRTOS
         // vTaskDelayUntil which manages waking the task at the exact right tick.
+        tasks[task_id].next_wake_time = absolute_deadline;
+        m_last_executed_task = task_id;
     }
     
     // Native FreeRTOS blocking call (Task retains its static priority)

@@ -54,10 +54,10 @@ static uint8_t crypto_buffer[CRYPTO_BUFFER_SIZE];
 constexpr size_t VISION_BUFFER_SIZE = 4096;
 static uint8_t vision_buffer[VISION_BUFFER_SIZE];
 
-constexpr UBaseType_t TASK1_PRIORITY = 3;
+constexpr UBaseType_t TASK1_PRIORITY = 4;
 constexpr UBaseType_t TASK2_PRIORITY = 2;
 constexpr UBaseType_t TASK3_PRIORITY = 1;
-constexpr UBaseType_t TASK4_PRIORITY = 2;
+constexpr UBaseType_t TASK4_PRIORITY = 3;
 
 constexpr uint32_t TASK1_PERIOD_MS = 10;  // High frequency
 constexpr uint32_t TASK2_PERIOD_MS = 50;  // Medium frequency
