@@ -19,6 +19,11 @@ class ContextAwareScheduler : public IScheduler
     private:
         void ApplyHeuristicAndUpdatePriorities();
         
+        bool IsTimeReached(const TickType_t current_time, const TickType_t wake_time) const noexcept;
+        int32_t TimeUntil(const TickType_t future_time, const TickType_t current_time) const noexcept;
+        bool IsTaskReadyForScheduling(const uint8_t task_id, const TickType_t current_time) const noexcept;
+        int32_t CalculateSlack(const TickType_t current_time, const TickType_t deadline_time, const TickType_t remaining_time) const noexcept;
+
         float m_alpha;
         float m_threshold;
         uint32_t m_safety_margin;
