@@ -64,6 +64,16 @@ constexpr uint32_t TASK2_PERIOD_MS = 50;  // Medium frequency
 constexpr uint32_t TASK3_PERIOD_MS = 500; // Low frequency
 constexpr uint32_t TASK4_PERIOD_MS = 20;  // High-Medium frequency
 
+// Context-Aware Scheduling parameters
+constexpr float     ALPHA                       = 0.5f;     // Weight for the heuristic penalty
+constexpr uint32_t  SAFETY_MARGIN_MS            = 5;        // Safety margin in milliseconds for deadline slack
+constexpr float     MEMORY_INTENSITY_THRESHOLD  = 0.5f;     // Threshold for memory-intensive tasks
+
+constexpr float TASK1_MEMORY_INTENSITY = 0.1f;  // Low memory intensity
+constexpr float TASK2_MEMORY_INTENSITY = 0.2f;  // Medium memory intensity
+constexpr float TASK3_MEMORY_INTENSITY = 0.9f;  // High memory intensity
+constexpr float TASK4_MEMORY_INTENSITY = 0.8f;  // High memory intensity
+
 class IScheduler;
 
 class TaskConfig 
