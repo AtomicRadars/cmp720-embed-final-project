@@ -41,9 +41,10 @@ void SchedulerTest::PrintTaskMetrics(IScheduler* p_pISched, ETaskID task_id)
         char msg[128];
         uint32_t misses = p_pISched->GetMissedDeadlines(task_id);
         float dmr = p_pISched->GetDeadlineMissRatio(task_id);
+        UBaseType_t priority = uxTaskPriorityGet(nullptr); // Priority of the calling task
         
-        snprintf(msg, sizeof(msg), "[TS: %lu ms] [Metrics] Task %d - Jobs: %lu | Misses: %lu | DMR: %d%%\r\n", 
-                 xTaskGetTickCount(), static_cast<int>(task_id), total, misses, static_cast<int>(dmr * 100.0f));
+        snprintf(msg, sizeof(msg), "[TS: %lu ms] [Metrics] Task %d - Prio: %lu | Jobs: %lu | Misses: %lu | DMR: %d%%\r\n", 
+                 xTaskGetTickCount(), static_cast<int>(task_id), static_cast<uint32_t>(priority), total, misses, static_cast<int>(dmr * 100.0f));
                  
         HAL_UART_Transmit(&huart2, (uint8_t*)msg, static_cast<uint16_t>(std::strlen(msg)), HAL_MAX_DELAY);
     }
