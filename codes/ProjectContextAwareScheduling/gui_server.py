@@ -29,6 +29,7 @@ app = FastAPI()
 PROJECT_ROOT = Path(__file__).parent.absolute()
 CONFIG_HEADER = PROJECT_ROOT / "Core" / "Inc" / "core" / "TaskConfig.h"
 AUTOMATION_SCRIPT = PROJECT_ROOT / "automate_schedulers.py"
+LOG_DIR = PROJECT_ROOT / "Core" / "Src" / "test" / "results" / "auto_tests"
 
 class SchedulerParams(BaseModel):
     TASK1_PRIORITY: int
@@ -152,6 +153,56 @@ async def run_tests():
         yield "data: --- COMPLETED ---\n\n"
 
     return StreamingResponse(generate(), media_type="text/event-stream")
+
+@app.get("/api/results")
+async def get_results():
+    # Find all logs
+    log_files = list(LOG_DIR.glob("*.log"))
+    if not log_files:
+        return {"status": "no logs found"}
+
+    # Group by timestamp (YYYYMMDDTHHMMSS)
+    runs = {}
+    for f in log_files:
+        # Expected: SchedName_Timestamp.log
+        parts = f.stem.rsplit('_', 1)
+        if len(parts) == 2:
+            ts = parts[1]
+            if ts not in runs: runs[ts] = []
+            runs[ts].append(f)
+            
+    if not runs: return {"status": "no valid runs found"}
+    
+    # Get the latest run
+    latest_ts = sorted(runs.keys())[-1]
+    latest_logs = runs[latest_ts]
+    
+    results = {}
+    for log_path in latest_logs:
+        # scheduler_name is the first part
+        sched_name = log_path.stem.rsplit('_', 1)[0]
+        content = log_path.read_text(encoding='utf-8')
+        
+        # Regex for: [TS: 1007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 100 | Misses: 3 | DMR: 3%
+        # Task 0 -> Motor, Task 1 -> Sensor, Task 2 -> Crypto, Task 3 -> Vision
+        task_map = {0: "Motor", 1: "Sensor", 2: "Crypto", 3: "Vision"}
+        
+        metrics = []
+        pattern = r"\[TS: (\d+) ms\] \[Metrics\] Task (\d) - Prio: \d+ \| Jobs: (\d+) \| Misses: (\d+) \| DMR: (\d+)%"
+        
+        for match in re.finditer(pattern, content):
+            ts, task_id, jobs, misses, dmr = match.groups()
+            metrics.append({
+                "ts": int(ts),
+                "task": task_map.get(int(task_id), f"Task{task_id}"),
+                "jobs": int(jobs),
+                "misses": int(misses),
+                "dmr": int(dmr)
+            })
+            
+        results[sched_name] = metrics
+        
+    return {"timestamp": latest_ts, "data": results}
 
 @app.post("/api/stop")
 async def stop_tests():
