@@ -32,6 +32,9 @@
                 <button onclick="saveParams()" class="flex items-center gap-2 px-5 py-2.5 glass rounded-xl hover:bg-slate-800 transition-all font-medium">
                     <i data-lucide="save" class="w-4 h-4"></i> Save Changes
                 </button>
+                <button onclick="stopTests()" id="stopBtn" class="hidden flex items-center gap-2 px-5 py-2.5 bg-red-600/20 text-red-400 border border-red-500/30 rounded-xl hover:bg-red-600/30 transition-all font-medium">
+                    <i data-lucide="square" class="w-4 h-4"></i> Stop
+                </button>
                 <button onclick="runTests()" id="runBtn" class="flex items-center gap-2 px-6 py-2.5 btn-primary rounded-xl font-semibold shadow-lg accent-glow">
                     <i data-lucide="play" class="w-4 h-4"></i> Run Benchmarks
                 </button>
@@ -77,18 +80,18 @@
 
                 <div class="glass p-6 rounded-3xl border-indigo-500/20">
                     <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Environment</h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-slate-500">Port</span>
-                            <span class="text-indigo-300 font-mono">COM4</span>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">COM Port</label>
+                            <input type="text" id="COM_PORT" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-indigo-300 focus:outline-none focus:border-indigo-500 transition-colors">
                         </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-slate-500">Baud</span>
-                            <span class="text-indigo-300 font-mono">115200</span>
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Baud Rate</label>
+                            <input type="number" id="BAUD_RATE" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-indigo-300 focus:outline-none focus:border-indigo-500 transition-colors">
                         </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-slate-500">Duration</span>
-                            <span class="text-indigo-300 font-mono">10s / sched</span>
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Duration (s)</label>
+                            <input type="number" id="DURATION_SECONDS" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-indigo-300 focus:outline-none focus:border-indigo-500 transition-colors">
                         </div>
                     </div>
                 </div>
@@ -235,7 +238,8 @@
             'TASK1_PRIORITY', 'TASK2_PRIORITY', 'TASK3_PRIORITY', 'TASK4_PRIORITY',
             'TASK1_PERIOD_MS', 'TASK2_PERIOD_MS', 'TASK3_PERIOD_MS', 'TASK4_PERIOD_MS',
             'ALPHA', 'SAFETY_MARGIN_MS', 'MEMORY_INTENSITY_THRESHOLD',
-            'TASK1_MEMORY_INTENSITY', 'TASK2_MEMORY_INTENSITY', 'TASK3_MEMORY_INTENSITY', 'TASK4_MEMORY_INTENSITY'
+            'TASK1_MEMORY_INTENSITY', 'TASK2_MEMORY_INTENSITY', 'TASK3_MEMORY_INTENSITY', 'TASK4_MEMORY_INTENSITY',
+            'COM_PORT', 'BAUD_RATE', 'DURATION_SECONDS'
         ];
 
         async function loadParams() {
@@ -262,17 +266,38 @@
             const body = {};
             params.forEach(p => {
                 const el = document.getElementById(p);
-                body[p] = parseFloat(el.value);
+                if (p === 'COM_PORT') {
+                    body[p] = el.value;
+                } else {
+                    body[p] = parseFloat(el.value);
+                }
             });
             
-            const res = await fetch('/api/params', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
-            
-            if (res.ok) {
-                log('System configuration updated successfully.', 'emerald-400');
+            try {
+                const res = await fetch('/api/params', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                
+                if (res.ok) {
+                    log('System configuration updated successfully.', 'emerald-400');
+                    const btn = document.querySelector('button[onclick="saveParams()"]');
+                    const originalHTML = btn.innerHTML;
+                    btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Saved!';
+                    btn.classList.add('bg-emerald-600');
+                    lucide.createIcons();
+                    setTimeout(() => {
+                        btn.innerHTML = originalHTML;
+                        btn.classList.remove('bg-emerald-600');
+                        lucide.createIcons();
+                    }, 2000);
+                } else {
+                    const err = await res.text();
+                    log('Failed to save: ' + err, 'red-400');
+                }
+            } catch (e) {
+                log('Network error: ' + e.message, 'red-400');
             }
         }
 
@@ -287,8 +312,10 @@
 
         async function runTests() {
             const btn = document.getElementById('runBtn');
+            const stopBtn = document.getElementById('stopBtn');
             btn.disabled = true;
             btn.classList.add('opacity-50', 'cursor-not-allowed');
+            stopBtn.classList.remove('hidden');
             
             log('Initiating test sequence...', 'indigo-400');
             const eventSource = new EventSource('/api/run');
@@ -298,6 +325,7 @@
                     eventSource.close();
                     btn.disabled = false;
                     btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    stopBtn.classList.add('hidden');
                     log('Benchmark suite completed.', 'emerald-400');
                 } else {
                     log(event.data);
@@ -308,8 +336,17 @@
                 eventSource.close();
                 btn.disabled = false;
                 btn.classList.remove('opacity-50', 'cursor-not-allowed');
-                log('Error in execution stream.', 'red-400');
+                stopBtn.classList.add('hidden');
+                // SSE errors often happen on disconnect, so we don't always log as error
             };
+        }
+
+        async function stopTests() {
+            log('Sending termination signal...', 'red-400');
+            const res = await fetch('/api/stop', { method: 'POST' });
+            if (res.ok) {
+                log('Process terminated by user.', 'amber-400');
+            }
         }
 
         window.onload = loadParams;

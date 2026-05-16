@@ -4,6 +4,7 @@ import time
 import os
 import string
 import re
+import argparse
 from datetime import datetime
 from pathlib import Path
 
@@ -23,6 +24,18 @@ SCHEDULERS = ["NATIVE", "EDF", "CONTEXT_AWARE"]
 PROJECT_ROOT = Path(__file__).parent.absolute()
 LOG_DIR = PROJECT_ROOT / "Core" / "Src" / "test" / "results" / "auto_tests"
 ELF_PATH = PROJECT_ROOT / "build" / "Debug" / "ProjectContextAwareScheduling.elf"
+
+def parse_args():
+    global COM_PORT, BAUD_RATE, DURATION_SECONDS
+    parser = argparse.ArgumentParser(description="Automate RTOS scheduler benchmarks.")
+    parser.add_argument("--port", type=str, default=COM_PORT, help="COM port (e.g., COM4)")
+    parser.add_argument("--baud", type=int, default=BAUD_RATE, help="Baud rate (default: 115200)")
+    parser.add_argument("--duration", type=int, default=DURATION_SECONDS, help="Test duration per scheduler (seconds)")
+    
+    args, unknown = parser.parse_known_args()
+    COM_PORT = args.port
+    BAUD_RATE = args.baud
+    DURATION_SECONDS = args.duration
 
 # Tool Paths (Automatic Discovery)
 def setup_environment():
@@ -63,6 +76,7 @@ def run_command(cmd, cwd=None):
         raise Exception(f"Command failed with exit code {result.returncode}")
 
 def main():
+    parse_args()
     setup_environment()
     if not LOG_DIR.exists():
         LOG_DIR.mkdir(parents=True)

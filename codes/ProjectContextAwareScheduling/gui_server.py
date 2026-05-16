@@ -46,6 +46,17 @@ class SchedulerParams(BaseModel):
     TASK2_MEMORY_INTENSITY: float
     TASK3_MEMORY_INTENSITY: float
     TASK4_MEMORY_INTENSITY: float
+    COM_PORT: str = "COM4"
+    BAUD_RATE: int = 115200
+    DURATION_SECONDS: int = 10
+
+# Global state to store runtime settings and process
+runtime_settings = {
+    "COM_PORT": "COM4",
+    "BAUD_RATE": 115200,
+    "DURATION_SECONDS": 10
+}
+current_process = None
 
 def parse_config() -> Dict:
     content = CONFIG_HEADER.read_text()
@@ -67,23 +78,30 @@ def parse_config() -> Dict:
             clean_value = value.replace("f", "")
             params[name] = float(clean_value) if "." in clean_value or name == "ALPHA" else int(clean_value)
             
+    # Add runtime settings to the params
+    params.update(runtime_settings)
     return params
 
 def write_config(params: Dict):
     content = CONFIG_HEADER.read_text()
     
     for name, value in params.items():
+        # Skip runtime settings (they are already popped in update_params)
+        if name in ["COM_PORT", "BAUD_RATE", "DURATION_SECONDS"]:
+            continue
+            
         # Handle float formatting with 'f' suffix
         if isinstance(value, float):
-            formatted_value = f"{value:.2f}f" if "." in str(value) else f"{value:.1f}f"
+            formatted_value = f"{value:.2f}f"
         else:
             formatted_value = str(value)
             
-        # Replace the value in the file
-        # Pattern matches: constexpr TYPE NAME = VALUE;
-        pattern = rf"(constexpr (?:UBaseType_t|uint32_t|float)\s+{name}\s+=\s+)([\d\.f]+);"
-        replacement = rf"\1{formatted_value};"
-        content = re.sub(pattern, replacement, content)
+        # Pattern: constexpr [TYPE] [NAME] = [VALUE];
+        pattern = rf"(constexpr\s+(?:UBaseType_t|uint32_t|float)\s+{name}\s*=\s*)([\d\.f]+);"
+        if re.search(pattern, content):
+            content = re.sub(pattern, rf"\g<1>{formatted_value};", content)
+        else:
+            print(f"Warning: Could not find parameter {name} in {CONFIG_HEADER}")
         
     CONFIG_HEADER.write_text(content)
 
@@ -93,26 +111,57 @@ async def get_params():
 
 @app.post("/api/params")
 async def update_params(params: SchedulerParams):
-    write_config(params.dict())
-    return {"status": "success"}
+    try:
+        p_dict = params.dict()
+        
+        # Update runtime settings
+        runtime_settings["COM_PORT"] = p_dict.pop("COM_PORT")
+        runtime_settings["BAUD_RATE"] = p_dict.pop("BAUD_RATE")
+        runtime_settings["DURATION_SECONDS"] = p_dict.pop("DURATION_SECONDS")
+        
+        write_config(p_dict)
+        return {"status": "success"}
+    except Exception as e:
+        print(f"Error updating params: {e}")
+        return HTMLResponse(content=str(e), status_code=500)
 
 @app.get("/api/run")
 async def run_tests():
+    global current_process
     def generate():
-        process = subprocess.Popen(
-            [sys.executable, "-u", str(AUTOMATION_SCRIPT)],
+        global current_process
+        cmd = [
+            sys.executable, "-u", str(AUTOMATION_SCRIPT),
+            "--port", runtime_settings["COM_PORT"],
+            "--baud", str(runtime_settings["BAUD_RATE"]),
+            "--duration", str(runtime_settings["DURATION_SECONDS"])
+        ]
+        current_process = subprocess.Popen(
+            cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
             bufsize=1,
             universal_newlines=True
         )
-        for line in process.stdout:
+        for line in current_process.stdout:
             yield f"data: {line}\n\n"
-        process.wait()
+        
+        current_process.wait()
+        current_process = None
         yield "data: --- COMPLETED ---\n\n"
 
     return StreamingResponse(generate(), media_type="text/event-stream")
+
+@app.post("/api/stop")
+async def stop_tests():
+    global current_process
+    if current_process:
+        # Kill the process tree (Windows)
+        subprocess.run(["taskkill", "/F", "/T", "/PID", str(current_process.pid)])
+        current_process = None
+        return {"status": "stopped"}
+    return {"status": "no process running"}
 
 @app.get("/", response_class=HTMLResponse)
 async def get_index():
