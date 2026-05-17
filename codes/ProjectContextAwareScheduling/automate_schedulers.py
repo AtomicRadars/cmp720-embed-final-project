@@ -102,7 +102,7 @@ def main():
             run_command(["cmake", "--build", "--preset", "Debug"], cwd=PROJECT_ROOT)
 
             # 4. Capture UART Metrics (Open port BEFORE flashing to capture first bytes)
-            log_name = f"{sched_file_names.get(sched, sched.lower())}_{timestamp}.log"
+            log_name = f"{sched_file_names.get(sched, sched.lower())}_{DURATION_SECONDS}s_{timestamp}.log"
             log_file_path = LOG_DIR / log_name
             print(f"Capturing UART metrics on {COM_PORT} for {DURATION_SECONDS} seconds...")
             

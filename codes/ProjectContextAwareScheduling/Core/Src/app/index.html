@@ -15,7 +15,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <style>
         body { font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s; }
-        .glass { backdrop-filter: blur(12px); transition: all 0.3s; }
+        .glass { backdrop-filter: blur(12px); transition: all 0.3s, position 0s, z-index 0s; }
         
         /* Light mode default */
         body { background-color: #f8fafc; color: #0f172a; }
@@ -32,9 +32,22 @@
         input[type="range"] { accent-color: #6366f1; }
         .btn-primary { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); transition: all 0.3s ease; color: white; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5); }
+
+        /* Maximized Trend Card styles */
+        .card-maximized {
+            position: fixed !important;
+            top: 5% !important;
+            left: 5% !important;
+            width: 90% !important;
+            height: 90% !important;
+            z-index: 50 !important;
+            margin: 0 !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+        }
     </style>
 </head>
 <body class="p-6 lg:p-10 min-h-screen">
+    <div id="modalBackdrop" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-md z-40 transition-all duration-300"></div>
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
@@ -264,10 +277,85 @@
                                 <canvas id="dmrChart"></canvas>
                             </div>
                         </div>
-                        <div class="glass p-8 rounded-3xl">
-                            <h3 class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-6 text-center">DMR Trend over Time</h3>
-                            <div class="h-[300px]">
+                        <div id="trendCard" class="glass p-8 rounded-3xl relative transition-all duration-300">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-widest text-center flex-grow pl-8">DMR Trend over Time</h3>
+                                <button onclick="toggleTrendZoom()" class="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all" title="Toggle Zoom">
+                                    <i id="zoomIcon" data-lucide="maximize-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <div id="trendChartContainer" class="h-[300px] transition-all duration-300">
                                 <canvas id="trendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Task Inspector Section -->
+                    <div class="glass p-8 rounded-3xl mt-8">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-slate-200 dark:border-white/5 pb-4">
+                            <div>
+                                <h3 class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                    <i data-lucide="binary" class="w-4 h-4 text-indigo-500"></i>
+                                    Task Execution & Parameter Explorer
+                                </h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Deep-dive into specific task parameters, control loop feedback, and real-time execution values.</p>
+                            </div>
+                            <div class="flex flex-wrap gap-3 items-center">
+                                <!-- View Mode Tabs -->
+                                <div class="flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 border border-slate-300 dark:border-slate-700" id="inspectViewModeContainer">
+                                    <button onclick="setInspectMode('metrics')" id="modeBtnMetrics" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm transition-all">Metrics</button>
+                                    <button onclick="setInspectMode('params')" id="modeBtnParams" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-all">Parameters</button>
+                                </div>
+                                <!-- Scheduler Selector -->
+                                <select id="inspectSched" onchange="updateInspectView()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold focus:outline-none border border-slate-300 dark:border-slate-700">
+                                    <option value="NativeSch_test">Native RMS</option>
+                                    <option value="EDFSch_test">Earliest Deadline First</option>
+                                    <option value="ContextAwareSch_test">Context-Aware</option>
+                                </select>
+                                <!-- Task Selector -->
+                                <select id="inspectTask" onchange="updateInspectView()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold focus:outline-none border border-slate-300 dark:border-slate-700">
+                                    <option value="Motor">Motor Control (SP / MV / OUT)</option>
+                                    <option value="Sensor">Sensor Acquisition (RAW / FILTERED)</option>
+                                    <option value="Crypto">Crypto Encryption (Jobs / Misses)</option>
+                                    <option value="Vision">Vision Processing (Jobs / Misses)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <!-- Left: Explorer Chart (2/3 width on large screens) -->
+                            <div class="lg:col-span-2 flex flex-col h-[350px] relative">
+                                <div id="starvationAlert" class="hidden absolute top-2 left-2 right-2 z-10 px-4 py-2.5 rounded-xl border border-rose-500/20 bg-rose-500/10 backdrop-blur-md text-rose-500 text-xs font-semibold flex items-center gap-2">
+                                    <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-500 shrink-0"></i>
+                                    <span>⚠️ Priority Starvation Detected: This task was completely starved under the NATIVE RMS scheduling policy due to memory contention/bus load.</span>
+                                </div>
+                                <div class="flex-grow min-h-[290px] relative">
+                                    <canvas id="inspectChart"></canvas>
+                                </div>
+                                <div id="inspectLegendToggles" class="flex flex-wrap justify-center gap-3 mt-3"></div>
+                            </div>
+                            
+                            <!-- Right: Stat Details and Table List -->
+                            <div class="flex flex-col h-[350px]">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-3 flex items-center gap-1.5">
+                                    <i data-lucide="history" class="w-3.5 h-3.5 text-indigo-500"></i>
+                                    Execution History
+                                </h4>
+                                <div class="overflow-y-auto flex-grow rounded-2xl bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800/80 p-4 scrollbar-hide text-xs">
+                                    <table class="w-full text-left border-collapse">
+                                        <thead>
+                                            <tr class="text-slate-500 border-b border-slate-200 dark:border-slate-800 pb-2">
+                                                <th class="pb-2 font-semibold">Time</th>
+                                                <th class="pb-2 font-semibold">Jobs</th>
+                                                <th class="pb-2 font-semibold">DMR</th>
+                                                <th class="pb-2 font-semibold text-right" id="inspectTableParamHeader">Params</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="inspectTableBody" class="divide-y divide-slate-200/50 dark:divide-slate-800/50">
+                                            <!-- Dynamic Rows -->
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -346,19 +434,86 @@
             }
         }
 
+        function highlightLogLine(lineText) {
+            // If the line starts with "Task", color the entire line in a single unified color
+            if (lineText.startsWith("Task")) {
+                return `<span class="text-sky-600 dark:text-sky-400 font-medium">${lineText}</span>`;
+            }
+            
+            let html = lineText;
+            
+            // 1. Highlight timestamps [TS: XXX ms]
+            html = html.replace(/\[TS:\s*(\d+)\s*ms\]/g, (match, ts) => {
+                return `<span class="text-amber-600 dark:text-amber-400 font-semibold">[TS: ${ts} ms]</span>`;
+            });
+            
+            // 2. Highlight [Metrics] tag
+            html = html.replace(/\[Metrics\]/g, '<span class="text-indigo-600 dark:text-indigo-400 font-bold">[Metrics]</span>');
+            
+            // 3. Highlight Task Names and Task IDs
+            // All tasks share a unified premium sky blue color for a cleaner look
+            const taskStyles = {
+                'Task1_MotorControl': 'text-sky-600 dark:text-sky-400 font-bold',
+                'Task 0': 'text-sky-600 dark:text-sky-400 font-bold',
+                'Task2_SensorAcquisition': 'text-sky-600 dark:text-sky-400 font-bold',
+                'Task 1': 'text-sky-600 dark:text-sky-400 font-bold',
+                'Task3_CryptoEncryption': 'text-sky-600 dark:text-sky-400 font-bold',
+                'Task 2': 'text-sky-600 dark:text-sky-400 font-bold',
+                'Task4_VisionProcessing': 'text-sky-600 dark:text-sky-400 font-bold',
+                'Task 3': 'text-sky-600 dark:text-sky-400 font-bold'
+            };
+            
+            for (const [taskName, className] of Object.entries(taskStyles)) {
+                const regex = new RegExp(`\\b${taskName}\\b`, 'g');
+                html = html.replace(regex, `<span class="${className}">${taskName}</span>`);
+            }
+            
+            // 4. Highlight field labels (e.g. "SP:", "MV:", "OUT:", "RAW:", "FILTERED:", "Prio:", "Jobs:", "Misses:", "DMR:")
+            const labels = ["SP:", "MV:", "OUT:", "RAW:", "FILTERED:", "Prio:", "Jobs:", "Misses:", "DMR:"];
+            labels.forEach(label => {
+                const regex = new RegExp(`\\b${label}`, 'g');
+                html = html.replace(regex, `<span class="text-slate-400 dark:text-slate-500 font-semibold">${label}</span>`);
+            });
+
+            // 5. Context-aware colors for DMR values (0% -> Green, >0% -> Red)
+            html = html.replace(/(DMR:<\/span>\s*)(\d+)%/g, (match, prefix, val) => {
+                const percentage = parseInt(val);
+                const colorClass = percentage > 0 ? 'text-rose-500 font-bold' : 'text-emerald-500 dark:text-emerald-400 font-bold';
+                return `${prefix}<span class="${colorClass}">${val}%</span>`;
+            });
+            
+            // Highlight Misses values (>0 -> Red)
+            html = html.replace(/(Misses:<\/span>\s*)(\d+)/g, (match, prefix, val) => {
+                const missCount = parseInt(val);
+                const colorClass = missCount > 0 ? 'text-rose-500 font-bold' : 'text-slate-700 dark:text-slate-300';
+                return `${prefix}<span class="${colorClass}">${val}</span>`;
+            });
+
+            return html;
+        }
+
         function log(msg, color = 'slate-300') {
             const consoleEl = document.getElementById('console');
             const line = document.createElement('div');
-            const colorMap = {
-                'slate-300': 'text-slate-700 dark:text-slate-300',
-                'indigo-400': 'text-indigo-600 dark:text-indigo-400',
-                'emerald-400': 'text-emerald-600 dark:text-emerald-400',
-                'red-400': 'text-red-600 dark:text-red-400',
-                'amber-400': 'text-amber-600 dark:text-amber-400'
-            };
-            const colorClass = colorMap[color] || `text-${color}`;
+            
+            let renderedContent = msg;
+            let colorClass = '';
+            
+            if (color === 'slate-300') {
+                renderedContent = highlightLogLine(msg);
+                colorClass = 'text-slate-700 dark:text-slate-300';
+            } else {
+                const colorMap = {
+                    'indigo-400': 'text-indigo-600 dark:text-indigo-400 font-semibold',
+                    'emerald-400': 'text-emerald-600 dark:text-emerald-400 font-semibold',
+                    'red-400': 'text-red-600 dark:text-red-400 font-semibold',
+                    'amber-400': 'text-amber-600 dark:text-amber-400 font-semibold'
+                };
+                colorClass = colorMap[color] || `text-${color}`;
+            }
+            
             line.className = `min-h-[1rem] mb-1 ${colorClass}`;
-            line.innerHTML = msg.trim() === "" ? "&nbsp;" : msg;
+            line.innerHTML = renderedContent.trim() === "" ? "&nbsp;" : renderedContent;
             consoleEl.appendChild(line);
             consoleEl.scrollTop = consoleEl.scrollHeight;
         }
@@ -410,6 +565,14 @@
             const res = await fetch('/api/results');
             const data = await res.json();
             if (data.status) return;
+
+            // Normalize data.data keys to strip duration suffixes (e.g. "EDFSch_test_10s" -> "EDFSch_test")
+            const normalizedData = {};
+            for (let k in data.data) {
+                const cleanK = k.replace(/_\d+s$/, '');
+                normalizedData[cleanK] = data.data[k];
+            }
+            data.data = normalizedData;
 
             document.getElementById('analytics').classList.remove('hidden');
             
@@ -532,9 +695,298 @@
                     }
                 }
             });
-            
+            window.lastResultsData = data;
+            updateInspectView();
+
             // Scroll to analytics
             document.getElementById('analytics').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        let inspectChart = null;
+        let inspectMode = 'metrics'; // 'metrics' or 'params'
+
+        function setInspectMode(mode) {
+            inspectMode = mode;
+            
+            const btnMetrics = document.getElementById('modeBtnMetrics');
+            const btnParams = document.getElementById('modeBtnParams');
+            
+            if (mode === 'metrics') {
+                btnMetrics.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm transition-all";
+                btnParams.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-all";
+            } else {
+                btnParams.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm transition-all";
+                btnMetrics.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-all";
+            }
+            
+            updateInspectView();
+        }
+
+        function updateInspectView() {
+            const data = window.lastResultsData;
+            if (!data) return;
+            
+            const selectedSched = document.getElementById('inspectSched').value;
+            const selectedTask = document.getElementById('inspectTask').value;
+            
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#94a3b8' : '#475569';
+            const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+            
+            // Get all metrics for this scheduler and task
+            const schedMetrics = data.data[selectedSched] || [];
+            let taskMetrics = schedMetrics.filter(m => m.task === selectedTask).sort((a,b) => a.ts - b.ts);
+            
+            // Detect priority starvation (if no metric points are captured)
+            const alertEl = document.getElementById('starvationAlert');
+            if (taskMetrics.length === 0 && schedMetrics.length > 0) {
+                alertEl.classList.remove('hidden');
+                
+                // Construct simulated flat zero timeline so the chart axis matches the overall run duration
+                let maxTS = 10000;
+                if (schedMetrics.length > 0) {
+                    maxTS = Math.max(...schedMetrics.map(m => m.ts));
+                }
+                for (let t = 1000; t <= maxTS; t += 1000) {
+                    taskMetrics.push({
+                        ts: t,
+                        task: selectedTask,
+                        jobs: 0,
+                        misses: 0,
+                        dmr: 0,
+                        sp: 0,
+                        mv: 0,
+                        out: 0,
+                        raw: 0,
+                        filtered: 0
+                    });
+                }
+            } else {
+                alertEl.classList.add('hidden');
+            }
+            
+            // Hide or show parameters tab based on task type
+            const tabContainer = document.getElementById('inspectViewModeContainer');
+            let activeMode = inspectMode;
+            if (selectedTask === 'Crypto' || selectedTask === 'Vision') {
+                tabContainer.classList.add('hidden');
+                activeMode = 'metrics';
+            } else {
+                tabContainer.classList.remove('hidden');
+            }
+            
+            // 1. Populate Table
+            const tbody = document.getElementById('inspectTableBody');
+            const paramHeader = document.getElementById('inspectTableParamHeader');
+            tbody.innerHTML = '';
+            
+            // Set header label dynamically
+            if (selectedTask === 'Motor') {
+                paramHeader.innerText = 'MV / OUT';
+            } else if (selectedTask === 'Sensor') {
+                paramHeader.innerText = 'RAW / FILT';
+            } else {
+                paramHeader.innerText = 'Misses';
+            }
+            
+            taskMetrics.forEach(m => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-200/30 dark:hover:bg-slate-800/30 transition-colors';
+                
+                let paramCol = '';
+                if (selectedTask === 'Motor') {
+                    paramCol = `<span class="text-sky-500 font-medium">${m.mv !== undefined ? m.mv.toFixed(1) : '0'}</span> / <span class="text-indigo-500 font-medium">${m.out !== undefined ? m.out.toFixed(1) : '0'}</span>`;
+                } else if (selectedTask === 'Sensor') {
+                    paramCol = `<span class="text-amber-500 font-medium">${m.raw || '0'}</span> / <span class="text-emerald-500 font-medium">${m.filtered || '0'}</span>`;
+                } else {
+                    paramCol = `<span class="text-rose-500 font-semibold">${m.misses || '0'}</span>`;
+                }
+                
+                tr.innerHTML = `
+                    <td class="py-2.5 font-medium text-slate-500 dark:text-slate-400">${(m.ts / 1000).toFixed(1)}s</td>
+                    <td class="py-2.5 font-bold text-slate-700 dark:text-slate-300">${m.jobs}</td>
+                    <td class="py-2.5 font-bold ${m.dmr > 0 ? 'text-rose-500' : 'text-emerald-500'}">${m.dmr}%</td>
+                    <td class="py-2.5 text-right font-mono">${paramCol}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            // 2. Build Chart Datasets
+            const tsLabels = taskMetrics.map(m => m.ts / 1000);
+            let datasets = [];
+            let yTitle = 'Values';
+            
+            if (activeMode === 'metrics') {
+                yTitle = 'Scheduling Metrics';
+                datasets = [
+                    {
+                        label: 'Jobs Executed',
+                        data: taskMetrics.map(m => m.jobs),
+                        borderColor: '#3b82f6', // Blue
+                        backgroundColor: 'rgba(59,130,246,0.05)',
+                        borderWidth: 2.5,
+                        pointRadius: 2.5,
+                        fill: false
+                    },
+                    {
+                        label: 'Deadline Misses',
+                        data: taskMetrics.map(m => m.misses),
+                        borderColor: '#ef4444', // Red
+                        backgroundColor: 'rgba(239,68,68,0.05)',
+                        borderWidth: 2.5,
+                        pointRadius: 2.5,
+                        fill: false
+                    },
+                    {
+                        label: 'Miss Ratio (DMR %)',
+                        data: taskMetrics.map(m => m.dmr),
+                        borderColor: '#f59e0b', // Amber
+                        backgroundColor: 'rgba(245,158,11,0.08)',
+                        borderWidth: 3,
+                        pointRadius: 3,
+                        fill: true,
+                        tension: 0.2
+                    }
+                ];
+            } else {
+                // Parameter Mode (Motor or Sensor)
+                if (selectedTask === 'Motor') {
+                    yTitle = 'Motor Speed (RPM) / Output';
+                    datasets = [
+                        {
+                            label: 'Setpoint (SP)',
+                            data: taskMetrics.map(m => m.sp),
+                            borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: false
+                        },
+                        {
+                            label: 'Measured Value (MV)',
+                            data: taskMetrics.map(m => m.mv),
+                            borderColor: '#0ea5e9', // Sky blue
+                            backgroundColor: 'rgba(14,165,233,0.1)',
+                            borderWidth: 3,
+                            pointRadius: 3,
+                            tension: 0.2
+                        },
+                        {
+                            label: 'Control Output (OUT)',
+                            data: taskMetrics.map(m => m.out),
+                            borderColor: '#6366f1', // Indigo
+                            backgroundColor: 'rgba(99,102,241,0.05)',
+                            borderWidth: 3,
+                            pointRadius: 3,
+                            tension: 0.2
+                        }
+                    ];
+                } else if (selectedTask === 'Sensor') {
+                    yTitle = 'ADC Signal Amplitude';
+                    datasets = [
+                        {
+                            label: 'Raw Reading',
+                            data: taskMetrics.map(m => m.raw),
+                            borderColor: '#f59e0b', // Amber
+                            borderWidth: 1.5,
+                            pointRadius: 1,
+                            tension: 0.1,
+                            fill: false
+                        },
+                        {
+                            label: 'Filtered Signal',
+                            data: taskMetrics.map(m => m.filtered),
+                            borderColor: '#10b981', // Emerald
+                            backgroundColor: 'rgba(16,185,129,0.1)',
+                            borderWidth: 3,
+                            pointRadius: 3,
+                            tension: 0.2
+                        }
+                    ];
+                }
+            }
+            
+            if (inspectChart) inspectChart.destroy();
+            inspectChart = new Chart(document.getElementById('inspectChart'), {
+                type: 'line',
+                data: { labels: tsLabels, datasets: datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'Time (s)', color: textColor }, grid: { color: gridColor }, ticks: { color: textColor } },
+                        y: { beginAtZero: activeMode === 'metrics', title: { display: true, text: yTitle, color: textColor }, grid: { color: gridColor }, ticks: { color: textColor } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                            titleColor: isDark ? '#fff' : '#0f172a',
+                            bodyColor: isDark ? '#cbd5e1' : '#334155',
+                            borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                            borderWidth: 1,
+                            titleFont: { family: 'Inter', weight: 'bold' },
+                            bodyFont: { family: 'Inter' },
+                            padding: 10,
+                            cornerRadius: 8
+                        }
+                    }
+                }
+            });
+
+            // Rebuild Dynamic Legend Toggles
+            const legendContainer = document.getElementById('inspectLegendToggles');
+            legendContainer.innerHTML = '';
+            
+            datasets.forEach((dataset, index) => {
+                const button = document.createElement('button');
+                
+                // Color configuration matching the theme and dataset
+                const activeColor = dataset.borderColor;
+                const activeBG = activeColor + '15'; // ~8% opacity background
+                
+                button.className = `flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold border transition-all duration-200 shadow-sm`;
+                button.style.borderColor = activeColor;
+                button.style.color = activeColor;
+                button.style.backgroundColor = activeBG;
+                
+                // Active indicator dot
+                const indicator = document.createElement('span');
+                indicator.className = 'w-2 h-2 rounded-full transition-transform duration-200';
+                indicator.style.backgroundColor = activeColor;
+                button.appendChild(indicator);
+                
+                // Label text
+                const text = document.createElement('span');
+                text.innerText = dataset.label;
+                button.appendChild(text);
+                
+                let visible = true;
+                
+                button.onclick = () => {
+                    visible = !visible;
+                    inspectChart.setDatasetVisibility(index, visible);
+                    inspectChart.update(); // Rescales Y-axis automatically!
+                    
+                    if (visible) {
+                        button.style.backgroundColor = activeBG;
+                        button.style.opacity = '1';
+                        indicator.style.transform = 'scale(1)';
+                        button.style.borderStyle = 'solid';
+                    } else {
+                        button.style.backgroundColor = 'transparent';
+                        button.style.opacity = '0.4';
+                        indicator.style.transform = 'scale(0)';
+                        button.style.borderStyle = 'dashed';
+                    }
+                };
+                
+                legendContainer.appendChild(button);
+            });
         }
 
         // Theme Toggle
@@ -543,6 +995,41 @@
             const isDark = document.documentElement.classList.contains('dark');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
             if (window.updateCharts) updateCharts();
+        }
+
+        // Toggle Trend Card Zoom/Maximize
+        function toggleTrendZoom() {
+            const card = document.getElementById('trendCard');
+            const container = document.getElementById('trendChartContainer');
+            const backdrop = document.getElementById('modalBackdrop');
+            const icon = document.getElementById('zoomIcon');
+            
+            const isMaximized = card.classList.contains('card-maximized');
+            
+            if (isMaximized) {
+                card.classList.remove('card-maximized');
+                container.classList.remove('h-[calc(100%-4rem)]');
+                container.classList.add('h-[300px]');
+                backdrop.classList.add('hidden');
+                icon.setAttribute('data-lucide', 'maximize-2');
+            } else {
+                card.classList.add('card-maximized');
+                container.classList.remove('h-[300px]');
+                container.classList.add('h-[calc(100%-4rem)]');
+                backdrop.classList.remove('hidden');
+                icon.setAttribute('data-lucide', 'minimize-2');
+            }
+            
+            // Re-render lucide icons
+            lucide.createIcons();
+            
+            // Resize Chart.js to fit the new container size
+            setTimeout(() => {
+                if (trendChart) {
+                    trendChart.resize();
+                    trendChart.update();
+                }
+            }, 300); // Wait for transition to finish
         }
         
         // Initialize Theme
@@ -555,6 +1042,7 @@
         window.onload = function() {
             loadParams();
             lucide.createIcons();
+            updateCharts();
         };
     </script>
 </body>

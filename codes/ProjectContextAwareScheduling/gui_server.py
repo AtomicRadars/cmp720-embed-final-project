@@ -179,27 +179,65 @@ async def get_results():
     
     results = {}
     for log_path in latest_logs:
-        # scheduler_name is the first part
         sched_name = log_path.stem.rsplit('_', 1)[0]
-        content = log_path.read_text(encoding='utf-8')
+        # Clean duration suffix if present (e.g. "EDFSch_test_10s" -> "EDFSch_test")
+        sched_name = re.sub(r'_\d+s$', '', sched_name)
+        lines = log_path.read_text(encoding='utf-8').splitlines()
         
-        # Regex for: [TS: 1007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 100 | Misses: 3 | DMR: 3%
-        # Task 0 -> Motor, Task 1 -> Sensor, Task 2 -> Crypto, Task 3 -> Vision
         task_map = {0: "Motor", 1: "Sensor", 2: "Crypto", 3: "Vision"}
-        
         metrics = []
-        pattern = r"\[TS: (\d+) ms\] \[Metrics\] Task (\d) - Prio: \d+ \| Jobs: (\d+) \| Misses: (\d+) \| DMR: (\d+)%"
         
-        for match in re.finditer(pattern, content):
-            ts, task_id, jobs, misses, dmr = match.groups()
-            metrics.append({
-                "ts": int(ts),
-                "task": task_map.get(int(task_id), f"Task{task_id}"),
-                "jobs": int(jobs),
-                "misses": int(misses),
-                "dmr": int(dmr)
-            })
-            
+        latest_motor = {"sp": 100.0, "mv": 0.0, "out": 0.0}
+        latest_sensor = {"raw": 0.0, "filtered": 0.0}
+        
+        motor_pattern = r"Task1_MotorControl! SP:\s*([\d\.-]+),\s*MV:\s*([\d\.-]+)\s*\(x1000\),\s*OUT:\s*([\d\.-]+)"
+        sensor_pattern = r"Task2_SensorAcquisition! RAW:\s*([\d\.-]+),\s*FILTERED:\s*([\d\.-]+)"
+        metrics_pattern = r"\[TS:\s*(\d+)\s*ms\]\s*\[Metrics\]\s*Task\s*(\d)\s*-\s*Prio:\s*\d+\s*\|\s*Jobs:\s*(\d+)\s*\|\s*Misses:\s*(\d+)\s*\|\s*DMR:\s*(\d+)%"
+        
+        for line in lines:
+            # Parse motor params
+            motor_match = re.search(motor_pattern, line)
+            if motor_match:
+                latest_motor["sp"] = float(motor_match.group(1))
+                latest_motor["mv"] = float(motor_match.group(2)) / 1000.0
+                latest_motor["out"] = float(motor_match.group(3)) / 1000.0
+                continue
+                
+            # Parse sensor params
+            sensor_match = re.search(sensor_pattern, line)
+            if sensor_match:
+                latest_sensor["raw"] = float(sensor_match.group(1))
+                latest_sensor["filtered"] = float(sensor_match.group(2))
+                continue
+                
+            # Parse metrics
+            metrics_match = re.search(metrics_pattern, line)
+            if metrics_match:
+                ts = int(metrics_match.group(1))
+                task_id = int(metrics_match.group(2))
+                jobs = int(metrics_match.group(3))
+                misses = int(metrics_match.group(4))
+                dmr = int(metrics_match.group(5))
+                
+                pt = {
+                    "ts": ts,
+                    "task": task_map.get(task_id, f"Task{task_id}"),
+                    "jobs": jobs,
+                    "misses": misses,
+                    "dmr": dmr
+                }
+                
+                # Append task-specific parameters
+                if task_id == 0:
+                    pt["sp"] = latest_motor["sp"]
+                    pt["mv"] = latest_motor["mv"]
+                    pt["out"] = latest_motor["out"]
+                elif task_id == 1:
+                    pt["raw"] = latest_sensor["raw"]
+                    pt["filtered"] = latest_sensor["filtered"]
+                    
+                metrics.append(pt)
+                
         results[sched_name] = metrics
         
     return {"timestamp": latest_ts, "data": results}
