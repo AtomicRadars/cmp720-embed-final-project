@@ -136,6 +136,10 @@ class PreemptiveScheduledJob:
     deadline_missed: bool
     lateness_ms: int
 
+    # Simulation timing metrics
+    start_delay_ms: int
+    response_time_ms: int
+
 
 @dataclass
 class PreemptiveEvaluation:
@@ -153,8 +157,21 @@ class PreemptiveEvaluation:
     total_time_ms: int
     deadline_misses: int
     total_lateness_ms: int
+
+    # Job-activation-level penalties
     total_contention_penalty_ms: int
     total_smooth_memory_penalty: float
+
+    # Segment/context-switch-level penalties
+    total_segment_contention_penalty_ms: int
+    total_segment_smooth_memory_penalty: float
+    segment_contention_events: int
+
+    # Simulation overhead proxies
+    scheduler_decisions: int
+    preemptions: int
+
+
     total_cost: float
 
 
@@ -287,6 +304,57 @@ def compute_smooth_memory_penalty(
 
     return memory_alpha * previous_job.memory_intensity * current_job.memory_intensity
 
+def compute_segment_contention_penalty_ms(
+    previous_job: Optional[Job],
+    current_job: Job,
+    *,
+    contention_threshold: float = 0.5,
+    segment_contention_penalty_ms: int = 2,
+) -> int:
+    """
+    Segment-level contention model.
+
+    This models context-switch/resume-level memory interference:
+    if a memory-heavy segment follows another memory-heavy segment,
+    we add a small overhead.
+
+    Unlike the job-start penalty, this can happen multiple times in a
+    preemptive schedule.
+    """
+    if previous_job is None:
+        return 0
+
+    # Do not penalize immediate continuation of the same job.
+    if previous_job.job_id == current_job.job_id:
+        return 0
+
+    previous_is_memory_heavy = previous_job.memory_intensity > contention_threshold
+    current_is_memory_heavy = current_job.memory_intensity > contention_threshold
+
+    if previous_is_memory_heavy and current_is_memory_heavy:
+        return segment_contention_penalty_ms
+
+    return 0
+
+
+def compute_segment_smooth_memory_penalty(
+    previous_job: Optional[Job],
+    current_job: Job,
+    *,
+    memory_alpha: float = 1.0,
+) -> float:
+    """
+    Segment-level smooth transition metric.
+
+    This is a metric, not necessarily execution time.
+    """
+    if previous_job is None:
+        return 0.0
+
+    if previous_job.job_id == current_job.job_id:
+        return 0.0
+
+    return memory_alpha * previous_job.memory_intensity * current_job.memory_intensity
 
 def evaluate_schedule(
     job_sequence: list[Job],

@@ -11,6 +11,9 @@ from .scheduler_model import (
     PreemptiveEvaluation,
     ScheduleEvaluation,
     compute_contention_penalty_ms,
+    compute_segment_contention_penalty_ms,
+    compute_smooth_memory_penalty,
+    compute_segment_smooth_memory_penalty,
     evaluate_schedule,
 )
 
@@ -146,6 +149,42 @@ class ContextAwareParams:
     penalty_threshold: float = 0.15
     safety_margin_ms: int = 2
 
+@dataclass
+class ContextAwareStats:
+    calls: int = 0
+
+    no_last_job: int = 0
+
+    penalty_triggered: int = 0
+    rejected_by_penalty_threshold: int = 0
+
+    candidate_slack_ok: int = 0
+    rejected_by_candidate_slack: int = 0
+
+    alternatives_checked: int = 0
+    alternatives_lower_memory: int = 0
+    alternatives_slack_ok: int = 0
+
+    swap_success: int = 0
+    rejected_no_alternative: int = 0
+    rejected_by_safety_check: int = 0
+
+    def print_summary(self, title: str) -> None:
+        print(f"\n{title}")
+        print("-" * len(title))
+        print(f"  calls                         : {self.calls}")
+        print(f"  no last job                   : {self.no_last_job}")
+        print(f"  penalty triggered             : {self.penalty_triggered}")
+        print(f"  rejected by penalty threshold : {self.rejected_by_penalty_threshold}")
+        print(f"  candidate slack OK            : {self.candidate_slack_ok}")
+        print(f"  rejected by candidate slack   : {self.rejected_by_candidate_slack}")
+        print(f"  alternatives checked          : {self.alternatives_checked}")
+        print(f"  alternatives lower memory     : {self.alternatives_lower_memory}")
+        print(f"  alternatives slack OK         : {self.alternatives_slack_ok}")
+        print(f"  rejected by safety check      : {self.rejected_by_safety_check}")
+        print(f"  rejected no alternative       : {self.rejected_no_alternative}")
+        print(f"  swap success                  : {self.swap_success}")
+
 
 def calculate_slack_ms(job: Job, current_time_ms: int) -> int:
     return job.deadline_ms - current_time_ms - job.wcet_ms
@@ -158,7 +197,10 @@ def pair_memory_penalty(previous_job: Optional[Job], current_job: Job, memory_al
     return memory_alpha * previous_job.memory_intensity * current_job.memory_intensity
 
 
-def make_context_aware_picker(params: ContextAwareParams) -> Callable[[list[Job], int, Optional[Job]], Job]:
+def make_context_aware_picker(
+    params: ContextAwareParams,
+    stats: Optional[ContextAwareStats] = None,
+) -> Callable[[list[Job], int, Optional[Job]], Job]:
     """
     Build a picker function that mirrors the embedded Context-Aware Scheduler.
 
@@ -175,7 +217,9 @@ def make_context_aware_picker(params: ContextAwareParams) -> Callable[[list[Job]
         current_time_ms: int,
         last_job: Optional[Job],
     ) -> Job:
-        # 1. EDF candidate
+        if stats is not None:
+            stats.calls += 1
+
         ordered = sorted(
             ready_jobs,
             key=lambda job: (
@@ -187,34 +231,63 @@ def make_context_aware_picker(params: ContextAwareParams) -> Callable[[list[Job]
 
         candidate = ordered[0]
 
-        # If there is no previous job, no pairwise memory penalty exists.
         if last_job is None:
+            if stats is not None:
+                stats.no_last_job += 1
             return candidate
 
         penalty = pair_memory_penalty(last_job, candidate, params.memory_alpha)
 
         if penalty <= params.penalty_threshold:
+            if stats is not None:
+                stats.rejected_by_penalty_threshold += 1
             return candidate
+
+        if stats is not None:
+            stats.penalty_triggered += 1
 
         cand_slack = calculate_slack_ms(candidate, current_time_ms)
 
         if cand_slack <= params.safety_margin_ms:
+            if stats is not None:
+                stats.rejected_by_candidate_slack += 1
             return candidate
 
-        # 2. Search lower-priority ready alternatives after the EDF candidate.
+        if stats is not None:
+            stats.candidate_slack_ok += 1
+
+        found_any_reasonable_alternative = False
+
         for alternative in ordered[1:]:
+            if stats is not None:
+                stats.alternatives_checked += 1
+
             if alternative.memory_intensity >= candidate.memory_intensity:
                 continue
+
+            if stats is not None:
+                stats.alternatives_lower_memory += 1
 
             alt_slack = calculate_slack_ms(alternative, current_time_ms)
 
             if alt_slack <= 0:
                 continue
 
-            # Important safety check:
-            # If alternative runs first, candidate is delayed by alternative.wcet.
+            if stats is not None:
+                stats.alternatives_slack_ok += 1
+
+            found_any_reasonable_alternative = True
+
             if cand_slack > alternative.wcet_ms + params.safety_margin_ms:
+                if stats is not None:
+                    stats.swap_success += 1
                 return alternative
+
+            if stats is not None:
+                stats.rejected_by_safety_check += 1
+
+        if stats is not None and not found_any_reasonable_alternative:
+            stats.rejected_no_alternative += 1
 
         return candidate
 
@@ -227,12 +300,13 @@ def calculate_runtime_slack_ms(runtime_job: RuntimeJob, current_time_ms: int) ->
 
 def make_context_aware_runtime_picker(
     params: ContextAwareParams,
+    stats: Optional[ContextAwareStats] = None,
 ) -> Callable[[list[RuntimeJob], int, Optional[Job]], RuntimeJob]:
     """
     Preemptive version of the Context-Aware picker.
 
-    Difference from the non-preemptive version:
-      - It uses remaining_ms instead of wcet_ms.
+    Difference:
+      - Uses remaining_ms instead of wcet_ms.
       - This better matches preempted jobs.
     """
     def pick_context_aware_runtime_job(
@@ -240,6 +314,9 @@ def make_context_aware_runtime_picker(
         current_time_ms: int,
         last_completed_job: Optional[Job],
     ) -> RuntimeJob:
+        if stats is not None:
+            stats.calls += 1
+
         ordered = sorted(
             ready_jobs,
             key=lambda runtime_job: (
@@ -252,6 +329,8 @@ def make_context_aware_runtime_picker(
         candidate = ordered[0]
 
         if last_completed_job is None:
+            if stats is not None:
+                stats.no_last_job += 1
             return candidate
 
         penalty = pair_memory_penalty(
@@ -261,25 +340,55 @@ def make_context_aware_runtime_picker(
         )
 
         if penalty <= params.penalty_threshold:
+            if stats is not None:
+                stats.rejected_by_penalty_threshold += 1
             return candidate
+
+        if stats is not None:
+            stats.penalty_triggered += 1
 
         cand_slack = calculate_runtime_slack_ms(candidate, current_time_ms)
 
         if cand_slack <= params.safety_margin_ms:
+            if stats is not None:
+                stats.rejected_by_candidate_slack += 1
             return candidate
 
+        if stats is not None:
+            stats.candidate_slack_ok += 1
+
+        found_any_reasonable_alternative = False
+
         for alternative in ordered[1:]:
+            if stats is not None:
+                stats.alternatives_checked += 1
+
             if alternative.job.memory_intensity >= candidate.job.memory_intensity:
                 continue
+
+            if stats is not None:
+                stats.alternatives_lower_memory += 1
 
             alt_slack = calculate_runtime_slack_ms(alternative, current_time_ms)
 
             if alt_slack <= 0:
                 continue
 
-            # If ALT runs before CAND, CAND is delayed by ALT's remaining time.
+            if stats is not None:
+                stats.alternatives_slack_ok += 1
+
+            found_any_reasonable_alternative = True
+
             if cand_slack > alternative.remaining_ms + params.safety_margin_ms:
+                if stats is not None:
+                    stats.swap_success += 1
                 return alternative
+
+            if stats is not None:
+                stats.rejected_by_safety_check += 1
+
+        if stats is not None and not found_any_reasonable_alternative:
+            stats.rejected_no_alternative += 1
 
         return candidate
 
@@ -341,22 +450,24 @@ def simulate_preemptive_scheduler(
     *,
     contention_threshold: float = 0.5,
     contention_penalty_ms: int = 30,
+    segment_contention_penalty_ms: int = 2,
+    enable_segment_contention_time: bool = True,
     memory_alpha: float = 1.0,
     deadline_miss_cost: float = 1_000_000.0,
     lateness_cost: float = 10_000.0,
     contention_cost: float = 1.0,
+    segment_contention_cost: float = 1.0,
     smooth_memory_cost: float = 10.0,
+    segment_smooth_memory_cost: float = 10.0,
 ) -> PreemptiveEvaluation:
     """
     Event-based preemptive scheduler simulation.
 
-    At every decision point:
-      1. Find released jobs with remaining work.
-      2. Pick one according to RMS / EDF / Context-Aware.
-      3. Run it until either:
-           - it completes, or
-           - the next job release occurs.
-      4. If a new job releases, re-run the scheduler decision.
+    Difference from the earlier version:
+      - Tracks segment-level memory transitions.
+      - Optionally adds small segment-level contention overhead.
+      - Tracks simulated scheduler decisions and preemptions.
+      - Computes start delay and response time per job.
     """
     runtime_jobs = [
         RuntimeJob(job=job, remaining_ms=job.wcet_ms)
@@ -364,16 +475,30 @@ def simulate_preemptive_scheduler(
     ]
 
     current_time_ms = 0
+
+    # Last completed job is close to the firmware's GetLastExecuted... model.
     last_completed_job: Optional[Job] = None
+
+    # Last executed segment is a stronger preemptive/cache-interference model.
+    last_executed_segment_job: Optional[Job] = None
 
     execution_segments: list[ExecutionSegment] = []
     completed_jobs: list[PreemptiveScheduledJob] = []
 
     total_contention_penalty_ms = 0
     total_smooth_memory_penalty = 0.0
+
+    total_segment_contention_penalty_ms = 0
+    total_segment_smooth_memory_penalty = 0.0
+    segment_contention_events = 0
+
     total_lateness_ms = 0
     deadline_misses = 0
     completion_order = 0
+
+    scheduler_decisions = 0
+    preemptions = 0
+    previously_selected_job_id: Optional[int] = None
 
     while any(runtime_job.remaining_ms > 0 for runtime_job in runtime_jobs):
         ready = get_released_runtime_jobs(runtime_jobs, current_time_ms)
@@ -382,12 +507,22 @@ def simulate_preemptive_scheduler(
             next_release = get_next_release_time(runtime_jobs, current_time_ms)
             if next_release is None:
                 break
+
             current_time_ms = next_release
             ready = get_released_runtime_jobs(runtime_jobs, current_time_ms)
 
+        scheduler_decisions += 1
         selected = pick_runtime_job(ready, current_time_ms, last_completed_job)
 
-        # Apply first-dispatch cost once per job activation.
+        if (
+            previously_selected_job_id is not None
+            and previously_selected_job_id != selected.job.job_id
+        ):
+            preemptions += 1
+
+        previously_selected_job_id = selected.job.job_id
+
+        # Job-activation penalty: applied only once when a job starts for the first time.
         if not selected.started:
             selected.started = True
             selected.first_start_ms = current_time_ms
@@ -399,7 +534,7 @@ def simulate_preemptive_scheduler(
                 contention_penalty_ms=contention_penalty_ms,
             )
 
-            selected.smooth_memory_penalty = pair_memory_penalty(
+            selected.smooth_memory_penalty = compute_smooth_memory_penalty(
                 last_completed_job,
                 selected.job,
                 memory_alpha,
@@ -410,6 +545,31 @@ def simulate_preemptive_scheduler(
             total_contention_penalty_ms += selected.contention_penalty_ms
             total_smooth_memory_penalty += selected.smooth_memory_penalty
 
+        # Segment-level transition metric/overhead.
+        segment_smooth_penalty = compute_segment_smooth_memory_penalty(
+            last_executed_segment_job,
+            selected.job,
+            memory_alpha=memory_alpha,
+        )
+
+        segment_contention_penalty = compute_segment_contention_penalty_ms(
+            last_executed_segment_job,
+            selected.job,
+            contention_threshold=contention_threshold,
+            segment_contention_penalty_ms=segment_contention_penalty_ms,
+        )
+
+        total_segment_smooth_memory_penalty += segment_smooth_penalty
+
+        if segment_contention_penalty > 0:
+            segment_contention_events += 1
+            total_segment_contention_penalty_ms += segment_contention_penalty
+
+            if enable_segment_contention_time:
+                # This models small cache/memory reload overhead caused by switching
+                # from one memory-heavy job to another.
+                selected.remaining_ms += segment_contention_penalty
+
         next_release = get_next_release_time(runtime_jobs, current_time_ms)
 
         if next_release is None:
@@ -418,7 +578,6 @@ def simulate_preemptive_scheduler(
             time_until_next_release = next_release - current_time_ms
             run_for_ms = min(selected.remaining_ms, time_until_next_release)
 
-        # Safety guard: if another job releases exactly now, loop again.
         if run_for_ms <= 0:
             current_time_ms = next_release if next_release is not None else current_time_ms
             continue
@@ -436,9 +595,16 @@ def simulate_preemptive_scheduler(
 
         selected.remaining_ms -= run_for_ms
         current_time_ms = segment_end
+        last_executed_segment_job = selected.job
 
         if selected.remaining_ms == 0:
             selected.finish_ms = current_time_ms
+
+            start_ms = (
+                selected.first_start_ms
+                if selected.first_start_ms is not None
+                else selected.finish_ms
+            )
 
             lateness_ms = max(0, selected.finish_ms - selected.job.deadline_ms)
             deadline_missed = lateness_ms > 0
@@ -447,16 +613,21 @@ def simulate_preemptive_scheduler(
                 deadline_misses += 1
                 total_lateness_ms += lateness_ms
 
+            start_delay_ms = start_ms - selected.job.release_ms
+            response_time_ms = selected.finish_ms - selected.job.release_ms
+
             completed_jobs.append(
                 PreemptiveScheduledJob(
                     order=completion_order,
                     job=selected.job,
-                    start_ms=selected.first_start_ms if selected.first_start_ms is not None else selected.finish_ms,
+                    start_ms=start_ms,
                     finish_ms=selected.finish_ms,
                     contention_penalty_ms=selected.contention_penalty_ms,
                     smooth_memory_penalty=selected.smooth_memory_penalty,
                     deadline_missed=deadline_missed,
                     lateness_ms=lateness_ms,
+                    start_delay_ms=start_delay_ms,
+                    response_time_ms=response_time_ms,
                 )
             )
 
@@ -467,7 +638,9 @@ def simulate_preemptive_scheduler(
         deadline_miss_cost * deadline_misses
         + lateness_cost * total_lateness_ms
         + contention_cost * total_contention_penalty_ms
+        + segment_contention_cost * total_segment_contention_penalty_ms
         + smooth_memory_cost * total_smooth_memory_penalty
+        + segment_smooth_memory_cost * total_segment_smooth_memory_penalty
     )
 
     return PreemptiveEvaluation(
@@ -478,6 +651,11 @@ def simulate_preemptive_scheduler(
         total_lateness_ms=total_lateness_ms,
         total_contention_penalty_ms=total_contention_penalty_ms,
         total_smooth_memory_penalty=total_smooth_memory_penalty,
+        total_segment_contention_penalty_ms=total_segment_contention_penalty_ms,
+        total_segment_smooth_memory_penalty=total_segment_smooth_memory_penalty,
+        segment_contention_events=segment_contention_events,
+        scheduler_decisions=scheduler_decisions,
+        preemptions=preemptions,
         total_cost=total_cost,
     )
 
@@ -530,14 +708,41 @@ def print_first_jobs(result: SchedulerResult, count: int = 20) -> None:
 def print_preemptive_result(result: PreemptiveSchedulerResult) -> None:
     e = result.evaluation
 
+    completed = e.scheduled_jobs
+
+    if completed:
+        avg_start_delay = sum(job.start_delay_ms for job in completed) / len(completed)
+        max_start_delay = max(job.start_delay_ms for job in completed)
+        avg_response_time = sum(job.response_time_ms for job in completed) / len(completed)
+        max_response_time = max(job.response_time_ms for job in completed)
+    else:
+        avg_start_delay = 0.0
+        max_start_delay = 0
+        avg_response_time = 0.0
+        max_response_time = 0
+
     print(f"\n{result.name}")
     print("-" * len(result.name))
-    print(f"  Deadline misses             : {e.deadline_misses}")
-    print(f"  Total lateness              : {e.total_lateness_ms} ms")
-    print(f"  Total contention penalty    : {e.total_contention_penalty_ms} ms")
-    print(f"  Smooth memory penalty       : {e.total_smooth_memory_penalty:.2f}")
-    print(f"  Total cost                  : {e.total_cost:.2f}")
-    print(f"  Final finish time           : {e.total_time_ms} ms")
+    print(f"  Deadline misses                  : {e.deadline_misses}")
+    print(f"  Total lateness                   : {e.total_lateness_ms} ms")
+
+    print(f"  Job-start contention penalty     : {e.total_contention_penalty_ms} ms")
+    print(f"  Job-start smooth memory penalty  : {e.total_smooth_memory_penalty:.2f}")
+
+    print(f"  Segment contention events        : {e.segment_contention_events}")
+    print(f"  Segment contention penalty       : {e.total_segment_contention_penalty_ms} ms")
+    print(f"  Segment smooth memory penalty    : {e.total_segment_smooth_memory_penalty:.2f}")
+
+    print(f"  Scheduler decisions              : {e.scheduler_decisions}")
+    print(f"  Preemptions/context switches     : {e.preemptions}")
+
+    print(f"  Avg start delay                  : {avg_start_delay:.2f} ms")
+    print(f"  Max start delay                  : {max_start_delay} ms")
+    print(f"  Avg response time                : {avg_response_time:.2f} ms")
+    print(f"  Max response time                : {max_response_time} ms")
+
+    print(f"  Total cost                       : {e.total_cost:.2f}")
+    print(f"  Final finish time                : {e.total_time_ms} ms")
 
 
 def print_first_preemptive_completions(result: PreemptiveSchedulerResult, count: int = 20) -> None:
@@ -549,12 +754,14 @@ def print_first_preemptive_completions(result: PreemptiveSchedulerResult, count:
 
         print(
             f"  {scheduled.order:02d}. {scheduled.job.label:<10} "
+            f"release={scheduled.job.release_ms:>4} "
             f"first_start={scheduled.start_ms:>4} "
             f"finish={scheduled.finish_ms:>4} "
-            f"deadline={scheduled.job.deadline_ms:>4}"
+            f"deadline={scheduled.job.deadline_ms:>4} "
+            f"delay={scheduled.start_delay_ms:>3} "
+            f"resp={scheduled.response_time_ms:>3}"
             f"{penalty_mark}{miss_mark}"
         )
-
 
 def print_first_execution_segments(result: PreemptiveSchedulerResult, count: int = 30) -> None:
     print(f"\nFirst {count} execution segments for {result.name}:")

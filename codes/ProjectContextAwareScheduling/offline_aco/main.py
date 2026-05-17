@@ -10,6 +10,7 @@ from .scheduler_model import (
 
 from .baselines import (
     ContextAwareParams,
+    ContextAwareStats,
     make_context_aware_picker,
     make_context_aware_runtime_picker,
     pick_edf_job,
@@ -25,6 +26,10 @@ from .baselines import (
     run_preemptive_baseline,
 )
 
+from .param_sweep import (
+    run_context_aware_sweep,
+    print_sweep_results
+)
 
 def read_float_with_default(prompt: str, default: float) -> float:
     """
@@ -97,6 +102,11 @@ def read_context_aware_params() -> ContextAwareParams:
 
 
 def main() -> None:
+
+    results = run_context_aware_sweep()
+    print_sweep_results(results)
+
+    """
     tasks = default_project_tasks()
     hyperperiod_ms = compute_hyperperiod_ms(tasks)
     jobs = generate_jobs(tasks, hyperperiod_ms)
@@ -119,7 +129,8 @@ def main() -> None:
         picker=pick_edf_job,
     )
 
-    context_picker = make_context_aware_picker(ca_params)
+    ca_stats = ContextAwareStats()
+    context_picker = make_context_aware_picker(ca_params, ca_stats)
 
     context_result = run_baseline(
         name="Context-Aware baseline",
@@ -136,6 +147,8 @@ def main() -> None:
     print_first_jobs(edf_result, count=25)
     print_first_jobs(context_result, count=25)
 
+    ca_stats.print_summary("Context-Aware stats / non-preemptive")
+
     print("\nPreemptive baseline results")
     print("===========================")
 
@@ -151,7 +164,8 @@ def main() -> None:
         picker=pick_edf_runtime_job,
     )
 
-    context_runtime_picker = make_context_aware_runtime_picker(ca_params)
+    ca_preemptive_stats = ContextAwareStats()
+    context_runtime_picker = make_context_aware_runtime_picker(ca_params, ca_preemptive_stats)
 
     context_preemptive = run_preemptive_baseline(
         name="Preemptive Context-Aware baseline",
@@ -169,6 +183,8 @@ def main() -> None:
     print_first_preemptive_completions(edf_preemptive, count=25)
     print_first_preemptive_completions(context_preemptive, count=25)
 
+    ca_preemptive_stats.print_summary("Context-Aware stats / preemptive")
+    """
 
 if __name__ == "__main__":
     main()
