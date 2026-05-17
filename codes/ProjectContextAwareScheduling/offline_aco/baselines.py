@@ -303,16 +303,15 @@ def make_context_aware_runtime_picker(
     stats: Optional[ContextAwareStats] = None,
 ) -> Callable[[list[RuntimeJob], int, Optional[Job]], RuntimeJob]:
     """
-    Preemptive version of the Context-Aware picker.
+    Segment-aware preemptive Context-Aware picker.
 
-    Difference:
-      - Uses remaining_ms instead of wcet_ms.
-      - This better matches preempted jobs.
+    Uses the last executed segment's job instead of the last completed job.
+    This aligns the heuristic with segment-level memory transition metrics.
     """
     def pick_context_aware_runtime_job(
         ready_jobs: list[RuntimeJob],
         current_time_ms: int,
-        last_completed_job: Optional[Job],
+        last_executed_job: Optional[Job],
     ) -> RuntimeJob:
         if stats is not None:
             stats.calls += 1
@@ -328,13 +327,19 @@ def make_context_aware_runtime_picker(
 
         candidate = ordered[0]
 
-        if last_completed_job is None:
+        if last_executed_job is None:
             if stats is not None:
                 stats.no_last_job += 1
             return candidate
 
+        # Continuing the same job is not a memory transition.
+        if last_executed_job.job_id == candidate.job.job_id:
+            if stats is not None:
+                stats.rejected_by_penalty_threshold += 1
+            return candidate
+
         penalty = pair_memory_penalty(
-            last_completed_job,
+            last_executed_job,
             candidate.job,
             params.memory_alpha,
         )
@@ -512,7 +517,7 @@ def simulate_preemptive_scheduler(
             ready = get_released_runtime_jobs(runtime_jobs, current_time_ms)
 
         scheduler_decisions += 1
-        selected = pick_runtime_job(ready, current_time_ms, last_completed_job)
+        selected = pick_runtime_job(ready, current_time_ms, last_executed_segment_job)
 
         if (
             previously_selected_job_id is not None

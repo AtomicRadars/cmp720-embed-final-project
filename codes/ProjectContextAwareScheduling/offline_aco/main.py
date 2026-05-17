@@ -106,7 +106,6 @@ def main() -> None:
     results = run_context_aware_sweep()
     print_sweep_results(results)
 
-    """
     tasks = default_project_tasks()
     hyperperiod_ms = compute_hyperperiod_ms(tasks)
     jobs = generate_jobs(tasks, hyperperiod_ms)
@@ -115,7 +114,44 @@ def main() -> None:
     print(f"\nHyperperiod: {hyperperiod_ms} ms")
     print_job_summary(jobs, max_rows=20)
 
+    print("\nPreemptive baseline results")
+    print("===========================")
+
+    rms_preemptive = run_preemptive_baseline(
+        name="Preemptive Native / RMS baseline",
+        jobs=jobs,
+        picker=pick_rms_runtime_job,
+    )
+
+    edf_preemptive = run_preemptive_baseline(
+        name="Preemptive EDF baseline",
+        jobs=jobs,
+        picker=pick_edf_runtime_job,
+    )
+
     ca_params = read_context_aware_params()
+    ca_preemptive_stats = ContextAwareStats()
+    context_runtime_picker = make_context_aware_runtime_picker(ca_params, ca_preemptive_stats)
+
+    context_preemptive = run_preemptive_baseline(
+        name="Preemptive Context-Aware baseline",
+        jobs=jobs,
+        picker=context_runtime_picker,
+    )
+
+    print_preemptive_result(rms_preemptive)
+    print_preemptive_result(edf_preemptive)
+    print_preemptive_result(context_preemptive)
+
+    print_first_execution_segments(edf_preemptive, count=40)
+    print_first_execution_segments(context_preemptive, count=40)
+
+    print_first_preemptive_completions(edf_preemptive, count=25)
+    print_first_preemptive_completions(context_preemptive, count=25)
+
+    ca_preemptive_stats.print_summary("Context-Aware stats / preemptive")
+
+"""
 
     rms_result = run_baseline(
         name="Native / RMS baseline",
@@ -149,42 +185,9 @@ def main() -> None:
 
     ca_stats.print_summary("Context-Aware stats / non-preemptive")
 
-    print("\nPreemptive baseline results")
-    print("===========================")
+"""
+    
 
-    rms_preemptive = run_preemptive_baseline(
-        name="Preemptive Native / RMS baseline",
-        jobs=jobs,
-        picker=pick_rms_runtime_job,
-    )
-
-    edf_preemptive = run_preemptive_baseline(
-        name="Preemptive EDF baseline",
-        jobs=jobs,
-        picker=pick_edf_runtime_job,
-    )
-
-    ca_preemptive_stats = ContextAwareStats()
-    context_runtime_picker = make_context_aware_runtime_picker(ca_params, ca_preemptive_stats)
-
-    context_preemptive = run_preemptive_baseline(
-        name="Preemptive Context-Aware baseline",
-        jobs=jobs,
-        picker=context_runtime_picker,
-    )
-
-    print_preemptive_result(rms_preemptive)
-    print_preemptive_result(edf_preemptive)
-    print_preemptive_result(context_preemptive)
-
-    print_first_execution_segments(edf_preemptive, count=40)
-    print_first_execution_segments(context_preemptive, count=40)
-
-    print_first_preemptive_completions(edf_preemptive, count=25)
-    print_first_preemptive_completions(context_preemptive, count=25)
-
-    ca_preemptive_stats.print_summary("Context-Aware stats / preemptive")
-    """
 
 if __name__ == "__main__":
     main()
