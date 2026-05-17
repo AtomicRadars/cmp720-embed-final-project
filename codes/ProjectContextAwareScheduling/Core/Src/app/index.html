@@ -1424,6 +1424,7 @@
 
         let inspectChart = null;
         let inspectMode = 'metrics'; // 'metrics' or 'params'
+        const inspectDatasetVisibility = {};
 
         function setInspectMode(mode) {
             inspectMode = mode;
@@ -1666,6 +1667,13 @@
                 }
             }
 
+            // Apply persisted visibility from the previous inspect chart selections
+            datasets.forEach(dataset => {
+                if (inspectDatasetVisibility.hasOwnProperty(dataset.label)) {
+                    dataset.hidden = !inspectDatasetVisibility[dataset.label];
+                }
+            });
+
             if (inspectChart) inspectChart.destroy();
             inspectChart = new Chart(document.getElementById('inspectChart'), {
                 type: 'line',
@@ -1697,6 +1705,7 @@
                     }
                 }
             });
+            inspectChart.update();
 
             // Rebuild Dynamic Legend Toggles
             const legendContainer = document.getElementById('inspectLegendToggles');
@@ -1725,9 +1734,16 @@
                 text.innerText = dataset.label;
                 button.appendChild(text);
 
-                // Initialize visibility to reflect the dataset's hidden flag
-                let visible = !(dataset.hidden === true);
-                // Ensure chart dataset visibility matches the initial state
+                // Initialize visibility to reflect stored state or default hidden flag
+                let visible;
+                if (inspectDatasetVisibility.hasOwnProperty(dataset.label)) {
+                    visible = inspectDatasetVisibility[dataset.label];
+                    dataset.hidden = !visible;
+                } else {
+                    visible = !(dataset.hidden === true);
+                }
+
+                inspectDatasetVisibility[dataset.label] = visible;
                 try { inspectChart.setDatasetVisibility(index, visible); } catch (e) { /* ignore if chart not yet ready */ }
 
                 // Apply initial button styles based on visibility
@@ -1745,6 +1761,7 @@
 
                 button.onclick = () => {
                     visible = !visible;
+                    inspectDatasetVisibility[dataset.label] = visible;
                     inspectChart.setDatasetVisibility(index, visible);
                     inspectChart.update(); // Rescales Y-axis automatically!
 
