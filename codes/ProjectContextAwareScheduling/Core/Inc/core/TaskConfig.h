@@ -32,7 +32,7 @@ struct TaskStruct
 // --- STATIC ALLOCATION STRUCTURES ---
 // Since dynamic allocation is avoided [2], we statically allocate memory 
 // for the Task Control Blocks (TCBs) and the Task Stacks.
-constexpr size_t TASK_STACK_SIZE = 256;
+constexpr size_t TASK_STACK_SIZE = 512;
 
 // TCBs (Task Control Blocks)
 extern StaticTask_t xTask1TCB;
