@@ -65,6 +65,50 @@
             display: none;
         }
 
+        /* Custom scrollbar styling for the terminal console (WebKit + Firefox) */
+        .terminal-bg {
+            scrollbar-width: thin; /* Firefox */
+            scrollbar-color: rgba(99,102,241,0.4) rgba(0,0,0,0.04); /* thumb track for Firefox */
+        }
+
+        .terminal-bg::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        .terminal-bg::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.04);
+            border-radius: 999px;
+        }
+
+        .terminal-bg::-webkit-scrollbar-thumb {
+            background: rgba(99,102,241,0.4);
+            border-radius: 999px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+
+        .terminal-bg::-webkit-scrollbar-thumb:hover {
+            background: rgba(99,102,241,0.6);
+        }
+
+        /* Dark mode scrollbar overrides */
+        .dark .terminal-bg {
+            scrollbar-color: rgba(148,163,184,0.45) rgba(255,255,255,0.03);
+        }
+
+        .dark .terminal-bg::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.03);
+        }
+
+        .dark .terminal-bg::-webkit-scrollbar-thumb {
+            background: rgba(148,163,184,0.25);
+        }
+
+        .dark .terminal-bg::-webkit-scrollbar-thumb:hover {
+            background: rgba(148,163,184,0.45);
+        }
+
         input[type="range"] {
             accent-color: #6366f1;
         }
@@ -434,13 +478,17 @@
                                 <i data-lucide="square" class="w-2.5 h-2.5"></i>
                                 Stop
                             </button>
+                            <button id="scrollLockBtn" onclick="toggleScrollLock()"
+                                class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-[9px] uppercase tracking-wider rounded-lg border border-slate-200 dark:border-slate-700 transition-all hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none">
+                                Scroll Lock: Off
+                            </button>
                             <span class="text-slate-300 dark:text-slate-700 text-xs">|</span>
                             <button onclick="document.getElementById('console').innerHTML = ''"
                                 class="text-[10px] uppercase tracking-widest text-slate-500 hover:text-slate-900 dark:text-white transition-colors">Clear</button>
                         </div>
                     </div>
                     <div id="console"
-                        class="terminal-bg p-6 font-mono text-xs overflow-y-auto flex-grow scrollbar-hide text-slate-700 dark:text-slate-300 leading-relaxed">
+                        class="terminal-bg p-6 font-mono text-xs overflow-y-auto flex-grow text-slate-700 dark:text-slate-300 leading-relaxed">
                         <span class="text-indigo-500">system_kernel:</span> Waiting for benchmark signal...
                     </div>
                 </div>
@@ -828,6 +876,21 @@
             return html;
         }
 
+        let consoleAutoScroll = true;
+
+        function toggleScrollLock() {
+            consoleAutoScroll = !consoleAutoScroll;
+            const btn = document.getElementById('scrollLockBtn');
+            if (!btn) return;
+            if (consoleAutoScroll) {
+                btn.textContent = 'Scroll Lock: Off';
+                btn.className = 'px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-[9px] uppercase tracking-wider rounded-lg border border-slate-200 dark:border-slate-700 transition-all hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none';
+            } else {
+                btn.textContent = 'Scroll Lock: On';
+                btn.className = 'px-2.5 py-1 bg-slate-700 dark:bg-slate-700 text-white font-semibold text-[9px] uppercase tracking-wider rounded-lg border border-slate-700 transition-all hover:bg-slate-800 focus:outline-none';
+            }
+        }
+
         function log(msg, color = 'slate-300') {
             const consoleEl = document.getElementById('console');
             const line = document.createElement('div');
@@ -851,7 +914,9 @@
             line.className = `min-h-[1rem] mb-1 ${colorClass}`;
             line.innerHTML = renderedContent.trim() === "" ? "&nbsp;" : renderedContent;
             consoleEl.appendChild(line);
-            consoleEl.scrollTop = consoleEl.scrollHeight;
+            if (consoleAutoScroll) {
+                consoleEl.scrollTop = consoleEl.scrollHeight;
+            }
         }
 
         async function runTests() {
