@@ -91,6 +91,21 @@
             margin: 0 !important;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
         }
+
+        @keyframes slideUpFade {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slide-up {
+            animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
     </style>
 </head>
 
@@ -249,9 +264,11 @@
             </aside>
 
             <!-- Middle/Right Column: Task Cards and Console -->
-            <main class="lg:col-span-9 space-y-8">
-                <!-- Task Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <main id="mainContent" class="lg:col-span-9 flex flex-col gap-8">
+                <!-- Live Container holding Task Cards and Console -->
+                <div id="liveContainer" class="flex flex-col gap-8 order-1 transition-all duration-500">
+                    <!-- Task Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Task 1 -->
                     <div class="glass p-6 rounded-3xl relative overflow-hidden group">
                         <div
@@ -414,14 +431,40 @@
                         <span class="text-indigo-500">system_kernel:</span> Waiting for benchmark signal...
                     </div>
                 </div>
+                </div> <!-- Close liveContainer -->
 
                 <!-- Analytics Section (Hidden by default) -->
-                <div id="analytics" class="hidden space-y-8 animate-in fade-in duration-700">
+                <div id="analytics" class="hidden space-y-8 order-2 transition-all duration-500">
                     <div class="flex items-center gap-3 mb-2">
                         <div class="p-2 bg-indigo-500/20 rounded-lg text-indigo-600 dark:text-indigo-400">
                             <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
                         </div>
                         <h2 class="text-xl font-bold text-slate-900 dark:text-white">Performance Analytics</h2>
+                    </div>
+
+                    <!-- Offline Parameter Summary (Hidden by default, shown in offline mode) -->
+                    <div id="offlineParamsCard" class="hidden glass rounded-3xl border border-indigo-500/20 bg-indigo-500/5 relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 group-hover:from-indigo-500/10 group-hover:to-purple-500/10 transition-all duration-300"></div>
+                        <div class="relative z-10">
+                            <!-- Collapsible Header button -->
+                            <button onclick="toggleOfflineParams()" class="w-full flex justify-between items-center p-6 text-slate-700 dark:text-slate-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors focus:outline-none">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="sliders-horizontal" class="w-4.5 h-4.5 text-indigo-500"></i>
+                                    <span class="text-xs font-bold uppercase tracking-wider">Offline Run Parameters & Task Configuration</span>
+                                    <span id="offlineDurationBadge" class="font-mono font-semibold text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full ml-3 hidden"></span>
+                                </div>
+                                <div class="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-[10px] font-semibold tracking-wider uppercase">
+                                    <span id="offlineParamsCollapseText">Click to expand</span>
+                                    <i id="offlineParamsChevron" data-lucide="chevron-up" class="w-4 h-4 rotate-180 transition-transform duration-300"></i>
+                                </div>
+                            </button>
+                            <!-- Collapsible Body container -->
+                            <div id="offlineParamsBody" class="px-6 pb-6 hidden transition-all duration-300 ease-in-out">
+                                <div id="offlineParamsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-xs">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -720,7 +763,7 @@
                     }
                     stopBtn.classList.add('hidden');
                     log('Benchmark suite completed.', 'emerald-400');
-                    updateCharts();
+                    updateCharts(true);
                 } else {
                     log(event.data);
                 }
@@ -749,19 +792,23 @@
 
         let dmrChart = null;
         let trendChart = null;
+        let lastChartData = null;
 
-        async function updateCharts() {
+        async function updateCharts(shouldScroll = false) {
             const res = await fetch('/api/results');
             const data = await res.json();
             if (data.status) return;
 
             renderChartsWithData(data);
 
-            // Scroll to analytics
-            document.getElementById('analytics').scrollIntoView({ behavior: 'smooth' });
+            // Scroll to analytics only when triggered from running benchmarks
+            if (shouldScroll) {
+                document.getElementById('analytics').scrollIntoView({ behavior: 'smooth' });
+            }
         }
 
         function renderChartsWithData(data) {
+            lastChartData = data;
             // Normalize data.data keys to strip duration suffixes (e.g. "EDFSch_test_10s" -> "EDFSch_test")
             const normalizedData = {};
             for (let k in data.data) {
@@ -1187,7 +1234,13 @@
             document.documentElement.classList.toggle('dark');
             const isDark = document.documentElement.classList.contains('dark');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            if (window.updateCharts) updateCharts();
+            
+            // Re-render current active charts (live or offline log data) with new theme styling
+            if (lastChartData) {
+                renderChartsWithData(lastChartData);
+            } else {
+                if (window.updateCharts) updateCharts(false);
+            }
         }
 
         // Toggle Trend Card Zoom/Maximize
@@ -1232,6 +1285,8 @@
             log(`Importing ${files.length} offline log files...`, 'indigo-400');
 
             const results = {};
+            const extractedParams = {};
+            const parsedFiles = [];
 
             const motorPattern = /Task1_MotorControl!\s+SP:\s*([\d\.-]+),\s*MV:\s*([\d\.-]+)\s*\(x1000\),\s*OUT:\s*([\d\.-]+)/;
             const sensorPattern = /Task2_SensorAcquisition!\s+RAW:\s*([\d\.-]+),\s*FILTERED:\s*([\d\.-]+)/;
@@ -1276,6 +1331,7 @@
 
                     const taskMap = { 0: "Motor", 1: "Sensor", 2: "Crypto", 3: "Vision" };
                     const metrics = [];
+                    let maxTS = 0;
 
                     let latestMotor = { sp: 100.0, mv: 0.0, out: 0.0 };
                     let latestSensor = { raw: 0.0, filtered: 0.0 };
@@ -1304,6 +1360,10 @@
                             const misses = parseInt(metricsMatch[4]);
                             const dmr = parseInt(metricsMatch[5]);
 
+                            if (ts > maxTS) {
+                                maxTS = ts;
+                            }
+
                             const pt = {
                                 ts: ts,
                                 task: taskMap[taskID] || `Task${taskID}`,
@@ -1325,8 +1385,112 @@
                         }
                     });
 
-                    results[schedName] = metrics;
-                    log(`Successfully parsed ${metrics.length} metrics from ${name} (${schedName})`, 'emerald-400');
+                    // Parse duration
+                    let duration = null;
+                    const nameDurationMatch = name.match(/_(\d+)s_/i);
+                    if (nameDurationMatch) {
+                        duration = parseInt(nameDurationMatch[1]);
+                    } else if (maxTS > 0) {
+                        duration = Math.round(maxTS / 1000);
+                    }
+
+                    const paramList = [];
+                    lines.forEach(line => {
+                        // Old format check (e.g. TASK1_HEAVY_WORKLOAD_MS = 10)
+                        if (line.includes("TASK") && line.includes("=")) {
+                            let cleanLine = line.replace(/[\*\@]/g, '').trim();
+                            if (cleanLine.endsWith(";")) {
+                                cleanLine = cleanLine.substring(0, cleanLine.length - 1).trim();
+                            }
+                            if (cleanLine && !paramList.includes(cleanLine)) {
+                                paramList.push(cleanLine);
+                            }
+                        }
+
+                        // New format: T1-T4 Task Configuration (e.g. T1 (Motor):  Prio: 4, Period: 10 ms, MemIntensity: 0.10)
+                        const taskMatch = line.match(/T(\d)\s*\(([^)]+)\):\s*Prio:\s*(\d+),\s*Period:\s*([^,]+),\s*MemIntensity:\s*([\d\.]+)/i);
+                        if (taskMatch) {
+                            const taskNum = taskMatch[1];
+                            const taskName = taskMatch[2];
+                            const prio = taskMatch[3];
+                            const period = taskMatch[4];
+                            const mem = taskMatch[5];
+                            
+                            paramList.push(`T${taskNum} (${taskName}) = Prio: ${prio} • Per: ${period} • Mem: ${mem}`);
+                        }
+                        
+                        // New format: Alpha & Safety Margin (e.g. Alpha: 1.00, Safety Margin: 2 ms, Threshold: 0.15)
+                        const alphaMatch = line.match(/Alpha:\s*([\d\.]+),\s*Safety\s+Margin:\s*([^,]+),\s*Threshold:\s*([\d\.]+)/i);
+                        if (alphaMatch) {
+                            const alpha = alphaMatch[1];
+                            const margin = alphaMatch[2];
+                            const threshold = alphaMatch[3];
+                            
+                            paramList.push(`Alpha Coefficient = ${alpha}`);
+                            paramList.push(`Safety Margin = ${margin}`);
+                            paramList.push(`Memory Intensity Threshold = ${threshold}`);
+                        }
+                    });
+
+                    parsedFiles.push({
+                        name,
+                        schedName,
+                        metrics,
+                        duration,
+                        paramList
+                    });
+                });
+
+                // --- VALIDATION RULES ---
+
+                // 1. Check if exactly 3 files were successfully mapped
+                if (parsedFiles.length !== 3) {
+                    alert(`Error: You must select exactly 3 distinct log files (EDF, Native RMS, and Context-Aware). Mapped ${parsedFiles.length} valid log files.`);
+                    log(`Error: Selected ${parsedFiles.length} valid log files, but exactly 3 are required.`, 'red-400');
+                    return;
+                }
+
+                // 2. Check for repeating scheduler log files
+                const seenSchedulers = new Set();
+                let duplicateSched = "";
+                for (const pf of parsedFiles) {
+                    if (seenSchedulers.has(pf.schedName)) {
+                        duplicateSched = pf.schedName;
+                        break;
+                    }
+                    seenSchedulers.add(pf.schedName);
+                }
+
+                if (duplicateSched) {
+                    const label = duplicateSched === 'NativeSch_test' ? 'Native RMS' :
+                                  duplicateSched === 'EDFSch_test' ? 'EDF' : 'Context-Aware';
+                    alert(`Error: Repeating scheduler log files detected for "${label}"! Please ensure you upload one distinct file for each of the 3 schedulers.`);
+                    log(`Error: Upload contains repeating scheduler files for "${label}".`, "red-400");
+                    return;
+                }
+
+                // 3. Check if all 3 files have the same run duration
+                const seenDurations = new Set();
+                parsedFiles.forEach(pf => {
+                    if (pf.duration !== null) {
+                        seenDurations.add(pf.duration);
+                    }
+                });
+
+                if (seenDurations.size > 1) {
+                    const durationsList = Array.from(seenDurations).map(d => `${d}s`).join(", ");
+                    alert(`Error: Test run duration mismatch detected (${durationsList})! All 3 log files must have exactly the same run duration (e.g., all 5s or all 10s).`);
+                    log(`Error: Run duration mismatch detected: ${durationsList}.`, "red-400");
+                    return;
+                }
+
+                // --- POPULATE RESULTS AND LOG ---
+                parsedFiles.forEach(pf => {
+                    results[pf.schedName] = pf.metrics;
+                    if (pf.paramList.length > 0) {
+                        extractedParams[pf.schedName] = pf.paramList;
+                    }
+                    log(`Successfully parsed ${pf.metrics.length} metrics from ${pf.name} (${pf.schedName})`, 'emerald-400');
                 });
 
                 if (Object.keys(results).length === 0) {
@@ -1336,6 +1500,122 @@
 
                 // Reveal offline notification banner
                 document.getElementById('offlineBanner').classList.remove('hidden');
+
+                // Swap layout order for offline analysis: put analytics at top
+                const liveContainer = document.getElementById('liveContainer');
+                const analytics = document.getElementById('analytics');
+                
+                liveContainer.classList.remove('order-1', 'animate-slide-up');
+                liveContainer.classList.add('order-2');
+                
+                analytics.classList.remove('order-2', 'animate-slide-up');
+                analytics.classList.add('order-1', 'animate-slide-up');
+
+                // Calculate total benchmark run duration dynamically from parsed metrics
+                let maxDurationMs = 0;
+                for (const [sched, metrics] of Object.entries(results)) {
+                    metrics.forEach(pt => {
+                        if (pt.ts > maxDurationMs) {
+                            maxDurationMs = pt.ts;
+                        }
+                    });
+                }
+                const durationSeconds = (maxDurationMs / 1000).toFixed(1);
+                
+                const durationBadge = document.getElementById('offlineDurationBadge');
+                if (maxDurationMs > 0) {
+                    durationBadge.textContent = `⏱️ Run Duration: ${durationSeconds}s`;
+                    durationBadge.classList.remove('hidden');
+                } else {
+                    durationBadge.classList.add('hidden');
+                }
+
+                // Keep parameters summary collapsed by default on log upload
+                const paramsBody = document.getElementById('offlineParamsBody');
+                const paramsChevron = document.getElementById('offlineParamsChevron');
+                paramsBody.classList.add('hidden');
+                paramsChevron.classList.add('rotate-180');
+                document.getElementById('offlineParamsCollapseText').textContent = "Click to expand";
+
+                // Populate offline parameters summary dynamically
+                const paramsContainer = document.getElementById('offlineParamsContainer');
+                const offlineParamsCard = document.getElementById('offlineParamsCard');
+                paramsContainer.innerHTML = '';
+                
+                let totalParams = 0;
+                for (const [sched, paramsList] of Object.entries(extractedParams)) {
+                    const schedLabel = sched === 'NativeSch_test' ? 'Native RMS' :
+                                       sched === 'EDFSch_test' ? 'EDF' : 'Context-Aware';
+                                       
+                    const schedCard = document.createElement('div');
+                    schedCard.className = 'p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800/80 flex flex-col gap-2.5';
+                    
+                    schedCard.innerHTML = `
+                        <div class="flex items-center gap-1.5 font-bold text-indigo-500 dark:text-indigo-400 border-b border-slate-200 dark:border-slate-800 pb-1.5 mb-1 text-xs">
+                            <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                            <span>${schedLabel}</span>
+                        </div>
+                    `;
+                    
+                    const paramListEl = document.createElement('div');
+                    paramListEl.className = 'space-y-1.5';
+                    
+                    let globalsHtml = '';
+                    let tasksHtml = '';
+                    
+                    paramsList.forEach(item => {
+                        totalParams++;
+                        const parts = item.split("=");
+                        if (parts.length >= 2) {
+                            const key = parts[0].trim();
+                            const val = parts[1].trim();
+                            
+                            if (key.startsWith("T") && (key.includes("(") || key.includes("Task"))) {
+                                tasksHtml += `
+                                    <div class="flex justify-between items-center text-[10.5px] py-1 border-b border-slate-300/10 dark:border-white/5 last:border-0">
+                                        <span class="text-slate-800 dark:text-slate-200 font-semibold">${key}</span>
+                                        <span class="font-mono text-slate-500 dark:text-slate-400 text-right bg-slate-200/50 dark:bg-slate-800/50 px-2 py-0.5 rounded-md border border-slate-300/30 dark:border-white/5">${val}</span>
+                                    </div>
+                                `;
+                            } else {
+                                let prettyKey = key.replace(/_/g, ' ').toLowerCase();
+                                prettyKey = prettyKey.replace(/\bms\b/g, '(ms)');
+                                
+                                globalsHtml += `
+                                    <div class="flex justify-between items-center text-[10px] py-0.5">
+                                        <span class="text-slate-500 dark:text-slate-400 capitalize">${prettyKey}</span>
+                                        <span class="font-mono font-bold text-indigo-500 dark:text-indigo-400">${val}</span>
+                                    </div>
+                                `;
+                            }
+                        }
+                    });
+                    
+                    paramListEl.innerHTML = `
+                        ${globalsHtml ? `
+                        <div class="bg-indigo-500/5 dark:bg-indigo-500/10 p-2.5 rounded-xl border border-indigo-500/10 mb-2 space-y-0.5">
+                            ${globalsHtml}
+                        </div>` : ''}
+                        <div class="space-y-1">${tasksHtml}</div>
+                    `;
+                    
+                    schedCard.appendChild(paramListEl);
+                    paramsContainer.appendChild(schedCard);
+                }
+                
+                if (totalParams > 0) {
+                    offlineParamsCard.classList.remove('hidden');
+                } else {
+                    offlineParamsCard.classList.remove('hidden');
+                    paramsContainer.innerHTML = `
+                        <div class="col-span-full p-4 text-center text-slate-500 dark:text-slate-400 italic">
+                            No explicit parameter settings detected inside log files. Default task parameters applied during historical benchmark execution.
+                        </div>
+                    `;
+                }
+
+                // Re-render icons for new content
+                lucide.createIcons();
 
                 // Plot data
                 const offlineData = { timestamp: "Offline Dataset", data: results };
@@ -1349,9 +1629,36 @@
 
         function resetToLiveServer() {
             document.getElementById('offlineBanner').classList.add('hidden');
+            document.getElementById('offlineParamsCard').classList.add('hidden');
             document.getElementById('offlineLogUpload').value = '';
+
+            // Restore layout order: put liveContainer back at top
+            const liveContainer = document.getElementById('liveContainer');
+            const analytics = document.getElementById('analytics');
+            
+            liveContainer.classList.remove('order-2', 'animate-slide-up');
+            liveContainer.classList.add('order-1', 'animate-slide-up');
+            
+            analytics.classList.remove('order-1', 'animate-slide-up');
+            analytics.classList.add('order-2');
+
             updateCharts();
             log("Switched back to live COM port metrics.", "emerald-400");
+        }
+
+        function toggleOfflineParams() {
+            const body = document.getElementById('offlineParamsBody');
+            const chevron = document.getElementById('offlineParamsChevron');
+            const label = document.getElementById('offlineParamsCollapseText');
+            
+            body.classList.toggle('hidden');
+            chevron.classList.toggle('rotate-180');
+            
+            if (body.classList.contains('hidden')) {
+                label.textContent = "Click to expand";
+            } else {
+                label.textContent = "Click to collapse";
+            }
         }
 
         // Initialize Theme
@@ -1365,6 +1672,10 @@
             loadParams();
             lucide.createIcons();
             updateCharts();
+            // Force viewport scroll to the absolute top on launch
+            setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'instant' });
+            }, 50);
         };
     </script>
 </body>
