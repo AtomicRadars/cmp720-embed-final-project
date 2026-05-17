@@ -90,6 +90,12 @@
             z-index: 50 !important;
             margin: 0 !important;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+            backdrop-filter: none !important; /* Fixes browser rendering blur bug on child elements */
+            background: #ffffff !important; /* Force solid crisp background in light mode */
+        }
+
+        .dark .card-maximized {
+            background: #1e293b !important; /* Force solid crisp background in dark mode */
         }
 
         @keyframes slideUpFade {
@@ -266,40 +272,37 @@
             <!-- Middle/Right Column: Task Cards and Console -->
             <main id="mainContent" class="lg:col-span-9 flex flex-col gap-8">
                 <!-- Live Container holding Task Cards and Console -->
-                <div id="liveContainer" class="flex flex-col gap-8 order-1 transition-all duration-500">
+                <div id="liveContainer" class="flex flex-col gap-5 order-1 transition-all duration-500">
                     <!-- Task Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Task 1 -->
-                    <div class="glass p-6 rounded-3xl relative overflow-hidden group">
+                    <div class="glass p-4 pb-5 rounded-3xl relative overflow-hidden group">
                         <div
-                            class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full -mr-8 -mt-8 group-hover:bg-indigo-500/10 transition-all">
+                            class="absolute top-0 right-0 w-20 h-20 bg-indigo-500/5 rounded-full -mr-6 -mt-6 group-hover:bg-indigo-500/10 transition-all">
                         </div>
-                        <div class="flex items-center gap-3 mb-6">
+                        <div class="flex items-center gap-3 mb-3.5">
                             <div class="p-2.5 bg-indigo-500/20 rounded-xl text-indigo-600 dark:text-indigo-400">
                                 <i data-lucide="cpu" class="w-5 h-5"></i>
                             </div>
                             <div>
-                                <h3 class="font-bold text-slate-900 dark:text-white">T1: Motor Control</h3>
-                                <span class="text-[10px] text-indigo-600 dark:text-indigo-400/80 font-mono">HIGH
-                                    PRIORITY</span>
+                                <h3 class="font-bold text-sm text-slate-900 dark:text-white leading-tight">T1: Motor Control</h3>
+                                <span class="text-[10px] text-indigo-600 dark:text-indigo-400/80 font-mono tracking-wider">HIGH PRIORITY</span>
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-3 gap-3">
                             <div>
                                 <label
-                                    class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Priority</label>
+                                    class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Priority</label>
                                 <input type="number" id="TASK1_PRIORITY"
                                     class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 transition-colors">
                             </div>
                             <div>
-                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Period
-                                    (ms)</label>
+                                <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Period (ms)</label>
                                 <input type="number" id="TASK1_PERIOD_MS"
                                     class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 transition-colors">
                             </div>
-                            <div class="col-span-2">
-                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Mem
-                                    Intensity (0.0 - 1.0)</label>
+                            <div>
+                                <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Mem Intensity</label>
                                 <input type="number" id="TASK1_MEMORY_INTENSITY" step="0.1"
                                     class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 transition-colors">
                             </div>
@@ -307,36 +310,33 @@
                     </div>
 
                     <!-- Task 4 -->
-                    <div class="glass p-6 rounded-3xl relative overflow-hidden group">
+                    <div class="glass p-4 pb-5 rounded-3xl relative overflow-hidden group">
                         <div
-                            class="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full -mr-8 -mt-8 group-hover:bg-purple-500/10 transition-all">
+                            class="absolute top-0 right-0 w-20 h-20 bg-purple-500/5 rounded-full -mr-6 -mt-6 group-hover:bg-purple-500/10 transition-all">
                         </div>
-                        <div class="flex items-center gap-3 mb-6">
+                        <div class="flex items-center gap-3 mb-3.5">
                             <div class="p-2.5 bg-purple-500/20 rounded-xl text-purple-600 dark:text-purple-400">
                                 <i data-lucide="eye" class="w-5 h-5"></i>
                             </div>
                             <div>
-                                <h3 class="font-bold text-slate-900 dark:text-white">T4: Vision Processing</h3>
-                                <span class="text-[10px] text-purple-600 dark:text-purple-400/80 font-mono">HIGH
-                                    LOAD</span>
+                                <h3 class="font-bold text-sm text-slate-900 dark:text-white leading-tight">T4: Vision Processing</h3>
+                                <span class="text-[10px] text-purple-600 dark:text-purple-400/80 font-mono tracking-wider">HIGH LOAD</span>
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-3 gap-3">
                             <div>
                                 <label
-                                    class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Priority</label>
+                                    class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Priority</label>
                                 <input type="number" id="TASK4_PRIORITY"
                                     class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors">
                             </div>
                             <div>
-                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Period
-                                    (ms)</label>
+                                <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Period (ms)</label>
                                 <input type="number" id="TASK4_PERIOD_MS"
                                     class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors">
                             </div>
-                            <div class="col-span-2">
-                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Mem
-                                    Intensity</label>
+                            <div>
+                                <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Mem Intensity</label>
                                 <input type="number" id="TASK4_MEMORY_INTENSITY" step="0.1"
                                     class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors">
                             </div>
@@ -344,33 +344,33 @@
                     </div>
 
                     <!-- Task 2 -->
-                    <div class="glass p-6 rounded-3xl relative overflow-hidden group">
-                        <div class="flex items-center gap-3 mb-6">
+                    <div class="glass p-4 pb-5 rounded-3xl relative overflow-hidden group">
+                        <div
+                            class="absolute top-0 right-0 w-20 h-20 bg-emerald-500/5 rounded-full -mr-6 -mt-6 group-hover:bg-emerald-500/10 transition-all">
+                        </div>
+                        <div class="flex items-center gap-3 mb-3.5">
                             <div class="p-2.5 bg-emerald-500/20 rounded-xl text-emerald-600 dark:text-emerald-400">
                                 <i data-lucide="database" class="w-5 h-5"></i>
                             </div>
                             <div>
-                                <h3 class="font-bold text-slate-900 dark:text-white">T2: Sensor Acquisition</h3>
-                                <span
-                                    class="text-[10px] text-emerald-600 dark:text-emerald-400/80 font-mono">MEDIUM</span>
+                                <h3 class="font-bold text-sm text-slate-900 dark:text-white leading-tight">T2: Sensor Acquisition</h3>
+                                <span class="text-[10px] text-emerald-600 dark:text-emerald-400/80 font-mono tracking-wider">MEDIUM</span>
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-3 gap-3">
                             <div>
                                 <label
-                                    class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Priority</label>
+                                    class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Priority</label>
                                 <input type="number" id="TASK2_PRIORITY"
                                     class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
                             </div>
                             <div>
-                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Period
-                                    (ms)</label>
+                                <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Period (ms)</label>
                                 <input type="number" id="TASK2_PERIOD_MS"
                                     class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
                             </div>
-                            <div class="col-span-2">
-                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Mem
-                                    Intensity</label>
+                            <div>
+                                <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Mem Intensity</label>
                                 <input type="number" id="TASK2_MEMORY_INTENSITY" step="0.1"
                                     class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
                             </div>
@@ -378,42 +378,42 @@
                     </div>
 
                     <!-- Task 3 -->
-                    <div class="glass p-6 rounded-3xl relative overflow-hidden group">
-                        <div class="flex items-center gap-3 mb-6">
+                    <div class="glass p-4 pb-5 rounded-3xl relative overflow-hidden group">
+                        <div
+                            class="absolute top-0 right-0 w-20 h-20 bg-amber-500/5 rounded-full -mr-6 -mt-6 group-hover:bg-amber-500/10 transition-all">
+                        </div>
+                        <div class="flex items-center gap-3 mb-3.5">
                             <div class="p-2.5 bg-amber-500/20 rounded-xl text-amber-600 dark:text-amber-400">
                                 <i data-lucide="shield" class="w-5 h-5"></i>
                             </div>
                             <div>
-                                <h3 class="font-bold text-slate-900 dark:text-white">T3: Crypto Encryption</h3>
-                                <span class="text-[10px] text-amber-600 dark:text-amber-400/80 font-mono">COMPUTE
-                                    INTENSIVE</span>
+                                <h3 class="font-bold text-sm text-slate-900 dark:text-white leading-tight">T3: Crypto Encryption</h3>
+                                <span class="text-[10px] text-amber-600 dark:text-amber-400/80 font-mono tracking-wider">COMPUTE INTENSIVE</span>
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-3 gap-3">
                             <div>
                                 <label
-                                    class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Priority</label>
+                                    class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Priority</label>
                                 <input type="number" id="TASK3_PRIORITY"
                                     class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition-colors">
                             </div>
                             <div>
-                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Period
-                                    (ms)</label>
+                                <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Period (ms)</label>
                                 <input type="number" id="TASK3_PERIOD_MS"
                                     class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition-colors">
                             </div>
-                            <div class="col-span-2">
-                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Mem
-                                    Intensity</label>
+                            <div>
+                                <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Mem Intensity</label>
                                 <input type="number" id="TASK3_MEMORY_INTENSITY" step="0.1"
                                     class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition-colors">
                             </div>
                         </div>
                     </div>
-                </div>
+                    </div>
 
                 <!-- Console -->
-                <div class="glass rounded-3xl overflow-hidden flex flex-col h-[400px]">
+                <div id="consoleCard" class="glass rounded-3xl overflow-hidden flex flex-col h-[280px]">
                     <div
                         class="bg-slate-200/50 dark:bg-slate-800/50 px-6 py-3 flex justify-between items-center border-b border-slate-300/50 dark:border-white/5">
                         <div class="flex items-center gap-2">
@@ -423,8 +423,21 @@
                             <span
                                 class="ml-3 text-xs font-mono text-slate-600 dark:text-slate-400 tracking-wider">OUTPUT_STREAM</span>
                         </div>
-                        <button onclick="document.getElementById('console').innerHTML = ''"
-                            class="text-[10px] uppercase tracking-widest text-slate-500 hover:text-slate-900 dark:text-white transition-colors">Clear</button>
+                        <div class="flex items-center gap-3">
+                            <button id="runBtnConsole" onclick="runTests()"
+                                class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-[9px] uppercase tracking-wider rounded-lg shadow-sm hover:shadow-indigo-500/20 transition-all flex items-center gap-1.5 focus:outline-none">
+                                <i data-lucide="play" class="w-2.5 h-2.5"></i>
+                                Run
+                            </button>
+                            <button id="stopBtnConsole" onclick="stopTests()"
+                                class="hidden px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white font-semibold text-[9px] uppercase tracking-wider rounded-lg shadow-sm hover:shadow-rose-500/20 transition-all flex items-center gap-1.5 focus:outline-none animate-pulse">
+                                <i data-lucide="square" class="w-2.5 h-2.5"></i>
+                                Stop
+                            </button>
+                            <span class="text-slate-300 dark:text-slate-700 text-xs">|</span>
+                            <button onclick="document.getElementById('console').innerHTML = ''"
+                                class="text-[10px] uppercase tracking-widest text-slate-500 hover:text-slate-900 dark:text-white transition-colors">Clear</button>
+                        </div>
                     </div>
                     <div id="console"
                         class="terminal-bg p-6 font-mono text-xs overflow-y-auto flex-grow scrollbar-hide text-slate-700 dark:text-slate-300 leading-relaxed">
@@ -435,11 +448,32 @@
 
                 <!-- Analytics Section (Hidden by default) -->
                 <div id="analytics" class="hidden space-y-8 order-2 transition-all duration-500">
-                    <div class="flex items-center gap-3 mb-2">
-                        <div class="p-2 bg-indigo-500/20 rounded-lg text-indigo-600 dark:text-indigo-400">
-                            <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                    <div class="flex flex-wrap items-center justify-between gap-4 mb-2">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-indigo-500/20 rounded-lg text-indigo-600 dark:text-indigo-400">
+                                <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                            </div>
+                            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Performance Analytics</h2>
                         </div>
-                        <h2 class="text-xl font-bold text-slate-900 dark:text-white">Performance Analytics</h2>
+                        <!-- Benchmark Source Indicator Badge -->
+                        <div id="analyticsSourceBadge" class="flex items-center gap-2 px-3 py-1 rounded-full border bg-amber-500/5 dark:bg-amber-500/10 border-amber-500/20 text-xs font-semibold select-none transition-all duration-300">
+                            <span id="analyticsSourceDot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                            <span id="analyticsSourceText" class="text-slate-600 dark:text-slate-300">Displaying: Previous Benchmark</span>
+                        </div>
+                    </div>
+
+                    <!-- Incomplete Benchmarks Warning Banner -->
+                    <div id="incompleteWarningBanner" class="hidden px-6 py-4 rounded-3xl border border-rose-500/20 bg-rose-500/10 backdrop-blur-md text-rose-500 flex flex-col md:flex-row md:items-center gap-4 relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-gradient-to-r from-rose-500/5 to-transparent"></div>
+                        <div class="relative z-10 p-2 bg-rose-500/20 rounded-2xl text-rose-500 shrink-0 w-fit">
+                            <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+                        </div>
+                        <div class="relative z-10 flex-grow">
+                            <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-0.5">Incomplete Benchmark Run Detected!</h4>
+                            <p id="incompleteWarningText" class="text-xs text-slate-600 dark:text-slate-400">
+                                Some scheduler tests are missing or ran for unequal durations (e.g. Native RMS: 5s, EDF: 3s). This may skew relative performance metrics.
+                            </p>
+                        </div>
                     </div>
 
                     <!-- Offline Parameter Summary (Hidden by default, shown in offline mode) -->
@@ -653,6 +687,12 @@
         }
 
         function highlightLogLine(lineText) {
+            // Check for Errors or Exceptions first to highlight them in red
+            const lowerLine = lineText.toLowerCase();
+            if (lowerLine.includes("error:") || lowerLine.includes("exception:") || lowerLine.startsWith("error") || lowerLine.startsWith("exception")) {
+                return `<span class="text-red-600 dark:text-red-500 font-bold">${lineText}</span>`;
+            }
+
             // If the line starts with "Task", color the entire line in a single unified color
             if (lineText.startsWith("Task")) {
                 return `<span class="text-sky-600 dark:text-sky-400 font-medium">${lineText}</span>`;
@@ -737,19 +777,86 @@
         }
 
         async function runTests() {
+            // If offline mode is active, reset to live server layout first
+            const offlineBanner = document.getElementById('offlineBanner');
+            if (offlineBanner && !offlineBanner.classList.contains('hidden')) {
+                resetToLiveServer();
+            }
+
+            // Clear Performance Analysis graphs & show Running Benchmark state
+            const analytics = document.getElementById('analytics');
+            if (analytics) {
+                analytics.classList.remove('hidden');
+            }
+            
+            // Update Source Badge to Running Benchmark
+            const sourceBadge = document.getElementById('analyticsSourceBadge');
+            const sourceDot = document.getElementById('analyticsSourceDot');
+            const sourceText = document.getElementById('analyticsSourceText');
+            if (sourceBadge && sourceDot && sourceText) {
+                sourceBadge.className = "flex items-center gap-2 px-3 py-1 rounded-full border bg-blue-500/5 dark:bg-blue-500/10 border-blue-500/20 text-xs font-semibold select-none transition-all duration-300";
+                sourceDot.className = "w-2 h-2 rounded-full bg-blue-500 animate-pulse";
+                sourceText.textContent = "Displaying: Running Benchmark";
+            }
+
+            // Clear global chart data variables to prevent old states from being redrawn
+            lastChartData = null;
+            window.lastResultsData = null;
+
+            // Destroy and clear existing charts
+            if (dmrChart) {
+                dmrChart.destroy();
+                dmrChart = null;
+            }
+            if (trendChart) {
+                trendChart.destroy();
+                trendChart = null;
+            }
+            if (inspectChart) {
+                inspectChart.destroy();
+                inspectChart = null;
+            }
+            
+            // Clear inspect table and legend toggles
+            const inspectTableBody = document.getElementById('inspectTableBody');
+            if (inspectTableBody) inspectTableBody.innerHTML = '';
+            
+            const inspectLegendToggles = document.getElementById('inspectLegendToggles');
+            if (inspectLegendToggles) inspectLegendToggles.innerHTML = '';
+            
+            const starvationAlert = document.getElementById('starvationAlert');
+            if (starvationAlert) starvationAlert.classList.add('hidden');
+            
+            // Hide warning banner during benchmark execution
+            const warningBanner = document.getElementById('incompleteWarningBanner');
+            if (warningBanner) {
+                warningBanner.classList.add('hidden');
+            }
+
             const btn = document.getElementById('runBtn');
             const stopBtn = document.getElementById('stopBtn');
             const saveBtn = document.getElementById('saveBtn');
+            const btnConsole = document.getElementById('runBtnConsole');
+            const stopBtnConsole = document.getElementById('stopBtnConsole');
 
             btn.disabled = true;
             btn.classList.add('opacity-50', 'cursor-not-allowed');
+            if (btnConsole) {
+                btnConsole.disabled = true;
+                btnConsole.classList.add('opacity-50', 'cursor-not-allowed');
+            }
             if (saveBtn) {
                 saveBtn.disabled = true;
                 saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
             }
             stopBtn.classList.remove('hidden');
+            if (stopBtnConsole) {
+                stopBtnConsole.classList.remove('hidden');
+            }
 
             log('Initiating test sequence...', 'indigo-400');
+            
+            let hasError = false;
             const eventSource = new EventSource('/api/run');
 
             eventSource.onmessage = function (event) {
@@ -757,15 +864,39 @@
                     eventSource.close();
                     btn.disabled = false;
                     btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    if (btnConsole) {
+                        btnConsole.disabled = false;
+                        btnConsole.classList.remove('opacity-50', 'cursor-not-allowed');
+                    }
                     if (saveBtn) {
                         saveBtn.disabled = false;
                         saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                     }
                     stopBtn.classList.add('hidden');
-                    log('Benchmark suite completed.', 'emerald-400');
-                    updateCharts(true);
+                    if (stopBtnConsole) {
+                        stopBtnConsole.classList.add('hidden');
+                    }
+                    
+                    if (hasError) {
+                        log('Benchmark execution failed.', 'red-400');
+                        // Scroll to the console logs card so the user easily sees the failure stream centered
+                        document.getElementById('consoleCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else {
+                        log('Benchmark suite completed.', 'emerald-400');
+                        hasRunNewBenchmark = true;
+                        updateCharts(true);
+                    }
                 } else {
                     log(event.data);
+                    
+                    // Show a browser alert prompt if any error or exception is streamed
+                    const lowerData = event.data.toLowerCase();
+                    if (lowerData.includes('error:') || lowerData.includes('exception:')) {
+                        hasError = true;
+                        // Scroll console card into the middle of the screen immediately
+                        document.getElementById('consoleCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        alert(event.data.trim());
+                    }
                 }
             };
 
@@ -773,11 +904,18 @@
                 eventSource.close();
                 btn.disabled = false;
                 btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                if (btnConsole) {
+                    btnConsole.disabled = false;
+                    btnConsole.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
                 if (saveBtn) {
                     saveBtn.disabled = false;
                     saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                 }
                 stopBtn.classList.add('hidden');
+                if (stopBtnConsole) {
+                    stopBtnConsole.classList.add('hidden');
+                }
                 // SSE errors often happen on disconnect, so we don't always log as error
             };
         }
@@ -793,6 +931,7 @@
         let dmrChart = null;
         let trendChart = null;
         let lastChartData = null;
+        let hasRunNewBenchmark = false;
 
         async function updateCharts(shouldScroll = false) {
             const res = await fetch('/api/results');
@@ -809,6 +948,27 @@
 
         function renderChartsWithData(data) {
             lastChartData = data;
+
+            // Update Benchmark Source Indicator Badge
+            const sourceBadge = document.getElementById('analyticsSourceBadge');
+            const sourceDot = document.getElementById('analyticsSourceDot');
+            const sourceText = document.getElementById('analyticsSourceText');
+            if (sourceBadge && sourceDot && sourceText) {
+                if (data.timestamp === "Offline Dataset") {
+                    sourceBadge.className = "flex items-center gap-2 px-3 py-1 rounded-full border bg-indigo-500/5 dark:bg-indigo-500/10 border-indigo-500/20 text-xs font-semibold select-none transition-all duration-300";
+                    sourceDot.className = "w-2 h-2 rounded-full bg-indigo-500 animate-pulse";
+                    sourceText.textContent = "Displaying: Loaded Log Files";
+                } else if (hasRunNewBenchmark) {
+                    sourceBadge.className = "flex items-center gap-2 px-3 py-1 rounded-full border bg-emerald-500/5 dark:bg-emerald-500/10 border-emerald-500/20 text-xs font-semibold select-none transition-all duration-300";
+                    sourceDot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+                    sourceText.textContent = "Displaying: Latest Benchmark";
+                } else {
+                    sourceBadge.className = "flex items-center gap-2 px-3 py-1 rounded-full border bg-amber-500/5 dark:bg-amber-500/10 border-amber-500/20 text-xs font-semibold select-none transition-all duration-300";
+                    sourceDot.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
+                    sourceText.textContent = "Displaying: Previous Benchmark";
+                }
+            }
+
             // Normalize data.data keys to strip duration suffixes (e.g. "EDFSch_test_10s" -> "EDFSch_test")
             const normalizedData = {};
             for (let k in data.data) {
@@ -818,6 +978,59 @@
             data.data = normalizedData;
 
             document.getElementById('analytics').classList.remove('hidden');
+
+            // --- INCOMPLETE OR UNEQUAL BENCHMARK CHECK ---
+            const expectedSchedulers = ["NativeSch_test", "EDFSch_test", "ContextAwareSch_test"];
+            const missingSchedulers = expectedSchedulers.filter(s => !data.data[s] || data.data[s].length === 0);
+            
+            const durationValues = [];
+            for (let sched in data.data) {
+                const metrics = data.data[sched] || [];
+                let maxTS = 0;
+                metrics.forEach(m => {
+                    if (m.ts > maxTS) maxTS = m.ts;
+                });
+                const dur = maxTS / 1000;
+                if (dur > 0) {
+                    durationValues.push({ name: sched, dur: dur });
+                }
+            }
+
+            let hasIncomplete = false;
+            let warningMsg = "";
+
+            if (missingSchedulers.length > 0) {
+                hasIncomplete = true;
+                const missingNames = missingSchedulers.map(s => {
+                    if (s === 'NativeSch_test') return 'Native RMS';
+                    if (s === 'EDFSch_test') return 'EDF';
+                    return 'Context-Aware';
+                }).join(" and ");
+                warningMsg = `Incomplete benchmarks: Missing datasets for ${missingNames}. All 3 scheduler runs (Native RMS, EDF, and Context-Aware) must be completed for a full comparative evaluation.`;
+            } else if (durationValues.length > 0) {
+                const firstDur = durationValues[0].dur;
+                // Allow a small tolerance of up to 2.0s to account for minor scheduling or serial print delays on STM32
+                const allSame = durationValues.every(item => Math.abs(item.dur - firstDur) <= 2.0);
+                if (!allSame) {
+                    hasIncomplete = true;
+                    const durStrings = durationValues.map(item => {
+                        const label = item.name === 'NativeSch_test' ? 'Native RMS' :
+                                      item.name === 'EDFSch_test' ? 'EDF' : 'Context-Aware';
+                        return `${label}: ${Math.round(item.dur)}s`;
+                    }).join(", ");
+                    warningMsg = `Unequal test durations detected (${durStrings})! The relative performance ratios and DMR percentages on the graphs below may be highly inaccurate due to unequal workloads.`;
+                }
+            }
+
+            const warningBanner = document.getElementById('incompleteWarningBanner');
+            const warningText = document.getElementById('incompleteWarningText');
+            if (hasIncomplete) {
+                warningText.textContent = warningMsg;
+                warningBanner.classList.remove('hidden');
+                lucide.createIcons();
+            } else {
+                warningBanner.classList.add('hidden');
+            }
 
             const isDark = document.documentElement.classList.contains('dark');
             const textColor = isDark ? '#94a3b8' : '#475569';
@@ -964,7 +1177,19 @@
 
         function updateInspectView() {
             const data = window.lastResultsData;
-            if (!data) return;
+            if (!data) {
+                if (inspectChart) {
+                    inspectChart.destroy();
+                    inspectChart = null;
+                }
+                const tbody = document.getElementById('inspectTableBody');
+                if (tbody) tbody.innerHTML = '';
+                const legendContainer = document.getElementById('inspectLegendToggles');
+                if (legendContainer) legendContainer.innerHTML = '';
+                const starvationAlert = document.getElementById('starvationAlert');
+                if (starvationAlert) starvationAlert.classList.add('hidden');
+                return;
+            }
 
             const selectedSched = document.getElementById('inspectSched').value;
             const selectedTask = document.getElementById('inspectTask').value;
@@ -1385,13 +1610,13 @@
                         }
                     });
 
-                    // Parse duration
+                    // Parse duration (allow matching _30s with or without trailing underscore)
                     let duration = null;
-                    const nameDurationMatch = name.match(/_(\d+)s_/i);
+                    const nameDurationMatch = name.match(/_(\d+)s/i);
                     if (nameDurationMatch) {
                         duration = parseInt(nameDurationMatch[1]);
                     } else if (maxTS > 0) {
-                        duration = Math.round(maxTS / 1000);
+                        duration = maxTS / 1000;
                     }
 
                     const paramList = [];
@@ -1469,19 +1694,17 @@
                     return;
                 }
 
-                // 3. Check if all 3 files have the same run duration
-                const seenDurations = new Set();
-                parsedFiles.forEach(pf => {
-                    if (pf.duration !== null) {
-                        seenDurations.add(pf.duration);
+                // 3. Check if all 3 files have a similar run duration (allow up to 2.0s tolerance)
+                const durations = parsedFiles.map(pf => pf.duration).filter(d => d !== null);
+                if (durations.length > 0) {
+                    const firstDur = durations[0];
+                    const allSame = durations.every(d => Math.abs(d - firstDur) <= 2.0);
+                    if (!allSame) {
+                        const durationsList = durations.map(d => `${Math.round(d)}s`).join(", ");
+                        alert(`Error: Test run duration mismatch detected (${durationsList})! All 3 log files must have approximately the same run duration (e.g., all 5s or all 10s).`);
+                        log(`Error: Run duration mismatch detected: ${durationsList}.`, "red-400");
+                        return;
                     }
-                });
-
-                if (seenDurations.size > 1) {
-                    const durationsList = Array.from(seenDurations).map(d => `${d}s`).join(", ");
-                    alert(`Error: Test run duration mismatch detected (${durationsList})! All 3 log files must have exactly the same run duration (e.g., all 5s or all 10s).`);
-                    log(`Error: Run duration mismatch detected: ${durationsList}.`, "red-400");
-                    return;
                 }
 
                 // --- POPULATE RESULTS AND LOG ---
@@ -1510,6 +1733,9 @@
                 
                 analytics.classList.remove('order-2', 'animate-slide-up');
                 analytics.classList.add('order-1', 'animate-slide-up');
+                analytics.addEventListener('animationend', () => {
+                    analytics.classList.remove('animate-slide-up');
+                }, { once: true });
 
                 // Calculate total benchmark run duration dynamically from parsed metrics
                 let maxDurationMs = 0;
@@ -1638,6 +1864,9 @@
             
             liveContainer.classList.remove('order-2', 'animate-slide-up');
             liveContainer.classList.add('order-1', 'animate-slide-up');
+            liveContainer.addEventListener('animationend', () => {
+                liveContainer.classList.remove('animate-slide-up');
+            }, { once: true });
             
             analytics.classList.remove('order-1', 'animate-slide-up');
             analytics.classList.add('order-2');

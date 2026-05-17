@@ -77,6 +77,22 @@ def run_command(cmd, cwd=None):
 
 def main():
     parse_args()
+    
+    # Check if COM port exists before starting build/test pipeline
+    try:
+        import serial.tools.list_ports
+        ports = [p.device.upper() for p in serial.tools.list_ports.comports()]
+        selected_port = COM_PORT.upper()
+        if selected_port not in ports:
+            available = [p.device for p in serial.tools.list_ports.comports()]
+            available_str = ", ".join(available) if available else "None"
+            print(f"Error: The selected COM Port '{COM_PORT}' does not exist or is not connected!")
+            print(f"Available system ports: {available_str}")
+            print("Aborting build and test sequence.")
+            sys.exit(1)
+    except Exception as e:
+        print(f"Warning: Could not verify serial ports: {e}")
+
     setup_environment()
     if not LOG_DIR.exists():
         LOG_DIR.mkdir(parents=True)

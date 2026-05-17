@@ -131,6 +131,33 @@ async def run_tests():
     global current_process
     def generate():
         global current_process
+        
+        # Check if COM port exists before starting build/test pipeline
+        try:
+            import serial
+            import serial.tools.list_ports
+        except ImportError:
+            yield "data: Installing missing pyserial dependency...\n\n"
+            try:
+                subprocess.check_call([sys.executable, "-m", "pip", "install", "pyserial"])
+                import serial
+                import serial.tools.list_ports
+            except Exception as e:
+                yield f"data: Error: Failed to install pyserial dependency: {str(e)}\n\n"
+                yield "data: --- COMPLETED ---\n\n"
+                return
+        
+        ports = [p.device.upper() for p in serial.tools.list_ports.comports()]
+        selected_port = runtime_settings["COM_PORT"].upper()
+        if selected_port not in ports:
+            available = [p.device for p in serial.tools.list_ports.comports()]
+            available_str = ", ".join(available) if available else "None"
+            yield f"data: Error: The selected COM Port '{runtime_settings['COM_PORT']}' does not exist or is not connected!\n\n"
+            yield f"data: Available system ports: {available_str}\n\n"
+            yield f"data: Aborting build and test sequence.\n\n"
+            yield "data: --- COMPLETED ---\n\n"
+            return
+
         cmd = [
             sys.executable, "-u", str(AUTOMATION_SCRIPT),
             "--port", runtime_settings["COM_PORT"],
