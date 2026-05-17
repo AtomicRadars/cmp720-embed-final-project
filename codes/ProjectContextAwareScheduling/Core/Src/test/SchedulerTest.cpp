@@ -6,6 +6,7 @@
 
 extern UART_HandleTypeDef huart2;
 
+
 void SchedulerTest::PrintTaskMetrics(IScheduler* p_pISched, ETaskID task_id)
 {
     if (p_pISched == nullptr)
@@ -38,13 +39,18 @@ void SchedulerTest::PrintTaskMetrics(IScheduler* p_pISched, ETaskID task_id)
 
     if ((total > 0) && ((total % print_interval) == 0))
     {
-        char msg[128];
+        char msg[256];
         uint32_t misses = p_pISched->GetMissedDeadlines(task_id);
         float dmr = p_pISched->GetDeadlineMissRatio(task_id);
         UBaseType_t priority = uxTaskPriorityGet(nullptr); // Priority of the calling task
         
-        snprintf(msg, sizeof(msg), "[TS: %lu ms] [Metrics] Task %d - Prio: %lu | Jobs: %lu | Misses: %lu | DMR: %d%%\r\n", 
-                 xTaskGetTickCount(), static_cast<int>(task_id), static_cast<uint32_t>(priority), total, misses, static_cast<int>(dmr * 100.0f));
+        float jitter = p_pISched->GetTaskJitter(task_id);
+        uint32_t jitter_int = static_cast<uint32_t>(jitter);
+        uint32_t jitter_frac = static_cast<uint32_t>(jitter * 100.0f) % 100;
+        
+        snprintf(msg, sizeof(msg), "[TS: %lu ms] [Metrics] Task %d - Prio: %lu | Jobs: %lu | Misses: %lu | DMR: %d%% | Jitter: %lu.%02lu ms | Contention: %lu ms | Overhead: %lu cycles\r\n", 
+                 xTaskGetTickCount(), static_cast<int>(task_id), static_cast<uint32_t>(priority), total, misses, static_cast<int>(dmr * 100.0f),
+                 jitter_int, jitter_frac, p_pISched->GetTotalContentionPenalty(), p_pISched->GetAverageOverheadCycles());
                  
         HAL_UART_Transmit(&huart2, (uint8_t*)msg, static_cast<uint16_t>(std::strlen(msg)), HAL_MAX_DELAY);
     }

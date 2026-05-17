@@ -501,6 +501,84 @@
                         </div>
                     </div>
 
+                    <!-- Evaluation Metrics KPI Grid -->
+                    <div id="metricsKPIGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Card 1: Critical Jitter -->
+                        <div class="glass p-6 rounded-3xl relative overflow-hidden group">
+                            <div class="absolute top-0 right-0 w-16 h-16 bg-amber-500/5 rounded-full -mr-4 -mt-4"></div>
+                            <div class="flex items-center gap-2.5 mb-3">
+                                <div class="p-2 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-xl">
+                                    <i data-lucide="activity" class="w-4 h-4"></i>
+                                </div>
+                                <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Critical Task Jitter (T1)</h4>
+                            </div>
+                            <div class="space-y-2.5">
+                                <div class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
+                                    <span class="text-slate-500 font-medium">Context-Aware:</span>
+                                    <span id="jitterCA" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">0.00 ms</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
+                                    <span class="text-slate-500 font-medium">EDF:</span>
+                                    <span id="jitterEDF" class="font-mono font-bold text-slate-700 dark:text-slate-300">0.00 ms</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-slate-500 font-medium">Native RMS:</span>
+                                    <span id="jitterNative" class="font-mono font-bold text-slate-700 dark:text-slate-300">0.00 ms</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Contention Penalty -->
+                        <div class="glass p-6 rounded-3xl relative overflow-hidden group">
+                            <div class="absolute top-0 right-0 w-16 h-16 bg-rose-500/5 rounded-full -mr-4 -mt-4"></div>
+                            <div class="flex items-center gap-2.5 mb-3">
+                                <div class="p-2 bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-xl">
+                                    <i data-lucide="zap" class="w-4 h-4"></i>
+                                </div>
+                                <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Total Contention Penalty</h4>
+                            </div>
+                            <div class="space-y-2.5">
+                                <div class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
+                                    <span class="text-slate-500 font-medium">Context-Aware:</span>
+                                    <span id="contentionCA" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">0 ms</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
+                                    <span class="text-slate-500 font-medium">EDF:</span>
+                                    <span id="contentionEDF" class="font-mono font-bold text-slate-700 dark:text-slate-300">0 ms</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-slate-500 font-medium">Native RMS:</span>
+                                    <span id="contentionNative" class="font-mono font-bold text-slate-700 dark:text-slate-300">0 ms</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Scheduler Overhead -->
+                        <div class="glass p-6 rounded-3xl relative overflow-hidden group">
+                            <div class="absolute top-0 right-0 w-16 h-16 bg-blue-500/5 rounded-full -mr-4 -mt-4"></div>
+                            <div class="flex items-center gap-2.5 mb-3">
+                                <div class="p-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl">
+                                    <i data-lucide="cpu" class="w-4 h-4"></i>
+                                </div>
+                                <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Avg Decision Overhead</h4>
+                            </div>
+                            <div class="space-y-2.5">
+                                <div class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
+                                    <span class="text-slate-500 font-medium">Context-Aware:</span>
+                                    <span id="overheadCA" class="font-mono font-bold text-amber-600 dark:text-amber-400">0 cyc</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
+                                    <span class="text-slate-500 font-medium">EDF:</span>
+                                    <span id="overheadEDF" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">0 cyc</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-slate-500 font-medium">Native RMS:</span>
+                                    <span id="overheadNative" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">0 cyc</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
                         <div class="glass p-8 rounded-3xl">
                             <h3
@@ -799,6 +877,14 @@
                 sourceText.textContent = "Displaying: Running Benchmark";
             }
 
+            // Clear Evaluation KPI Grid
+            const defaultJitter = "0.00 ms";
+            const defaultContention = "0 ms";
+            const defaultOverhead = "0 cyc";
+            ['jitterCA', 'jitterEDF', 'jitterNative'].forEach(id => { const el = document.getElementById(id); if (el) el.innerText = defaultJitter; });
+            ['contentionCA', 'contentionEDF', 'contentionNative'].forEach(id => { const el = document.getElementById(id); if (el) el.innerText = defaultContention; });
+            ['overheadCA', 'overheadEDF', 'overheadNative'].forEach(id => { const el = document.getElementById(id); if (el) el.innerText = defaultOverhead; });
+
             // Clear global chart data variables to prevent old states from being redrawn
             lastChartData = null;
             window.lastResultsData = null;
@@ -1044,6 +1130,32 @@
 
             const tasks = ["Motor", "Sensor", "Crypto", "Vision"];
 
+            // --- EVALUATION METRICS KPI UPDATE ---
+            // Helper to get last valid metric point of a specific task
+            function getLatestMetric(taskData, taskName) {
+                const filtered = (taskData || []).filter(m => m.task === taskName);
+                return filtered.length > 0 ? filtered[filtered.length - 1] : null;
+            }
+
+            const caMotor = getLatestMetric(data.data["ContextAwareSch_test"], "Motor");
+            const edfMotor = getLatestMetric(data.data["EDFSch_test"], "Motor");
+            const nativeMotor = getLatestMetric(data.data["NativeSch_test"], "Motor");
+
+            // Update Jitter T1 (Motor)
+            document.getElementById('jitterCA').innerText = caMotor && caMotor.jitter !== undefined ? caMotor.jitter.toFixed(2) + " ms" : "0.00 ms";
+            document.getElementById('jitterEDF').innerText = edfMotor && edfMotor.jitter !== undefined ? edfMotor.jitter.toFixed(2) + " ms" : "0.00 ms";
+            document.getElementById('jitterNative').innerText = nativeMotor && nativeMotor.jitter !== undefined ? nativeMotor.jitter.toFixed(2) + " ms" : "0.00 ms";
+
+            // Update Contention Penalty
+            document.getElementById('contentionCA').innerText = caMotor && caMotor.contention !== undefined ? caMotor.contention + " ms" : "0 ms";
+            document.getElementById('contentionEDF').innerText = edfMotor && edfMotor.contention !== undefined ? edfMotor.contention + " ms" : "0 ms";
+            document.getElementById('contentionNative').innerText = nativeMotor && nativeMotor.contention !== undefined ? nativeMotor.contention + " ms" : "0 ms";
+
+            // Update Scheduler Overhead
+            document.getElementById('overheadCA').innerText = caMotor && caMotor.overhead !== undefined ? caMotor.overhead + " cyc" : "0 cyc";
+            document.getElementById('overheadEDF').innerText = edfMotor && edfMotor.overhead !== undefined ? edfMotor.overhead + " cyc" : "0 cyc";
+            document.getElementById('overheadNative').innerText = nativeMotor && nativeMotor.overhead !== undefined ? nativeMotor.overhead + " cyc" : "0 cyc";
+            // ------------------------------------
             // 1. Prepare Bar Chart Data (Final DMR)
             const barDatasets = schedulers.map((sched) => {
                 const taskData = tasks.map(t => {
@@ -1306,11 +1418,40 @@
                         label: 'Miss Ratio (DMR %)',
                         data: taskMetrics.map(m => m.dmr),
                         borderColor: '#f59e0b', // Amber
-                        backgroundColor: 'rgba(245,158,11,0.08)',
-                        borderWidth: 3,
-                        pointRadius: 3,
-                        fill: true,
-                        tension: 0.2
+                        backgroundColor: 'rgba(245,158,11,0.05)',
+                        borderWidth: 2.5,
+                        pointRadius: 2.5,
+                        fill: false
+                    },
+                    {
+                        label: 'Jitter (ms)',
+                        data: taskMetrics.map(m => m.jitter !== undefined ? m.jitter : 0),
+                        borderColor: '#10b981', // Emerald
+                        backgroundColor: 'rgba(16,185,129,0.05)',
+                        borderWidth: 2.5,
+                        pointRadius: 2.5,
+                        fill: false,
+                        hidden: true // Hidden by default to avoid clutter
+                    },
+                    {
+                        label: 'Contention Penalty (ms)',
+                        data: taskMetrics.map(m => m.contention !== undefined ? m.contention : 0),
+                        borderColor: '#8b5cf6', // Violet
+                        backgroundColor: 'rgba(139,92,246,0.05)',
+                        borderWidth: 2.5,
+                        pointRadius: 2.5,
+                        fill: false,
+                        hidden: true
+                    },
+                    {
+                        label: 'Decision Overhead (cyc)',
+                        data: taskMetrics.map(m => m.overhead !== undefined ? m.overhead : 0),
+                        borderColor: '#6366f1', // Indigo
+                        backgroundColor: 'rgba(99,102,241,0.05)',
+                        borderWidth: 2.5,
+                        pointRadius: 2.5,
+                        fill: false,
+                        hidden: true
                     }
                 ];
             } else {

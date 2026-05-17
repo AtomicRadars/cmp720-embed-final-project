@@ -219,7 +219,7 @@ async def get_results():
         
         motor_pattern = r"Task1_MotorControl! SP:\s*([\d\.-]+),\s*MV:\s*([\d\.-]+)\s*\(x1000\),\s*OUT:\s*([\d\.-]+)"
         sensor_pattern = r"Task2_SensorAcquisition! RAW:\s*([\d\.-]+),\s*FILTERED:\s*([\d\.-]+)"
-        metrics_pattern = r"\[TS:\s*(\d+)\s*ms\]\s*\[Metrics\]\s*Task\s*(\d)\s*-\s*Prio:\s*\d+\s*\|\s*Jobs:\s*(\d+)\s*\|\s*Misses:\s*(\d+)\s*\|\s*DMR:\s*(\d+)%"
+        metrics_pattern = r"\[TS:\s*(\d+)\s*ms\]\s*\[Metrics\]\s*Task\s*(\d)\s*-\s*Prio:\s*\d+\s*\|\s*Jobs:\s*(\d+)\s*\|\s*Misses:\s*(\d+)\s*\|\s*DMR:\s*(\d+)%(?:\s*\|\s*Jitter:\s*([\d\.]+)\s*ms\s*\|\s*Contention:\s*(\d+)\s*ms\s*\|\s*Overhead:\s*(\d+)\s*cycles)?"
         
         for line in lines:
             # Parse motor params
@@ -253,6 +253,11 @@ async def get_results():
                     "misses": misses,
                     "dmr": dmr
                 }
+                
+                # Optionals for proposal-aligned evaluation metrics
+                pt["jitter"] = float(metrics_match.group(6)) if metrics_match.group(6) is not None else 0.0
+                pt["contention"] = int(metrics_match.group(7)) if metrics_match.group(7) is not None else 0
+                pt["overhead"] = int(metrics_match.group(8)) if metrics_match.group(8) is not None else 0
                 
                 # Append task-specific parameters
                 if task_id == 0:

@@ -1,4 +1,5 @@
 #include "core/IScheduler.h"
+#include <cmath>
 
 void IScheduler::Initialize() 
 {
@@ -58,4 +59,32 @@ float IScheduler::GetLastExecutedMemoryIntensity() const
         return tasks[m_last_executed_task].memory_intensity;
     }
     return 0.0f;
+}
+
+float IScheduler::GetTaskJitter(ETaskID task_id) const
+{
+    if (task_id < TASK_COUNT)
+    {
+        uint32_t count = m_jitter_count[task_id];
+        if (count > 1)
+        {
+            // Standard deviation of response times using Welford's Algorithm
+            return std::sqrt(m_jitter_m2[task_id] / static_cast<float>(count - 1));
+        }
+    }
+    return 0.0f;
+}
+
+uint32_t IScheduler::GetTotalContentionPenalty() const
+{
+    return m_total_contention_penalty_ms;
+}
+
+uint32_t IScheduler::GetAverageOverheadCycles() const
+{
+    if (m_overhead_call_count > 0)
+    {
+        return m_total_overhead_cycles / m_overhead_call_count;
+    }
+    return 0;
 }
