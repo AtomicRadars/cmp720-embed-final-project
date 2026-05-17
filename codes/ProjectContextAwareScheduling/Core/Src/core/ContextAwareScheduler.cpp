@@ -7,44 +7,6 @@ ContextAwareScheduler::ContextAwareScheduler(float alpha, float threshold, uint3
 {
 }
 
-bool ContextAwareScheduler::IsTimeReached(const TickType_t current_time, const TickType_t wake_time) const noexcept
-{
-    return static_cast<int32_t>(current_time - wake_time) >= 0;
-}
-
-int32_t ContextAwareScheduler::TimeUntil(const TickType_t future_time, const TickType_t current_time) const noexcept
-{
-    return static_cast<int32_t>(future_time - current_time);
-}
-
-bool ContextAwareScheduler::IsTaskReadyForScheduling(const uint8_t task_id, const TickType_t current_time) const noexcept
-{
-    if (task_id >= TASK_COUNT)
-    {
-        return false;
-    }
-
-    if (!tasks[task_id].is_registered)
-    {
-        return false;
-    }
-
-    if (!IsTimeReached(current_time, tasks[task_id].next_wake_time))
-    {
-        return false;
-    }
-
-    // TODO If overhead is high we might remove this
-    const eTaskState state{eTaskGetState(tasks[task_id].handle)};
-
-    return (state == eReady) || (state == eRunning);
-}
-
-int32_t ContextAwareScheduler::CalculateSlack(const TickType_t current_time, const TickType_t deadline_time, const TickType_t remaining_time) const noexcept
-{
-    return TimeUntil(deadline_time, current_time) - static_cast<int32_t>(remaining_time);
-}
-
 void ContextAwareScheduler::ApplyHeuristicAndUpdatePriorities()
 {
     TickType_t current_time = xTaskGetTickCount();
@@ -149,7 +111,12 @@ void ContextAwareScheduler::ApplyHeuristicAndUpdatePriorities()
     UBaseType_t current_priority = count; // Max priority
     for (uint8_t i = 0; i < count; ++i)
     {
-        vTaskPrioritySet(tasks[indices[i]].handle, current_priority--);
+        TaskHandle_t handle = tasks[indices[i]].handle;
+        UBaseType_t desired_priority = current_priority--;
+        if (uxTaskPriorityGet(handle) != desired_priority)
+        {
+            vTaskPrioritySet(handle, desired_priority);
+        }
     }
 }
 
