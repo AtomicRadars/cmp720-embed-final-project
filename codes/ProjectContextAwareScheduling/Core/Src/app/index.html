@@ -17,12 +17,12 @@
         body { font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s; }
         .glass { backdrop-filter: blur(12px); transition: all 0.3s; }
         
-        /* Light mode */
+        /* Light mode default */
         body { background-color: #f8fafc; color: #0f172a; }
-        .glass { background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.05); }
-        .terminal-bg { background: #f8fafc; border: 1px solid rgba(0,0,0,0.1); }
+        .glass { background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.08); }
+        .terminal-bg { background: #f1f5f9; border: 1px solid rgba(0, 0, 0, 0.08); }
         
-        /* Dark mode */
+        /* Dark mode overrides */
         .dark body { background-color: #0f172a; color: #f8fafc; }
         .dark .glass { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); }
         .dark .terminal-bg { background: #020617; border: none; }
@@ -44,12 +44,12 @@
                 </h1>
                 <p class="text-slate-600 dark:text-slate-400 mt-1">Real-time Task Configuration & Benchmark Suite</p>
             </div>
-                        <div class="flex gap-3">
-                <button onclick="toggleTheme()" class="flex items-center justify-center w-11 h-11 glass rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 transition-all" title="Toggle Theme">
-                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-white"></i>
-                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden text-slate-600 hover:text-black"></i>
+            <div class="flex gap-3">
+                <button onclick="toggleTheme()" class="flex items-center justify-center w-11 h-11 glass rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 transition-all text-slate-600 dark:text-slate-400" title="Toggle Theme">
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
                 </button>
-                <button onclick="saveParams()" class="flex items-center gap-2 px-5 py-2.5 glass rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 transition-all font-medium">
+                <button onclick="saveParams()" class="flex items-center gap-2 px-5 py-2.5 glass rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 transition-all font-medium text-slate-700 dark:text-slate-300">
                     <i data-lucide="save" class="w-4 h-4"></i> Save Changes
                 </button>
                 <button onclick="stopTests()" id="stopBtn" class="hidden flex items-center gap-2 px-5 py-2.5 bg-red-600/20 text-red-400 border border-red-500/30 rounded-xl hover:bg-red-600/30 transition-all font-medium">
@@ -76,7 +76,7 @@
                                 <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Alpha Coefficient</label>
                                 <span class="text-xs font-mono text-indigo-600 dark:text-indigo-400" id="ALPHA_val">1.0</span>
                             </div>
-                            <input type="range" id="ALPHA" min="0" max="2" step="0.1" class="w-full h-1.5 bg-slate-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                            <input type="range" id="ALPHA" min="0" max="2" step="0.1" class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer">
                             <p class="text-[10px] text-slate-500 mt-2 italic">Weight for context-aware heuristic penalty</p>
                         </div>
 
@@ -85,7 +85,7 @@
                                 <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Safety Margin (ms)</label>
                                 <span class="text-xs font-mono text-indigo-600 dark:text-indigo-400" id="SAFETY_MARGIN_MS_val">2</span>
                             </div>
-                            <input type="range" id="SAFETY_MARGIN_MS" min="0" max="20" step="1" class="w-full h-1.5 bg-slate-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                            <input type="range" id="SAFETY_MARGIN_MS" min="0" max="20" step="1" class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer">
                         </div>
 
                         <div>
@@ -93,7 +93,7 @@
                                 <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Memory Threshold</label>
                                 <span class="text-xs font-mono text-indigo-600 dark:text-indigo-400" id="MEMORY_INTENSITY_THRESHOLD_val">0.15</span>
                             </div>
-                            <input type="range" id="MEMORY_INTENSITY_THRESHOLD" min="0" max="1" step="0.05" class="w-full h-1.5 bg-slate-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                            <input type="range" id="MEMORY_INTENSITY_THRESHOLD" min="0" max="1" step="0.05" class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer">
                         </div>
                     </div>
                 </div>
@@ -103,15 +103,15 @@
                     <div class="space-y-4">
                         <div>
                             <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">COM Port</label>
-                            <input type="text" id="COM_PORT" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-indigo-700 dark:text-indigo-300 focus:outline-none focus:border-indigo-500 transition-colors">
+                            <input type="text" id="COM_PORT" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-indigo-300 focus:outline-none focus:border-indigo-500 transition-colors">
                         </div>
                         <div>
                             <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Baud Rate</label>
-                            <input type="number" id="BAUD_RATE" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-indigo-700 dark:text-indigo-300 focus:outline-none focus:border-indigo-500 transition-colors">
+                            <input type="number" id="BAUD_RATE" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-indigo-300 focus:outline-none focus:border-indigo-500 transition-colors">
                         </div>
                         <div>
                             <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Duration (s)</label>
-                            <input type="number" id="DURATION_SECONDS" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-indigo-700 dark:text-indigo-300 focus:outline-none focus:border-indigo-500 transition-colors">
+                            <input type="number" id="DURATION_SECONDS" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-indigo-300 focus:outline-none focus:border-indigo-500 transition-colors">
                         </div>
                     </div>
                 </div>
@@ -234,7 +234,7 @@
 
                 <!-- Console -->
                 <div class="glass rounded-3xl overflow-hidden flex flex-col h-[400px]">
-                    <div class="bg-slate-200/50 dark:bg-slate-800/50 px-6 py-3 flex justify-between items-center border-b border-black/5 dark:border-white/5">
+                    <div class="bg-slate-200/50 dark:bg-slate-800/50 px-6 py-3 flex justify-between items-center border-b border-slate-300/50 dark:border-white/5">
                         <div class="flex items-center gap-2">
                             <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
                             <div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
@@ -277,21 +277,6 @@
     </div>
 
     <script>
-                // Theme Toggle
-        function toggleTheme() {
-            document.documentElement.classList.toggle('dark');
-            const isDark = document.documentElement.classList.contains('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            if(window.updateCharts) updateCharts(); // Re-render charts for new colors
-        }
-        
-        // Load theme
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-
         lucide.createIcons();
         
         const params = [
@@ -346,41 +331,11 @@
                     const originalHTML = btn.innerHTML;
                     btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Saved!';
                     btn.classList.add('bg-emerald-600');
-                            // Theme Toggle
-        function toggleTheme() {
-            document.documentElement.classList.toggle('dark');
-            const isDark = document.documentElement.classList.contains('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            if(window.updateCharts) updateCharts(); // Re-render charts for new colors
-        }
-        
-        // Load theme
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-
-        lucide.createIcons();
+                    lucide.createIcons();
                     setTimeout(() => {
                         btn.innerHTML = originalHTML;
                         btn.classList.remove('bg-emerald-600');
-                                // Theme Toggle
-        function toggleTheme() {
-            document.documentElement.classList.toggle('dark');
-            const isDark = document.documentElement.classList.contains('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            if(window.updateCharts) updateCharts(); // Re-render charts for new colors
-        }
-        
-        // Load theme
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-
-        lucide.createIcons();
+                        lucide.createIcons();
                     }, 2000);
                 } else {
                     const err = await res.text();
@@ -394,7 +349,15 @@
         function log(msg, color = 'slate-300') {
             const consoleEl = document.getElementById('console');
             const line = document.createElement('div');
-            line.className = `min-h-[1rem] mb-1 text-${color}`;
+            const colorMap = {
+                'slate-300': 'text-slate-700 dark:text-slate-300',
+                'indigo-400': 'text-indigo-600 dark:text-indigo-400',
+                'emerald-400': 'text-emerald-600 dark:text-emerald-400',
+                'red-400': 'text-red-600 dark:text-red-400',
+                'amber-400': 'text-amber-600 dark:text-amber-400'
+            };
+            const colorClass = colorMap[color] || `text-${color}`;
+            line.className = `min-h-[1rem] mb-1 ${colorClass}`;
             line.innerHTML = msg.trim() === "" ? "&nbsp;" : msg;
             consoleEl.appendChild(line);
             consoleEl.scrollTop = consoleEl.scrollHeight;
@@ -450,12 +413,10 @@
 
             document.getElementById('analytics').classList.remove('hidden');
             
-            const schedulers = Object.keys(data.data);
-
-            const isDark = document.documentElement.classList.contains('dark');
+                        const isDark = document.documentElement.classList.contains('dark');
             const textColor = isDark ? '#94a3b8' : '#475569';
-            const gridColor = isDark ? gridColor : 'rgba(0,0,0,0.05)';
-
+            const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+            const schedulers = Object.keys(data.data);
             const schedColors = {
                 "NativeSch_test": "#94a3b8",
                 "EDFSch_test": "#f59e0b",
@@ -485,8 +446,23 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
                     plugins: { 
-                        legend: { labels: { color: textColor, font: { family: 'Inter', size: 11 } } } 
+                        legend: { labels: { color: textColor, font: { family: 'Inter', size: 11 } } },
+                        tooltip: {
+                            backgroundColor: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                            titleColor: isDark ? '#fff' : '#0f172a',
+                            bodyColor: isDark ? '#cbd5e1' : '#334155',
+                            borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                            borderWidth: 1,
+                            titleFont: { family: 'Inter', weight: 'bold' },
+                            bodyFont: { family: 'Inter' },
+                            padding: 10,
+                            cornerRadius: 8
+                        }
                     },
                     scales: {
                         y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: textColor } },
@@ -519,7 +495,8 @@
                     fill: false, // Set to false to see overlapping lines
                     borderWidth: 3,
                     tension: 0.3,
-                    pointRadius: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 7,
                     pointBackgroundColor: schedColors[sched]
                 };
             });
@@ -531,11 +508,28 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
                     scales: {
                         x: { type: 'linear', title: { display: true, text: 'Time (s)', color: textColor }, grid: { color: gridColor }, ticks: { color: textColor } },
                         y: { beginAtZero: true, title: { display: true, text: 'Avg DMR (%)', color: textColor }, grid: { color: gridColor }, ticks: { color: textColor } }
                     },
-                    plugins: { legend: { labels: { color: textColor, font: { family: 'Inter' } } } }
+                    plugins: { 
+                        legend: { labels: { color: textColor, font: { family: 'Inter' } } },
+                        tooltip: {
+                            backgroundColor: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                            titleColor: isDark ? '#fff' : '#0f172a',
+                            bodyColor: isDark ? '#cbd5e1' : '#334155',
+                            borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                            borderWidth: 1,
+                            titleFont: { family: 'Inter', weight: 'bold' },
+                            bodyFont: { family: 'Inter' },
+                            padding: 10,
+                            cornerRadius: 8
+                        }
+                    }
                 }
             });
             
@@ -543,7 +537,25 @@
             document.getElementById('analytics').scrollIntoView({ behavior: 'smooth' });
         }
 
-        window.onload = loadParams;
+        // Theme Toggle
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            if (window.updateCharts) updateCharts();
+        }
+        
+        // Initialize Theme
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        window.onload = function() {
+            loadParams();
+            lucide.createIcons();
+        };
     </script>
 </body>
 </html>

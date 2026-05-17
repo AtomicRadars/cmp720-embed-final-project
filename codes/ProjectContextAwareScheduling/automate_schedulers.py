@@ -115,14 +115,15 @@ def main():
                 run_command(["STM32_Programmer_CLI", "-c", "port=SWD", "-w", str(ELF_PATH), "-v", "-rst"])
 
                 print(f"Logging to: {log_file_path}")
-                start_time = time.time()
+                start_time = time.time()  # Start timer after flashing completes
                 with open(log_file_path, "w", newline='', encoding='utf-8') as f:
                     f.write(f"--- Log started at {time.ctime()} for scheduler {sched} ---\n\n")
                     buffer = ""
                     first_task_printed = False
                     recording_started = False
                     
-                    while (time.time() - start_time) < DURATION_SECONDS:
+                    grace_period = 0.8
+                    while (time.time() - start_time) < (DURATION_SECONDS + grace_period):
                         if ser.in_waiting > 0:
                             # Read and decode
                             buffer += ser.read(ser.in_waiting).decode('utf-8', errors='replace')
@@ -154,6 +155,7 @@ def main():
                                                 clean_line = "Tasks created successfully" + clean_line.split("Tasks created successfully", 1)[1]
                                             
                                             recording_started = True
+                                            start_time = time.time()  # Reset timer to capture full DURATION_SECONDS of active metrics
                                         else:
                                             continue
 
