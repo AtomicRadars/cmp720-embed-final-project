@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,25 +14,71 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <style>
-        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s; }
-        .glass { backdrop-filter: blur(12px); transition: all 0.3s, position 0s, z-index 0s; }
-        
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .glass {
+            backdrop-filter: blur(12px);
+            transition: all 0.3s, position 0s, z-index 0s;
+        }
+
         /* Light mode default */
-        body { background-color: #f8fafc; color: #0f172a; }
-        .glass { background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.08); }
-        .terminal-bg { background: #f1f5f9; border: 1px solid rgba(0, 0, 0, 0.08); }
-        
+        body {
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .terminal-bg {
+            background: #f1f5f9;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
         /* Dark mode overrides */
-        .dark body { background-color: #0f172a; color: #f8fafc; }
-        .dark .glass { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .dark .terminal-bg { background: #020617; border: none; }
-        
-        .accent-glow { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        input[type="range"] { accent-color: #6366f1; }
-        .btn-primary { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); transition: all 0.3s ease; color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5); }
+        .dark body {
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+
+        .dark .glass {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dark .terminal-bg {
+            background: #020617;
+            border: none;
+        }
+
+        .accent-glow {
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        input[type="range"] {
+            accent-color: #6366f1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5);
+        }
 
         /* Maximized Trend Card styles */
         .card-maximized {
@@ -46,33 +93,61 @@
         }
     </style>
 </head>
+
 <body class="p-6 lg:p-10 min-h-screen">
-    <div id="modalBackdrop" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-md z-40 transition-all duration-300"></div>
+    <div id="modalBackdrop"
+        class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-md z-40 transition-all duration-300"></div>
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
             <div>
-                <h1 class="text-3xl font-bold tracking-tight bg-gradient-to-r from-slate-800 dark:from-white to-slate-500 dark:to-slate-400 bg-clip-text text-transparent">
+                <h1
+                    class="text-3xl font-bold tracking-tight bg-gradient-to-r from-slate-800 dark:from-white to-slate-500 dark:to-slate-400 bg-clip-text text-transparent">
                     Scheduler Performance Lab
                 </h1>
                 <p class="text-slate-600 dark:text-slate-400 mt-1">Real-time Task Configuration & Benchmark Suite</p>
             </div>
             <div class="flex gap-3">
-                <button onclick="toggleTheme()" class="flex items-center justify-center w-11 h-11 glass rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 transition-all text-slate-600 dark:text-slate-400" title="Toggle Theme">
+                <button onclick="toggleTheme()"
+                    class="flex items-center justify-center w-11 h-11 glass rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 transition-all text-slate-600 dark:text-slate-400"
+                    title="Toggle Theme">
                     <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
                     <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
                 </button>
-                <button onclick="saveParams()" class="flex items-center gap-2 px-5 py-2.5 glass rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 transition-all font-medium text-slate-700 dark:text-slate-300">
+                <button onclick="document.getElementById('offlineLogUpload').click()"
+                    class="flex items-center gap-2 px-5 py-2.5 glass rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 transition-all font-medium text-slate-700 dark:text-slate-300"
+                    title="Upload Offline Log Files">
+                    <i data-lucide="upload-cloud" class="w-4 h-4 text-amber-500"></i> Upload Logs
+                </button>
+                <input type="file" id="offlineLogUpload" multiple accept=".log" class="hidden"
+                    onchange="handleLogUpload(event)">
+                <button id="saveBtn" onclick="saveParams()"
+                    class="flex items-center gap-2 px-5 py-2.5 glass rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 transition-all font-medium text-slate-700 dark:text-slate-300">
                     <i data-lucide="save" class="w-4 h-4"></i> Save Changes
                 </button>
-                <button onclick="stopTests()" id="stopBtn" class="hidden flex items-center gap-2 px-5 py-2.5 bg-red-600/20 text-red-400 border border-red-500/30 rounded-xl hover:bg-red-600/30 transition-all font-medium">
+                <button onclick="stopTests()" id="stopBtn"
+                    class="hidden flex items-center gap-2 px-5 py-2.5 bg-red-600/20 text-red-400 border border-red-500/30 rounded-xl hover:bg-red-600/30 transition-all font-medium">
                     <i data-lucide="square" class="w-4 h-4"></i> Stop
                 </button>
-                <button onclick="runTests()" id="runBtn" class="flex items-center gap-2 px-6 py-2.5 btn-primary rounded-xl font-semibold shadow-lg accent-glow">
+                <button onclick="runTests()" id="runBtn"
+                    class="flex items-center gap-2 px-6 py-2.5 btn-primary rounded-xl font-semibold shadow-lg accent-glow">
                     <i data-lucide="play" class="w-4 h-4"></i> Run Benchmarks
                 </button>
             </div>
         </header>
+
+        <!-- Offline Banner -->
+        <div id="offlineBanner"
+            class="hidden mb-6 px-6 py-4 rounded-2xl border border-amber-500/20 bg-amber-500/10 backdrop-blur-md flex justify-between items-center animate-in slide-in-from-top duration-300">
+            <div class="flex items-center gap-3 text-amber-600 dark:text-amber-400 text-sm font-semibold">
+                <i data-lucide="folder-open" class="w-5 h-5"></i>
+                <span>📂 Offline Mode Active: Currently plotting historical uploaded log datasets.</span>
+            </div>
+            <button onclick="resetToLiveServer()"
+                class="px-4 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all shadow-md">
+                Reset to Live Server
+            </button>
+        </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <!-- Left Column: Global Config -->
@@ -82,50 +157,93 @@
                         <i data-lucide="settings-2" class="w-5 h-5"></i>
                         <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Global Parameters</h2>
                     </div>
-                    
+
                     <div class="space-y-8">
                         <div>
                             <div class="flex justify-between mb-2">
-                                <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Alpha Coefficient</label>
-                                <span class="text-xs font-mono text-indigo-600 dark:text-indigo-400" id="ALPHA_val">1.0</span>
+                                <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Alpha
+                                    Coefficient</label>
+                                <span class="text-xs font-mono text-indigo-600 dark:text-indigo-400"
+                                    id="ALPHA_val">1.0</span>
                             </div>
-                            <input type="range" id="ALPHA" min="0" max="2" step="0.1" class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer">
-                            <p class="text-[10px] text-slate-500 mt-2 italic">Weight for context-aware heuristic penalty</p>
+                            <input type="range" id="ALPHA" min="0" max="2" step="0.1"
+                                class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                            <p class="text-[10px] text-slate-500 mt-2 italic">Weight for context-aware heuristic penalty
+                            </p>
                         </div>
 
                         <div>
                             <div class="flex justify-between mb-2">
-                                <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Safety Margin (ms)</label>
-                                <span class="text-xs font-mono text-indigo-600 dark:text-indigo-400" id="SAFETY_MARGIN_MS_val">2</span>
+                                <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Safety Margin
+                                    (ms)</label>
+                                <span class="text-xs font-mono text-indigo-600 dark:text-indigo-400"
+                                    id="SAFETY_MARGIN_MS_val">2</span>
                             </div>
-                            <input type="range" id="SAFETY_MARGIN_MS" min="0" max="20" step="1" class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                            <input type="range" id="SAFETY_MARGIN_MS" min="0" max="20" step="1"
+                                class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer">
                         </div>
 
                         <div>
                             <div class="flex justify-between mb-2">
-                                <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Memory Threshold</label>
-                                <span class="text-xs font-mono text-indigo-600 dark:text-indigo-400" id="MEMORY_INTENSITY_THRESHOLD_val">0.15</span>
+                                <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Memory
+                                    Threshold</label>
+                                <span class="text-xs font-mono text-indigo-600 dark:text-indigo-400"
+                                    id="MEMORY_INTENSITY_THRESHOLD_val">0.15</span>
                             </div>
-                            <input type="range" id="MEMORY_INTENSITY_THRESHOLD" min="0" max="1" step="0.05" class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                            <input type="range" id="MEMORY_INTENSITY_THRESHOLD" min="0" max="1" step="0.05"
+                                class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer">
                         </div>
                     </div>
                 </div>
 
                 <div class="glass p-6 rounded-3xl border-indigo-500/20">
-                    <h3 class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-4">Environment</h3>
+                    <h3 class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-4">
+                        Environment</h3>
                     <div class="space-y-4">
                         <div>
-                            <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">COM Port</label>
-                            <input type="text" id="COM_PORT" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-indigo-300 focus:outline-none focus:border-indigo-500 transition-colors">
+                            <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">COM
+                                Port</label>
+                            <input type="text" id="COM_PORT"
+                                class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-indigo-300 focus:outline-none focus:border-indigo-500 transition-colors">
                         </div>
                         <div>
-                            <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Baud Rate</label>
-                            <input type="number" id="BAUD_RATE" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-indigo-300 focus:outline-none focus:border-indigo-500 transition-colors">
+                            <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Baud
+                                Rate</label>
+                            <input type="number" id="BAUD_RATE"
+                                class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-indigo-300 focus:outline-none focus:border-indigo-500 transition-colors">
                         </div>
                         <div>
-                            <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Duration (s)</label>
-                            <input type="number" id="DURATION_SECONDS" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-indigo-300 focus:outline-none focus:border-indigo-500 transition-colors">
+                            <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Duration
+                                (s)</label>
+                            <input type="number" id="DURATION_SECONDS"
+                                class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-indigo-300 focus:outline-none focus:border-indigo-500 transition-colors">
                         </div>
+                    </div>
+                </div>
+
+                <!-- About & Credits Card -->
+                <div class="glass p-6 rounded-3xl relative overflow-hidden group">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 group-hover:from-indigo-500/10 group-hover:to-purple-500/10 transition-all duration-300">
+                    </div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-2 mb-3 text-slate-700 dark:text-slate-300">
+                            <i data-lucide="info" class="w-4 h-4 text-indigo-500"></i>
+                            <h3 class="text-xs font-bold uppercase tracking-wider">Credits</h3>
+                        </div>
+                        <p class="text-[11px] text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
+                            Developed by <span class="font-bold text-slate-800 dark:text-slate-200">AtomicRadars</span>
+                            as part of the CMP720 Embedded System Design final project.
+                        </p>
+                        <a href="https://github.com/AtomicRadars/cmp720-embed-final-project" target="_blank"
+                            class="flex items-center justify-center gap-2.5 w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-900 dark:bg-white/10 dark:hover:bg-white/20 text-white dark:text-slate-200 text-xs font-semibold transition-all duration-200 shadow-sm">
+                            <svg class="w-4 h-4 shrink-0 fill-current" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                            </svg>
+                            GitHub Repository
+                        </a>
                     </div>
                 </div>
             </aside>
@@ -136,56 +254,74 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Task 1 -->
                     <div class="glass p-6 rounded-3xl relative overflow-hidden group">
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full -mr-8 -mt-8 group-hover:bg-indigo-500/10 transition-all"></div>
+                        <div
+                            class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full -mr-8 -mt-8 group-hover:bg-indigo-500/10 transition-all">
+                        </div>
                         <div class="flex items-center gap-3 mb-6">
                             <div class="p-2.5 bg-indigo-500/20 rounded-xl text-indigo-600 dark:text-indigo-400">
                                 <i data-lucide="cpu" class="w-5 h-5"></i>
                             </div>
                             <div>
                                 <h3 class="font-bold text-slate-900 dark:text-white">T1: Motor Control</h3>
-                                <span class="text-[10px] text-indigo-600 dark:text-indigo-400/80 font-mono">HIGH PRIORITY</span>
+                                <span class="text-[10px] text-indigo-600 dark:text-indigo-400/80 font-mono">HIGH
+                                    PRIORITY</span>
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Priority</label>
-                                <input type="number" id="TASK1_PRIORITY" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 transition-colors">
+                                <label
+                                    class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Priority</label>
+                                <input type="number" id="TASK1_PRIORITY"
+                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 transition-colors">
                             </div>
                             <div>
-                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Period (ms)</label>
-                                <input type="number" id="TASK1_PERIOD_MS" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 transition-colors">
+                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Period
+                                    (ms)</label>
+                                <input type="number" id="TASK1_PERIOD_MS"
+                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 transition-colors">
                             </div>
                             <div class="col-span-2">
-                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Mem Intensity (0.0 - 1.0)</label>
-                                <input type="number" id="TASK1_MEMORY_INTENSITY" step="0.1" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 transition-colors">
+                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Mem
+                                    Intensity (0.0 - 1.0)</label>
+                                <input type="number" id="TASK1_MEMORY_INTENSITY" step="0.1"
+                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 transition-colors">
                             </div>
                         </div>
                     </div>
 
                     <!-- Task 4 -->
                     <div class="glass p-6 rounded-3xl relative overflow-hidden group">
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full -mr-8 -mt-8 group-hover:bg-purple-500/10 transition-all"></div>
+                        <div
+                            class="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full -mr-8 -mt-8 group-hover:bg-purple-500/10 transition-all">
+                        </div>
                         <div class="flex items-center gap-3 mb-6">
                             <div class="p-2.5 bg-purple-500/20 rounded-xl text-purple-600 dark:text-purple-400">
                                 <i data-lucide="eye" class="w-5 h-5"></i>
                             </div>
                             <div>
                                 <h3 class="font-bold text-slate-900 dark:text-white">T4: Vision Processing</h3>
-                                <span class="text-[10px] text-purple-600 dark:text-purple-400/80 font-mono">HIGH LOAD</span>
+                                <span class="text-[10px] text-purple-600 dark:text-purple-400/80 font-mono">HIGH
+                                    LOAD</span>
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Priority</label>
-                                <input type="number" id="TASK4_PRIORITY" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors">
+                                <label
+                                    class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Priority</label>
+                                <input type="number" id="TASK4_PRIORITY"
+                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors">
                             </div>
                             <div>
-                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Period (ms)</label>
-                                <input type="number" id="TASK4_PERIOD_MS" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors">
+                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Period
+                                    (ms)</label>
+                                <input type="number" id="TASK4_PERIOD_MS"
+                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors">
                             </div>
                             <div class="col-span-2">
-                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Mem Intensity</label>
-                                <input type="number" id="TASK4_MEMORY_INTENSITY" step="0.1" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors">
+                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Mem
+                                    Intensity</label>
+                                <input type="number" id="TASK4_MEMORY_INTENSITY" step="0.1"
+                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors">
                             </div>
                         </div>
                     </div>
@@ -198,21 +334,28 @@
                             </div>
                             <div>
                                 <h3 class="font-bold text-slate-900 dark:text-white">T2: Sensor Acquisition</h3>
-                                <span class="text-[10px] text-emerald-600 dark:text-emerald-400/80 font-mono">MEDIUM</span>
+                                <span
+                                    class="text-[10px] text-emerald-600 dark:text-emerald-400/80 font-mono">MEDIUM</span>
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Priority</label>
-                                <input type="number" id="TASK2_PRIORITY" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
+                                <label
+                                    class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Priority</label>
+                                <input type="number" id="TASK2_PRIORITY"
+                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
                             </div>
                             <div>
-                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Period (ms)</label>
-                                <input type="number" id="TASK2_PERIOD_MS" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
+                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Period
+                                    (ms)</label>
+                                <input type="number" id="TASK2_PERIOD_MS"
+                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
                             </div>
                             <div class="col-span-2">
-                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Mem Intensity</label>
-                                <input type="number" id="TASK2_MEMORY_INTENSITY" step="0.1" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
+                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Mem
+                                    Intensity</label>
+                                <input type="number" id="TASK2_MEMORY_INTENSITY" step="0.1"
+                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
                             </div>
                         </div>
                     </div>
@@ -225,21 +368,28 @@
                             </div>
                             <div>
                                 <h3 class="font-bold text-slate-900 dark:text-white">T3: Crypto Encryption</h3>
-                                <span class="text-[10px] text-amber-600 dark:text-amber-400/80 font-mono">COMPUTE INTENSIVE</span>
+                                <span class="text-[10px] text-amber-600 dark:text-amber-400/80 font-mono">COMPUTE
+                                    INTENSIVE</span>
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Priority</label>
-                                <input type="number" id="TASK3_PRIORITY" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition-colors">
+                                <label
+                                    class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Priority</label>
+                                <input type="number" id="TASK3_PRIORITY"
+                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition-colors">
                             </div>
                             <div>
-                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Period (ms)</label>
-                                <input type="number" id="TASK3_PERIOD_MS" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition-colors">
+                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Period
+                                    (ms)</label>
+                                <input type="number" id="TASK3_PERIOD_MS"
+                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition-colors">
                             </div>
                             <div class="col-span-2">
-                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Mem Intensity</label>
-                                <input type="number" id="TASK3_MEMORY_INTENSITY" step="0.1" class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition-colors">
+                                <label class="text-[10px] uppercase tracking-widest text-slate-500 block mb-1">Mem
+                                    Intensity</label>
+                                <input type="number" id="TASK3_MEMORY_INTENSITY" step="0.1"
+                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition-colors">
                             </div>
                         </div>
                     </div>
@@ -247,16 +397,20 @@
 
                 <!-- Console -->
                 <div class="glass rounded-3xl overflow-hidden flex flex-col h-[400px]">
-                    <div class="bg-slate-200/50 dark:bg-slate-800/50 px-6 py-3 flex justify-between items-center border-b border-slate-300/50 dark:border-white/5">
+                    <div
+                        class="bg-slate-200/50 dark:bg-slate-800/50 px-6 py-3 flex justify-between items-center border-b border-slate-300/50 dark:border-white/5">
                         <div class="flex items-center gap-2">
                             <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
                             <div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
                             <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
-                            <span class="ml-3 text-xs font-mono text-slate-600 dark:text-slate-400 tracking-wider">OUTPUT_STREAM</span>
+                            <span
+                                class="ml-3 text-xs font-mono text-slate-600 dark:text-slate-400 tracking-wider">OUTPUT_STREAM</span>
                         </div>
-                        <button onclick="document.getElementById('console').innerHTML = ''" class="text-[10px] uppercase tracking-widest text-slate-500 hover:text-slate-900 dark:text-white transition-colors">Clear</button>
+                        <button onclick="document.getElementById('console').innerHTML = ''"
+                            class="text-[10px] uppercase tracking-widest text-slate-500 hover:text-slate-900 dark:text-white transition-colors">Clear</button>
                     </div>
-                    <div id="console" class="terminal-bg p-6 font-mono text-xs overflow-y-auto flex-grow scrollbar-hide text-slate-700 dark:text-slate-300 leading-relaxed">
+                    <div id="console"
+                        class="terminal-bg p-6 font-mono text-xs overflow-y-auto flex-grow scrollbar-hide text-slate-700 dark:text-slate-300 leading-relaxed">
                         <span class="text-indigo-500">system_kernel:</span> Waiting for benchmark signal...
                     </div>
                 </div>
@@ -272,15 +426,21 @@
 
                     <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
                         <div class="glass p-8 rounded-3xl">
-                            <h3 class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-6 text-center">Final Deadline Miss Ratio (%)</h3>
+                            <h3
+                                class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-6 text-center">
+                                Final Deadline Miss Ratio (%)</h3>
                             <div class="h-[300px]">
                                 <canvas id="dmrChart"></canvas>
                             </div>
                         </div>
                         <div id="trendCard" class="glass p-8 rounded-3xl relative transition-all duration-300">
                             <div class="flex justify-between items-center mb-6">
-                                <h3 class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-widest text-center flex-grow pl-8">DMR Trend over Time</h3>
-                                <button onclick="toggleTrendZoom()" class="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all" title="Toggle Zoom">
+                                <h3
+                                    class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-widest text-center flex-grow pl-8">
+                                    DMR Trend over Time</h3>
+                                <button onclick="toggleTrendZoom()"
+                                    class="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all"
+                                    title="Toggle Zoom">
                                     <i id="zoomIcon" data-lucide="maximize-2" class="w-4 h-4"></i>
                                 </button>
                             </div>
@@ -292,28 +452,36 @@
 
                     <!-- Task Inspector Section -->
                     <div class="glass p-8 rounded-3xl mt-8">
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-slate-200 dark:border-white/5 pb-4">
+                        <div
+                            class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-slate-200 dark:border-white/5 pb-4">
                             <div>
-                                <h3 class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                <h3
+                                    class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                     <i data-lucide="binary" class="w-4 h-4 text-indigo-500"></i>
                                     Task Execution & Parameter Explorer
                                 </h3>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Deep-dive into specific task parameters, control loop feedback, and real-time execution values.</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Deep-dive into specific task
+                                    parameters, control loop feedback, and real-time execution values.</p>
                             </div>
                             <div class="flex flex-wrap gap-3 items-center">
                                 <!-- View Mode Tabs -->
-                                <div class="flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 border border-slate-300 dark:border-slate-700" id="inspectViewModeContainer">
-                                    <button onclick="setInspectMode('metrics')" id="modeBtnMetrics" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm transition-all">Metrics</button>
-                                    <button onclick="setInspectMode('params')" id="modeBtnParams" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-all">Parameters</button>
+                                <div class="flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 border border-slate-300 dark:border-slate-700"
+                                    id="inspectViewModeContainer">
+                                    <button onclick="setInspectMode('metrics')" id="modeBtnMetrics"
+                                        class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm transition-all">Metrics</button>
+                                    <button onclick="setInspectMode('params')" id="modeBtnParams"
+                                        class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-all">Parameters</button>
                                 </div>
                                 <!-- Scheduler Selector -->
-                                <select id="inspectSched" onchange="updateInspectView()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold focus:outline-none border border-slate-300 dark:border-slate-700">
+                                <select id="inspectSched" onchange="updateInspectView()"
+                                    class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold focus:outline-none border border-slate-300 dark:border-slate-700">
                                     <option value="NativeSch_test">Native RMS</option>
                                     <option value="EDFSch_test">Earliest Deadline First</option>
                                     <option value="ContextAwareSch_test">Context-Aware</option>
                                 </select>
                                 <!-- Task Selector -->
-                                <select id="inspectTask" onchange="updateInspectView()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold focus:outline-none border border-slate-300 dark:border-slate-700">
+                                <select id="inspectTask" onchange="updateInspectView()"
+                                    class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold focus:outline-none border border-slate-300 dark:border-slate-700">
                                     <option value="Motor">Motor Control (SP / MV / OUT)</option>
                                     <option value="Sensor">Sensor Acquisition (RAW / FILTERED)</option>
                                     <option value="Crypto">Crypto Encryption (Jobs / Misses)</option>
@@ -325,33 +493,40 @@
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             <!-- Left: Explorer Chart (2/3 width on large screens) -->
                             <div class="lg:col-span-2 flex flex-col h-[350px] relative">
-                                <div id="starvationAlert" class="hidden absolute top-2 left-2 right-2 z-10 px-4 py-2.5 rounded-xl border border-rose-500/20 bg-rose-500/10 backdrop-blur-md text-rose-500 text-xs font-semibold flex items-center gap-2">
+                                <div id="starvationAlert"
+                                    class="hidden absolute top-2 left-2 right-2 z-10 px-4 py-2.5 rounded-xl border border-rose-500/20 bg-rose-500/10 backdrop-blur-md text-rose-500 text-xs font-semibold flex items-center gap-2">
                                     <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-500 shrink-0"></i>
-                                    <span>⚠️ Priority Starvation Detected: This task was completely starved under the NATIVE RMS scheduling policy due to memory contention/bus load.</span>
+                                    <span>⚠️ Priority Starvation Detected: This task was completely starved under the
+                                        NATIVE RMS scheduling policy due to memory contention/bus load.</span>
                                 </div>
                                 <div class="flex-grow min-h-[290px] relative">
                                     <canvas id="inspectChart"></canvas>
                                 </div>
                                 <div id="inspectLegendToggles" class="flex flex-wrap justify-center gap-3 mt-3"></div>
                             </div>
-                            
+
                             <!-- Right: Stat Details and Table List -->
                             <div class="flex flex-col h-[350px]">
-                                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-3 flex items-center gap-1.5">
+                                <h4
+                                    class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-3 flex items-center gap-1.5">
                                     <i data-lucide="history" class="w-3.5 h-3.5 text-indigo-500"></i>
                                     Execution History
                                 </h4>
-                                <div class="overflow-y-auto flex-grow rounded-2xl bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800/80 p-4 scrollbar-hide text-xs">
+                                <div
+                                    class="overflow-y-auto flex-grow rounded-2xl bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800/80 p-4 scrollbar-hide text-xs">
                                     <table class="w-full text-left border-collapse">
                                         <thead>
-                                            <tr class="text-slate-500 border-b border-slate-200 dark:border-slate-800 pb-2">
+                                            <tr
+                                                class="text-slate-500 border-b border-slate-200 dark:border-slate-800 pb-2">
                                                 <th class="pb-2 font-semibold">Time</th>
                                                 <th class="pb-2 font-semibold">Jobs</th>
                                                 <th class="pb-2 font-semibold">DMR</th>
-                                                <th class="pb-2 font-semibold text-right" id="inspectTableParamHeader">Params</th>
+                                                <th class="pb-2 font-semibold text-right" id="inspectTableParamHeader">
+                                                    Params</th>
                                             </tr>
                                         </thead>
-                                        <tbody id="inspectTableBody" class="divide-y divide-slate-200/50 dark:divide-slate-800/50">
+                                        <tbody id="inspectTableBody"
+                                            class="divide-y divide-slate-200/50 dark:divide-slate-800/50">
                                             <!-- Dynamic Rows -->
                                         </tbody>
                                     </table>
@@ -366,7 +541,7 @@
 
     <script>
         lucide.createIcons();
-        
+
         const params = [
             'TASK1_PRIORITY', 'TASK2_PRIORITY', 'TASK3_PRIORITY', 'TASK4_PRIORITY',
             'TASK1_PERIOD_MS', 'TASK2_PERIOD_MS', 'TASK3_PERIOD_MS', 'TASK4_PERIOD_MS',
@@ -390,7 +565,7 @@
 
         // Update slider values real-time
         ['ALPHA', 'SAFETY_MARGIN_MS', 'MEMORY_INTENSITY_THRESHOLD'].forEach(p => {
-            document.getElementById(p).oninput = function() {
+            document.getElementById(p).oninput = function () {
                 document.getElementById(p + '_val').innerText = this.value;
             };
         });
@@ -405,14 +580,14 @@
                     body[p] = parseFloat(el.value);
                 }
             });
-            
+
             try {
                 const res = await fetch('/api/params', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(body)
                 });
-                
+
                 if (res.ok) {
                     log('System configuration updated successfully.', 'emerald-400');
                     const btn = document.querySelector('button[onclick="saveParams()"]');
@@ -439,17 +614,17 @@
             if (lineText.startsWith("Task")) {
                 return `<span class="text-sky-600 dark:text-sky-400 font-medium">${lineText}</span>`;
             }
-            
+
             let html = lineText;
-            
+
             // 1. Highlight timestamps [TS: XXX ms]
             html = html.replace(/\[TS:\s*(\d+)\s*ms\]/g, (match, ts) => {
                 return `<span class="text-amber-600 dark:text-amber-400 font-semibold">[TS: ${ts} ms]</span>`;
             });
-            
+
             // 2. Highlight [Metrics] tag
             html = html.replace(/\[Metrics\]/g, '<span class="text-indigo-600 dark:text-indigo-400 font-bold">[Metrics]</span>');
-            
+
             // 3. Highlight Task Names and Task IDs
             // All tasks share a unified premium sky blue color for a cleaner look
             const taskStyles = {
@@ -462,12 +637,12 @@
                 'Task4_VisionProcessing': 'text-sky-600 dark:text-sky-400 font-bold',
                 'Task 3': 'text-sky-600 dark:text-sky-400 font-bold'
             };
-            
+
             for (const [taskName, className] of Object.entries(taskStyles)) {
                 const regex = new RegExp(`\\b${taskName}\\b`, 'g');
                 html = html.replace(regex, `<span class="${className}">${taskName}</span>`);
             }
-            
+
             // 4. Highlight field labels (e.g. "SP:", "MV:", "OUT:", "RAW:", "FILTERED:", "Prio:", "Jobs:", "Misses:", "DMR:")
             const labels = ["SP:", "MV:", "OUT:", "RAW:", "FILTERED:", "Prio:", "Jobs:", "Misses:", "DMR:"];
             labels.forEach(label => {
@@ -481,7 +656,7 @@
                 const colorClass = percentage > 0 ? 'text-rose-500 font-bold' : 'text-emerald-500 dark:text-emerald-400 font-bold';
                 return `${prefix}<span class="${colorClass}">${val}%</span>`;
             });
-            
+
             // Highlight Misses values (>0 -> Red)
             html = html.replace(/(Misses:<\/span>\s*)(\d+)/g, (match, prefix, val) => {
                 const missCount = parseInt(val);
@@ -495,10 +670,10 @@
         function log(msg, color = 'slate-300') {
             const consoleEl = document.getElementById('console');
             const line = document.createElement('div');
-            
+
             let renderedContent = msg;
             let colorClass = '';
-            
+
             if (color === 'slate-300') {
                 renderedContent = highlightLogLine(msg);
                 colorClass = 'text-slate-700 dark:text-slate-300';
@@ -511,7 +686,7 @@
                 };
                 colorClass = colorMap[color] || `text-${color}`;
             }
-            
+
             line.className = `min-h-[1rem] mb-1 ${colorClass}`;
             line.innerHTML = renderedContent.trim() === "" ? "&nbsp;" : renderedContent;
             consoleEl.appendChild(line);
@@ -521,18 +696,28 @@
         async function runTests() {
             const btn = document.getElementById('runBtn');
             const stopBtn = document.getElementById('stopBtn');
+            const saveBtn = document.getElementById('saveBtn');
+
             btn.disabled = true;
             btn.classList.add('opacity-50', 'cursor-not-allowed');
+            if (saveBtn) {
+                saveBtn.disabled = true;
+                saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
             stopBtn.classList.remove('hidden');
-            
+
             log('Initiating test sequence...', 'indigo-400');
             const eventSource = new EventSource('/api/run');
-            
-            eventSource.onmessage = function(event) {
+
+            eventSource.onmessage = function (event) {
                 if (event.data.includes('--- COMPLETED ---')) {
                     eventSource.close();
                     btn.disabled = false;
                     btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    if (saveBtn) {
+                        saveBtn.disabled = false;
+                        saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    }
                     stopBtn.classList.add('hidden');
                     log('Benchmark suite completed.', 'emerald-400');
                     updateCharts();
@@ -541,10 +726,14 @@
                 }
             };
 
-            eventSource.onerror = function() {
+            eventSource.onerror = function () {
                 eventSource.close();
                 btn.disabled = false;
                 btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
                 stopBtn.classList.add('hidden');
                 // SSE errors often happen on disconnect, so we don't always log as error
             };
@@ -566,6 +755,13 @@
             const data = await res.json();
             if (data.status) return;
 
+            renderChartsWithData(data);
+
+            // Scroll to analytics
+            document.getElementById('analytics').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function renderChartsWithData(data) {
             // Normalize data.data keys to strip duration suffixes (e.g. "EDFSch_test_10s" -> "EDFSch_test")
             const normalizedData = {};
             for (let k in data.data) {
@@ -575,8 +771,8 @@
             data.data = normalizedData;
 
             document.getElementById('analytics').classList.remove('hidden');
-            
-                        const isDark = document.documentElement.classList.contains('dark');
+
+            const isDark = document.documentElement.classList.contains('dark');
             const textColor = isDark ? '#94a3b8' : '#475569';
             const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
             const schedulers = Object.keys(data.data);
@@ -587,7 +783,7 @@
             };
 
             const tasks = ["Motor", "Sensor", "Crypto", "Vision"];
-            
+
             // 1. Prepare Bar Chart Data (Final DMR)
             const barDatasets = schedulers.map((sched) => {
                 const taskData = tasks.map(t => {
@@ -613,7 +809,7 @@
                         intersect: false,
                         mode: 'index',
                     },
-                    plugins: { 
+                    plugins: {
                         legend: { labels: { color: textColor, font: { family: 'Inter', size: 11 } } },
                         tooltip: {
                             backgroundColor: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
@@ -643,10 +839,10 @@
                     if (!tsMap[roundedTS]) tsMap[roundedTS] = [];
                     tsMap[roundedTS].push(m.dmr);
                 });
-                
-                const sortedTS = Object.keys(tsMap).sort((a,b) => parseInt(a) - parseInt(b));
+
+                const sortedTS = Object.keys(tsMap).sort((a, b) => parseInt(a) - parseInt(b));
                 const avgData = sortedTS.map(ts => {
-                    const sum = tsMap[ts].reduce((a,b) => a+b, 0);
+                    const sum = tsMap[ts].reduce((a, b) => a + b, 0);
                     return { x: parseInt(ts) / 1000, y: sum / tsMap[ts].length };
                 });
 
@@ -679,7 +875,7 @@
                         x: { type: 'linear', title: { display: true, text: 'Time (s)', color: textColor }, grid: { color: gridColor }, ticks: { color: textColor } },
                         y: { beginAtZero: true, title: { display: true, text: 'Avg DMR (%)', color: textColor }, grid: { color: gridColor }, ticks: { color: textColor } }
                     },
-                    plugins: { 
+                    plugins: {
                         legend: { labels: { color: textColor, font: { family: 'Inter' } } },
                         tooltip: {
                             backgroundColor: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
@@ -697,9 +893,6 @@
             });
             window.lastResultsData = data;
             updateInspectView();
-
-            // Scroll to analytics
-            document.getElementById('analytics').scrollIntoView({ behavior: 'smooth' });
         }
 
         let inspectChart = null;
@@ -707,10 +900,10 @@
 
         function setInspectMode(mode) {
             inspectMode = mode;
-            
+
             const btnMetrics = document.getElementById('modeBtnMetrics');
             const btnParams = document.getElementById('modeBtnParams');
-            
+
             if (mode === 'metrics') {
                 btnMetrics.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm transition-all";
                 btnParams.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-all";
@@ -718,30 +911,30 @@
                 btnParams.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm transition-all";
                 btnMetrics.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-all";
             }
-            
+
             updateInspectView();
         }
 
         function updateInspectView() {
             const data = window.lastResultsData;
             if (!data) return;
-            
+
             const selectedSched = document.getElementById('inspectSched').value;
             const selectedTask = document.getElementById('inspectTask').value;
-            
+
             const isDark = document.documentElement.classList.contains('dark');
             const textColor = isDark ? '#94a3b8' : '#475569';
             const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
-            
+
             // Get all metrics for this scheduler and task
             const schedMetrics = data.data[selectedSched] || [];
-            let taskMetrics = schedMetrics.filter(m => m.task === selectedTask).sort((a,b) => a.ts - b.ts);
-            
+            let taskMetrics = schedMetrics.filter(m => m.task === selectedTask).sort((a, b) => a.ts - b.ts);
+
             // Detect priority starvation (if no metric points are captured)
             const alertEl = document.getElementById('starvationAlert');
             if (taskMetrics.length === 0 && schedMetrics.length > 0) {
                 alertEl.classList.remove('hidden');
-                
+
                 // Construct simulated flat zero timeline so the chart axis matches the overall run duration
                 let maxTS = 10000;
                 if (schedMetrics.length > 0) {
@@ -764,7 +957,7 @@
             } else {
                 alertEl.classList.add('hidden');
             }
-            
+
             // Hide or show parameters tab based on task type
             const tabContainer = document.getElementById('inspectViewModeContainer');
             let activeMode = inspectMode;
@@ -774,12 +967,12 @@
             } else {
                 tabContainer.classList.remove('hidden');
             }
-            
+
             // 1. Populate Table
             const tbody = document.getElementById('inspectTableBody');
             const paramHeader = document.getElementById('inspectTableParamHeader');
             tbody.innerHTML = '';
-            
+
             // Set header label dynamically
             if (selectedTask === 'Motor') {
                 paramHeader.innerText = 'MV / OUT';
@@ -788,11 +981,11 @@
             } else {
                 paramHeader.innerText = 'Misses';
             }
-            
+
             taskMetrics.forEach(m => {
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-slate-200/30 dark:hover:bg-slate-800/30 transition-colors';
-                
+
                 let paramCol = '';
                 if (selectedTask === 'Motor') {
                     paramCol = `<span class="text-sky-500 font-medium">${m.mv !== undefined ? m.mv.toFixed(1) : '0'}</span> / <span class="text-indigo-500 font-medium">${m.out !== undefined ? m.out.toFixed(1) : '0'}</span>`;
@@ -801,7 +994,7 @@
                 } else {
                     paramCol = `<span class="text-rose-500 font-semibold">${m.misses || '0'}</span>`;
                 }
-                
+
                 tr.innerHTML = `
                     <td class="py-2.5 font-medium text-slate-500 dark:text-slate-400">${(m.ts / 1000).toFixed(1)}s</td>
                     <td class="py-2.5 font-bold text-slate-700 dark:text-slate-300">${m.jobs}</td>
@@ -810,12 +1003,12 @@
                 `;
                 tbody.appendChild(tr);
             });
-            
+
             // 2. Build Chart Datasets
             const tsLabels = taskMetrics.map(m => m.ts / 1000);
             let datasets = [];
             let yTitle = 'Values';
-            
+
             if (activeMode === 'metrics') {
                 yTitle = 'Scheduling Metrics';
                 datasets = [
@@ -905,7 +1098,7 @@
                     ];
                 }
             }
-            
+
             if (inspectChart) inspectChart.destroy();
             inspectChart = new Chart(document.getElementById('inspectChart'), {
                 type: 'line',
@@ -941,37 +1134,37 @@
             // Rebuild Dynamic Legend Toggles
             const legendContainer = document.getElementById('inspectLegendToggles');
             legendContainer.innerHTML = '';
-            
+
             datasets.forEach((dataset, index) => {
                 const button = document.createElement('button');
-                
+
                 // Color configuration matching the theme and dataset
                 const activeColor = dataset.borderColor;
                 const activeBG = activeColor + '15'; // ~8% opacity background
-                
+
                 button.className = `flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold border transition-all duration-200 shadow-sm`;
                 button.style.borderColor = activeColor;
                 button.style.color = activeColor;
                 button.style.backgroundColor = activeBG;
-                
+
                 // Active indicator dot
                 const indicator = document.createElement('span');
                 indicator.className = 'w-2 h-2 rounded-full transition-transform duration-200';
                 indicator.style.backgroundColor = activeColor;
                 button.appendChild(indicator);
-                
+
                 // Label text
                 const text = document.createElement('span');
                 text.innerText = dataset.label;
                 button.appendChild(text);
-                
+
                 let visible = true;
-                
+
                 button.onclick = () => {
                     visible = !visible;
                     inspectChart.setDatasetVisibility(index, visible);
                     inspectChart.update(); // Rescales Y-axis automatically!
-                    
+
                     if (visible) {
                         button.style.backgroundColor = activeBG;
                         button.style.opacity = '1';
@@ -984,7 +1177,7 @@
                         button.style.borderStyle = 'dashed';
                     }
                 };
-                
+
                 legendContainer.appendChild(button);
             });
         }
@@ -1003,9 +1196,9 @@
             const container = document.getElementById('trendChartContainer');
             const backdrop = document.getElementById('modalBackdrop');
             const icon = document.getElementById('zoomIcon');
-            
+
             const isMaximized = card.classList.contains('card-maximized');
-            
+
             if (isMaximized) {
                 card.classList.remove('card-maximized');
                 container.classList.remove('h-[calc(100%-4rem)]');
@@ -1019,10 +1212,10 @@
                 backdrop.classList.remove('hidden');
                 icon.setAttribute('data-lucide', 'minimize-2');
             }
-            
+
             // Re-render lucide icons
             lucide.createIcons();
-            
+
             // Resize Chart.js to fit the new container size
             setTimeout(() => {
                 if (trendChart) {
@@ -1031,7 +1224,136 @@
                 }
             }, 300); // Wait for transition to finish
         }
-        
+
+        async function handleLogUpload(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+
+            log(`Importing ${files.length} offline log files...`, 'indigo-400');
+
+            const results = {};
+
+            const motorPattern = /Task1_MotorControl!\s+SP:\s*([\d\.-]+),\s*MV:\s*([\d\.-]+)\s*\(x1000\),\s*OUT:\s*([\d\.-]+)/;
+            const sensorPattern = /Task2_SensorAcquisition!\s+RAW:\s*([\d\.-]+),\s*FILTERED:\s*([\d\.-]+)/;
+            const metricsPattern = /\[TS:\s*(\d+)\s*ms\]\s*\[Metrics\]\s*Task\s*(\d)\s*-\s*Prio:\s*\d+\s*\|\s*Jobs:\s*(\d+)\s*\|\s*Misses:\s*(\d+)\s*\|\s*DMR:\s*(\d+)%/;
+
+            const readFileAsText = (file) => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve({ name: file.name, text: e.target.result });
+                    reader.readAsText(file);
+                });
+            };
+
+            try {
+                const fileContents = await Promise.all(Array.from(files).map(readFileAsText));
+
+                fileContents.forEach(({ name, text }) => {
+                    const lines = text.split(/\r?\n/);
+                    let schedName = "";
+
+                    if (lines.length > 0 && lines[0].includes("for scheduler")) {
+                        const match = lines[0].match(/for scheduler\s+([A-Z_]+)/);
+                        if (match) {
+                            const rawName = match[1];
+                            if (rawName === "NATIVE") schedName = "NativeSch_test";
+                            else if (rawName === "EDF") schedName = "EDFSch_test";
+                            else if (rawName === "CONTEXT_AWARE") schedName = "ContextAwareSch_test";
+                        }
+                    }
+
+                    if (!schedName) {
+                        const lowerName = name.toLowerCase();
+                        if (lowerName.includes("native")) schedName = "NativeSch_test";
+                        else if (lowerName.includes("edf")) schedName = "EDFSch_test";
+                        else if (lowerName.includes("context")) schedName = "ContextAwareSch_test";
+                    }
+
+                    if (!schedName) {
+                        log(`Warning: Could not identify scheduler for log file ${name}. Skipping.`, 'amber-400');
+                        return;
+                    }
+
+                    const taskMap = { 0: "Motor", 1: "Sensor", 2: "Crypto", 3: "Vision" };
+                    const metrics = [];
+
+                    let latestMotor = { sp: 100.0, mv: 0.0, out: 0.0 };
+                    let latestSensor = { raw: 0.0, filtered: 0.0 };
+
+                    lines.forEach(line => {
+                        const motorMatch = line.match(motorPattern);
+                        if (motorMatch) {
+                            latestMotor.sp = parseFloat(motorMatch[1]);
+                            latestMotor.mv = parseFloat(motorMatch[2]) / 1000.0;
+                            latestMotor.out = parseFloat(motorMatch[3]) / 1000.0;
+                            return;
+                        }
+
+                        const sensorMatch = line.match(sensorPattern);
+                        if (sensorMatch) {
+                            latestSensor.raw = parseFloat(sensorMatch[1]);
+                            latestSensor.filtered = parseFloat(sensorMatch[2]);
+                            return;
+                        }
+
+                        const metricsMatch = line.match(metricsPattern);
+                        if (metricsMatch) {
+                            const ts = parseInt(metricsMatch[1]);
+                            const taskID = parseInt(metricsMatch[2]);
+                            const jobs = parseInt(metricsMatch[3]);
+                            const misses = parseInt(metricsMatch[4]);
+                            const dmr = parseInt(metricsMatch[5]);
+
+                            const pt = {
+                                ts: ts,
+                                task: taskMap[taskID] || `Task${taskID}`,
+                                jobs: jobs,
+                                misses: misses,
+                                dmr: dmr
+                            };
+
+                            if (taskID === 0) {
+                                pt.sp = latestMotor.sp;
+                                pt.mv = latestMotor.mv;
+                                pt.out = latestMotor.out;
+                            } else if (taskID === 1) {
+                                pt.raw = latestSensor.raw;
+                                pt.filtered = latestSensor.filtered;
+                            }
+
+                            metrics.push(pt);
+                        }
+                    });
+
+                    results[schedName] = metrics;
+                    log(`Successfully parsed ${metrics.length} metrics from ${name} (${schedName})`, 'emerald-400');
+                });
+
+                if (Object.keys(results).length === 0) {
+                    log("Error: No valid scheduler data could be parsed from the uploaded files.", "red-400");
+                    return;
+                }
+
+                // Reveal offline notification banner
+                document.getElementById('offlineBanner').classList.remove('hidden');
+
+                // Plot data
+                const offlineData = { timestamp: "Offline Dataset", data: results };
+                renderChartsWithData(offlineData);
+
+                log("Offline log plotting compiled successfully!", "emerald-400");
+            } catch (err) {
+                log(`Error reading offline logs: ${err.message}`, "red-400");
+            }
+        }
+
+        function resetToLiveServer() {
+            document.getElementById('offlineBanner').classList.add('hidden');
+            document.getElementById('offlineLogUpload').value = '';
+            updateCharts();
+            log("Switched back to live COM port metrics.", "emerald-400");
+        }
+
         // Initialize Theme
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -1039,11 +1361,12 @@
             document.documentElement.classList.remove('dark');
         }
 
-        window.onload = function() {
+        window.onload = function () {
             loadParams();
             lucide.createIcons();
             updateCharts();
         };
     </script>
 </body>
+
 </html>

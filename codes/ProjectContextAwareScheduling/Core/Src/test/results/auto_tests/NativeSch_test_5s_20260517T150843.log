@@ -1,0 +1,36 @@
+--- Log started at Sun May 17 15:08:47 2026 for scheduler NATIVE ---
+
+--- System Configuration ---
+T1 (Motor):  Prio: 4, Period: 10 ms, MemIntensity: 0.10
+T2 (Sensor): Prio: 2, Period: 50 ms, MemIntensity: 0.20
+T3 (Crypto): Prio: 1, Period: 500 ms, MemIntensity: 0.90
+T4 (Vision): Prio: 3, Period: 20 ms, MemIntensity: 0.80
+Alpha: 1.00, Safety Margin: 2 ms, Threshold: 0.15
+---------------------------
+Tasks created successfully. Activating [Native RMS Scheduler]...
+
+Task1_MotorControl! SP: 100, MV: -500 (x1000), OUT: 613050 (x1000)
+Task4_VisionProcessing!
+Task2_SensorAcquisition! RAW: 1036, FILTERED: 259
+Task3_CryptoEncryption!
+
+Task1_MotorControl! SP: 100, MV: 103025 (x1000), OUT: 66442 (x1000)
+[TS: 1007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 100 | Misses: 0 | DMR: 0%
+Task4_VisionProcessing!
+[TS: 1627 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 50 | Misses: 38 | DMR: 76%
+
+Task1_MotorControl! SP: 100, MV: 102061 (x1000), OUT: 116 (x1000)
+[TS: 2007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 200 | Misses: 1 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 100636 (x1000), OUT: 9371 (x1000)
+[TS: 3007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 300 | Misses: 2 | DMR: 0%
+Task4_VisionProcessing!
+[TS: 3446 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 100 | Misses: 88 | DMR: 88%
+
+Task1_MotorControl! SP: 100, MV: 99712 (x1000), OUT: 13951 (x1000)
+[TS: 4007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 400 | Misses: 3 | DMR: 0%
+
+Task1_MotorControl! SP: 100, MV: 98940 (x1000), OUT: 13279 (x1000)
+[TS: 5007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 500 | Misses: 4 | DMR: 0%
+Task4_VisionProcessing!
+[TS: 5266 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 150 | Misses: 138 | DMR: 92%
