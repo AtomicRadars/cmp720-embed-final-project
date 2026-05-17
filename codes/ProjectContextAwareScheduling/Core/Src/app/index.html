@@ -179,7 +179,7 @@
                     <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
                     <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
                 </button>
-                <button onclick="document.getElementById('offlineLogUpload').click()"
+                <button id="uploadLogsBtn" onclick="document.getElementById('offlineLogUpload').click()"
                     class="flex items-center gap-2 px-5 py-2.5 glass rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 transition-all font-medium text-slate-700 dark:text-slate-300"
                     title="Upload Offline Log Files">
                     <i data-lucide="upload-cloud" class="w-4 h-4 text-amber-500"></i> Upload Logs
@@ -504,10 +504,13 @@
                             <h2 class="text-xl font-bold text-slate-900 dark:text-white">Performance Analytics</h2>
                         </div>
                         <!-- Benchmark Source Indicator Badge -->
-                        <div id="analyticsSourceBadge" class="flex items-center gap-2 px-3 py-1 rounded-full border bg-amber-500/5 dark:bg-amber-500/10 border-amber-500/20 text-xs font-semibold select-none transition-all duration-300">
-                            <span id="analyticsSourceDot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                            <span id="analyticsSourceText" class="text-slate-600 dark:text-slate-300">Displaying: Previous Benchmark</span>
-                        </div>
+                                <div id="analyticsSourceBadge" class="flex items-center gap-2 px-3 py-1 rounded-full border bg-amber-500/5 dark:bg-amber-500/10 border-amber-500/20 text-xs font-semibold select-none transition-all duration-300">
+                                    <span id="analyticsSourceDot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                                    <div class="flex flex-col">
+                                        <span id="analyticsSourceText" class="text-slate-600 dark:text-slate-300">Displaying: Previous Benchmark</span>
+                                        <span id="analyticsTimestamp" class="text-[10px] text-slate-500 dark:text-slate-400">Timestamp: --</span>
+                                    </div>
+                                </div>
                     </div>
 
                     <!-- Incomplete Benchmarks Warning Banner -->
@@ -533,7 +536,8 @@
                                 <div class="flex items-center gap-2">
                                     <i data-lucide="sliders-horizontal" class="w-4.5 h-4.5 text-indigo-500"></i>
                                     <span class="text-xs font-bold uppercase tracking-wider">Offline Run Parameters & Task Configuration</span>
-                                    <span id="offlineDurationBadge" class="font-mono font-semibold text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full ml-3 hidden"></span>
+                                    <span id="offlineDurationBadge" class="font-mono font-semibold text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full ml-3 hidden whitespace-nowrap"></span>
+                                    <span id="offlineFilesTimeBadge" class="font-mono text-[10px] text-slate-600 dark:text-slate-400 bg-white/5 border border-slate-200 dark:border-slate-800 px-2 py-0.5 rounded-full ml-3 hidden whitespace-nowrap max-w-[170px] overflow-hidden text-ellipsis"></span>
                                 </div>
                                 <div class="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-[10px] font-semibold tracking-wider uppercase">
                                     <span id="offlineParamsCollapseText">Click to expand</span>
@@ -989,6 +993,8 @@
             const saveBtn = document.getElementById('saveBtn');
             const btnConsole = document.getElementById('runBtnConsole');
             const stopBtnConsole = document.getElementById('stopBtnConsole');
+            const uploadBtn = document.getElementById('uploadLogsBtn');
+            const offlineInput = document.getElementById('offlineLogUpload');
 
             btn.disabled = true;
             btn.classList.add('opacity-50', 'cursor-not-allowed');
@@ -999,6 +1005,13 @@
             if (saveBtn) {
                 saveBtn.disabled = true;
                 saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+            if (uploadBtn) {
+                uploadBtn.disabled = true;
+                uploadBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+            if (offlineInput) {
+                offlineInput.disabled = true;
             }
             stopBtn.classList.remove('hidden');
             if (stopBtnConsole) {
@@ -1022,6 +1035,13 @@
                     if (saveBtn) {
                         saveBtn.disabled = false;
                         saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    }
+                    if (uploadBtn) {
+                        uploadBtn.disabled = false;
+                        uploadBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    }
+                    if (offlineInput) {
+                        offlineInput.disabled = false;
                     }
                     stopBtn.classList.add('hidden');
                     if (stopBtnConsole) {
@@ -1062,6 +1082,13 @@
                 if (saveBtn) {
                     saveBtn.disabled = false;
                     saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+                if (uploadBtn) {
+                    uploadBtn.disabled = false;
+                    uploadBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+                if (offlineInput) {
+                    offlineInput.disabled = false;
                 }
                 stopBtn.classList.add('hidden');
                 if (stopBtnConsole) {
@@ -1104,6 +1131,7 @@
             const sourceBadge = document.getElementById('analyticsSourceBadge');
             const sourceDot = document.getElementById('analyticsSourceDot');
             const sourceText = document.getElementById('analyticsSourceText');
+            const analyticsTimestampEl = document.getElementById('analyticsTimestamp');
             if (sourceBadge && sourceDot && sourceText) {
                 if (data.timestamp === "Offline Dataset") {
                     sourceBadge.className = "flex items-center gap-2 px-3 py-1 rounded-full border bg-indigo-500/5 dark:bg-indigo-500/10 border-indigo-500/20 text-xs font-semibold select-none transition-all duration-300";
@@ -1118,6 +1146,26 @@
                     sourceDot.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
                     sourceText.textContent = "Displaying: Previous Benchmark";
                 }
+            }
+
+            // Helper to format timestamps that may be backend filenames or raw date strings
+            function formatTimestamp(ts) {
+                if (!ts) return '--';
+                // Match YYYYMMDDTHHMMSS or YYYYMMDD_HHMMSS
+                const m = (''+ts).match(/(\d{4})(\d{2})(\d{2})T?(\d{2})(\d{2})(\d{2})/);
+                try {
+                    if (m) {
+                        const d = new Date(`${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}`);
+                        return d.toLocaleString();
+                    }
+                    const d2 = new Date(ts);
+                    if (!isNaN(d2)) return d2.toLocaleString();
+                } catch (e) {}
+                return ts;
+            }
+
+            if (analyticsTimestampEl) {
+                analyticsTimestampEl.textContent = `Timestamp: ${formatTimestamp(data.timestamp)}`;
             }
 
             // Normalize data.data keys to strip duration suffixes (e.g. "EDFSch_test_10s" -> "EDFSch_test")
@@ -1205,21 +1253,63 @@
             const caMotor = getLatestMetric(data.data["ContextAwareSch_test"], "Motor");
             const edfMotor = getLatestMetric(data.data["EDFSch_test"], "Motor");
             const nativeMotor = getLatestMetric(data.data["NativeSch_test"], "Motor");
+            // Helper fallbacks: average non-zero jitter, sum contention, average non-zero overhead
+            function avgNonZero(arr, key) {
+                const vals = arr.map(x => (x && x[key] !== undefined) ? Number(x[key]) : 0).filter(v => v && !isNaN(v));
+                if (!vals.length) return 0;
+                return vals.reduce((a,b) => a + b, 0) / vals.length;
+            }
+            function sumVals(arr, key) {
+                return arr.map(x => (x && x[key] !== undefined) ? Number(x[key]) : 0).reduce((a,b) => a + b, 0);
+            }
 
-            // Update Jitter T1 (Motor)
-            document.getElementById('jitterCA').innerText = caMotor && caMotor.jitter !== undefined ? caMotor.jitter.toFixed(2) + " ms" : "0.00 ms";
-            document.getElementById('jitterEDF').innerText = edfMotor && edfMotor.jitter !== undefined ? edfMotor.jitter.toFixed(2) + " ms" : "0.00 ms";
-            document.getElementById('jitterNative').innerText = nativeMotor && nativeMotor.jitter !== undefined ? nativeMotor.jitter.toFixed(2) + " ms" : "0.00 ms";
+            const caMotorSeries = (data.data["ContextAwareSch_test"] || []).filter(m => m.task === 'Motor');
+            const edfMotorSeries = (data.data["EDFSch_test"] || []).filter(m => m.task === 'Motor');
+            const nativeMotorSeries = (data.data["NativeSch_test"] || []).filter(m => m.task === 'Motor');
 
-            // Update Contention Penalty
-            document.getElementById('contentionCA').innerText = caMotor && caMotor.contention !== undefined ? caMotor.contention + " ms" : "0 ms";
-            document.getElementById('contentionEDF').innerText = edfMotor && edfMotor.contention !== undefined ? edfMotor.contention + " ms" : "0 ms";
-            document.getElementById('contentionNative').innerText = nativeMotor && nativeMotor.contention !== undefined ? nativeMotor.contention + " ms" : "0 ms";
+            if (hasRunNewBenchmark) {
+                // After running a new benchmark in this session: show latest if present, otherwise display N/A
+                const formatJitter = (val) => (val !== undefined && val !== null) ? Number(val).toFixed(2) + ' ms' : 'N/A';
+                const formatContention = (val) => (val !== undefined && val !== null) ? Number(val) + ' ms' : 'N/A';
+                const formatOverhead = (val) => (val !== undefined && val !== null) ? Math.round(Number(val)) + ' cyc' : 'N/A';
 
-            // Update Scheduler Overhead
-            document.getElementById('overheadCA').innerText = caMotor && caMotor.overhead !== undefined ? caMotor.overhead + " cyc" : "0 cyc";
-            document.getElementById('overheadEDF').innerText = edfMotor && edfMotor.overhead !== undefined ? edfMotor.overhead + " cyc" : "0 cyc";
-            document.getElementById('overheadNative').innerText = nativeMotor && nativeMotor.overhead !== undefined ? nativeMotor.overhead + " cyc" : "0 cyc";
+                document.getElementById('jitterCA').innerText = formatJitter(caMotor ? caMotor.jitter : undefined);
+                document.getElementById('jitterEDF').innerText = formatJitter(edfMotor ? edfMotor.jitter : undefined);
+                document.getElementById('jitterNative').innerText = formatJitter(nativeMotor ? nativeMotor.jitter : undefined);
+
+                document.getElementById('contentionCA').innerText = formatContention(caMotor ? caMotor.contention : undefined);
+                document.getElementById('contentionEDF').innerText = formatContention(edfMotor ? edfMotor.contention : undefined);
+                document.getElementById('contentionNative').innerText = formatContention(nativeMotor ? nativeMotor.contention : undefined);
+
+                document.getElementById('overheadCA').innerText = formatOverhead(caMotor ? caMotor.overhead : undefined);
+                document.getElementById('overheadEDF').innerText = formatOverhead(edfMotor ? edfMotor.overhead : undefined);
+                document.getElementById('overheadNative').innerText = formatOverhead(nativeMotor ? nativeMotor.overhead : undefined);
+            } else {
+                // Initial page load: show previous dataset values using fallbacks
+                const caJitterVal = (caMotor && caMotor.jitter !== undefined && caMotor.jitter !== 0) ? Number(caMotor.jitter) : avgNonZero(caMotorSeries, 'jitter');
+                const edfJitterVal = (edfMotor && edfMotor.jitter !== undefined && edfMotor.jitter !== 0) ? Number(edfMotor.jitter) : avgNonZero(edfMotorSeries, 'jitter');
+                const nativeJitterVal = (nativeMotor && nativeMotor.jitter !== undefined && nativeMotor.jitter !== 0) ? Number(nativeMotor.jitter) : avgNonZero(nativeMotorSeries, 'jitter');
+
+                document.getElementById('jitterCA').innerText = caJitterVal ? caJitterVal.toFixed(2) + " ms" : "0.00 ms";
+                document.getElementById('jitterEDF').innerText = edfJitterVal ? edfJitterVal.toFixed(2) + " ms" : "0.00 ms";
+                document.getElementById('jitterNative').innerText = nativeJitterVal ? nativeJitterVal.toFixed(2) + " ms" : "0.00 ms";
+
+                const caContentionVal = (caMotor && caMotor.contention !== undefined && caMotor.contention !== 0) ? Number(caMotor.contention) : sumVals(caMotorSeries, 'contention');
+                const edfContentionVal = (edfMotor && edfMotor.contention !== undefined && edfMotor.contention !== 0) ? Number(edfMotor.contention) : sumVals(edfMotorSeries, 'contention');
+                const nativeContentionVal = (nativeMotor && nativeMotor.contention !== undefined && nativeMotor.contention !== 0) ? Number(nativeMotor.contention) : sumVals(nativeMotorSeries, 'contention');
+
+                document.getElementById('contentionCA').innerText = caContentionVal ? caContentionVal + " ms" : "0 ms";
+                document.getElementById('contentionEDF').innerText = edfContentionVal ? edfContentionVal + " ms" : "0 ms";
+                document.getElementById('contentionNative').innerText = nativeContentionVal ? nativeContentionVal + " ms" : "0 ms";
+
+                const caOverVal = (caMotor && caMotor.overhead !== undefined && caMotor.overhead !== 0) ? Number(caMotor.overhead) : avgNonZero(caMotorSeries, 'overhead');
+                const edfOverVal = (edfMotor && edfMotor.overhead !== undefined && edfMotor.overhead !== 0) ? Number(edfMotor.overhead) : avgNonZero(edfMotorSeries, 'overhead');
+                const nativeOverVal = (nativeMotor && nativeMotor.overhead !== undefined && nativeMotor.overhead !== 0) ? Number(nativeMotor.overhead) : avgNonZero(nativeMotorSeries, 'overhead');
+
+                document.getElementById('overheadCA').innerText = caOverVal ? Math.round(caOverVal) + " cyc" : "0 cyc";
+                document.getElementById('overheadEDF').innerText = edfOverVal ? Math.round(edfOverVal) + " cyc" : "0 cyc";
+                document.getElementById('overheadNative').innerText = nativeOverVal ? Math.round(nativeOverVal) + " cyc" : "0 cyc";
+            }
             // ------------------------------------
             // 1. Prepare Bar Chart Data (Final DMR)
             const barDatasets = schedulers.map((sched) => {
@@ -1468,7 +1558,8 @@
                         backgroundColor: 'rgba(59,130,246,0.05)',
                         borderWidth: 2.5,
                         pointRadius: 2.5,
-                        fill: false
+                        fill: false,
+                        hidden: true
                     },
                     {
                         label: 'Deadline Misses',
@@ -1495,8 +1586,7 @@
                         backgroundColor: 'rgba(16,185,129,0.05)',
                         borderWidth: 2.5,
                         pointRadius: 2.5,
-                        fill: false,
-                        hidden: true // Hidden by default to avoid clutter
+                        fill: false
                     },
                     {
                         label: 'Contention Penalty (ms)',
@@ -1505,8 +1595,7 @@
                         backgroundColor: 'rgba(139,92,246,0.05)',
                         borderWidth: 2.5,
                         pointRadius: 2.5,
-                        fill: false,
-                        hidden: true
+                        fill: false
                     },
                     {
                         label: 'Decision Overhead (cyc)',
@@ -1636,7 +1725,23 @@
                 text.innerText = dataset.label;
                 button.appendChild(text);
 
-                let visible = true;
+                // Initialize visibility to reflect the dataset's hidden flag
+                let visible = !(dataset.hidden === true);
+                // Ensure chart dataset visibility matches the initial state
+                try { inspectChart.setDatasetVisibility(index, visible); } catch (e) { /* ignore if chart not yet ready */ }
+
+                // Apply initial button styles based on visibility
+                if (visible) {
+                    button.style.backgroundColor = activeBG;
+                    button.style.opacity = '1';
+                    indicator.style.transform = 'scale(1)';
+                    button.style.borderStyle = 'solid';
+                } else {
+                    button.style.backgroundColor = 'transparent';
+                    button.style.opacity = '0.4';
+                    indicator.style.transform = 'scale(0)';
+                    button.style.borderStyle = 'dashed';
+                }
 
                 button.onclick = () => {
                     visible = !visible;
@@ -1721,7 +1826,7 @@
 
             const motorPattern = /Task1_MotorControl!\s+SP:\s*([\d\.-]+),\s*MV:\s*([\d\.-]+)\s*\(x1000\),\s*OUT:\s*([\d\.-]+)/;
             const sensorPattern = /Task2_SensorAcquisition!\s+RAW:\s*([\d\.-]+),\s*FILTERED:\s*([\d\.-]+)/;
-            const metricsPattern = /\[TS:\s*(\d+)\s*ms\]\s*\[Metrics\]\s*Task\s*(\d)\s*-\s*Prio:\s*\d+\s*\|\s*Jobs:\s*(\d+)\s*\|\s*Misses:\s*(\d+)\s*\|\s*DMR:\s*(\d+)%/;
+            const metricsPattern = /\[TS:\s*(\d+)\s*ms\]\s*\[Metrics\]\s*Task\s*(\d)\s*-\s*Prio:\s*\d+\s*\|\s*Jobs:\s*(\d+)\s*\|\s*Misses:\s*(\d+)\s*\|\s*DMR:\s*(\d+)%(?:\s*\|\s*Jitter:\s*([\d\.]+)\s*ms\s*\|\s*Contention:\s*(\d+)\s*ms\s*\|\s*Overhead:\s*(\d+)\s*cycles)?/;
 
             const readFileAsText = (file) => {
                 return new Promise((resolve) => {
@@ -1790,6 +1895,9 @@
                             const jobs = parseInt(metricsMatch[3]);
                             const misses = parseInt(metricsMatch[4]);
                             const dmr = parseInt(metricsMatch[5]);
+                            const jitterVal = metricsMatch[6] !== undefined ? parseFloat(metricsMatch[6]) : undefined;
+                            const contentionVal = metricsMatch[7] !== undefined ? parseInt(metricsMatch[7]) : undefined;
+                            const overheadVal = metricsMatch[8] !== undefined ? parseInt(metricsMatch[8]) : undefined;
 
                             if (ts > maxTS) {
                                 maxTS = ts;
@@ -1800,7 +1908,10 @@
                                 task: taskMap[taskID] || `Task${taskID}`,
                                 jobs: jobs,
                                 misses: misses,
-                                dmr: dmr
+                                dmr: dmr,
+                                jitter: jitterVal !== undefined ? jitterVal : 0.0,
+                                contention: contentionVal !== undefined ? contentionVal : 0,
+                                overhead: overheadVal !== undefined ? overheadVal : 0
                             };
 
                             if (taskID === 0) {
@@ -1863,12 +1974,21 @@
                         }
                     });
 
+                    // Extract log start time if present (e.g. '--- Log started at Sun May 17 18:02:57 2026 for scheduler ...')
+                    let startTimeStr = null;
+                    for (let i = 0; i < lines.length; i++) {
+                        const l = lines[i];
+                        const m = l.match(/---\s*Log started at\s*(.+?)\s*for scheduler/i);
+                        if (m) { startTimeStr = m[1].trim(); break; }
+                    }
+
                     parsedFiles.push({
                         name,
                         schedName,
                         metrics,
                         duration,
-                        paramList
+                        paramList,
+                        startTime: startTimeStr
                     });
                 });
 
@@ -2050,6 +2170,26 @@
                 lucide.createIcons();
 
                 // Plot data
+                // Compute uploaded files time range and display badge
+                const offlineFilesBadge = document.getElementById('offlineFilesTimeBadge');
+                try {
+                    const starts = parsedFiles.map(pf => pf.startTime).filter(s => s);
+                    if (starts.length > 0) {
+                        const parsedDates = starts.map(s => new Date(s)).filter(d => !isNaN(d));
+                        if (parsedDates.length > 0) {
+                            const latestDate = parsedDates.reduce((max, current) => current > max ? current : max, parsedDates[0]);
+                            offlineFilesBadge.textContent = latestDate.toLocaleString();
+                            offlineFilesBadge.classList.remove('hidden');
+                        } else {
+                            offlineFilesBadge.classList.add('hidden');
+                        }
+                    } else {
+                        offlineFilesBadge.classList.add('hidden');
+                    }
+                } catch (e) {
+                    if (offlineFilesBadge) offlineFilesBadge.classList.add('hidden');
+                }
+
                 const offlineData = { timestamp: "Offline Dataset", data: results };
                 renderChartsWithData(offlineData);
 

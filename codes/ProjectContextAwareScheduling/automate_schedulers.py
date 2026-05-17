@@ -23,7 +23,7 @@ DURATION_SECONDS = 30  # Capture duration for each scheduler
 SCHEDULERS = ["NATIVE", "EDF", "CONTEXT_AWARE"]
 PROJECT_ROOT = Path(__file__).parent.absolute()
 LOG_DIR = PROJECT_ROOT / "Core" / "Src" / "test" / "results" / "auto_tests"
-ELF_PATH = PROJECT_ROOT / "build" / "Debug" / "ProjectContextAwareScheduling.elf"
+ELF_PATH = PROJECT_ROOT / "build" / "Release" / "ProjectContextAwareScheduling.elf"
 
 def parse_args():
     global COM_PORT, BAUD_RATE, DURATION_SECONDS
@@ -112,16 +112,16 @@ def main():
 
         try:
             # 1. Configure CMake
-            run_command(["cmake", "--preset", "Debug", f"-DACTIVE_SCHEDULER={sched}"], cwd=PROJECT_ROOT)
+            run_command(["cmake", "--preset", "Release", f"-DACTIVE_SCHEDULER={sched}"], cwd=PROJECT_ROOT)
 
             # 2. Build
-            run_command(["cmake", "--build", "--preset", "Debug"], cwd=PROJECT_ROOT)
+            run_command(["cmake", "--build", "--preset", "Release"], cwd=PROJECT_ROOT)
 
             # 4. Capture UART Metrics (Open port BEFORE flashing to capture first bytes)
             log_name = f"{sched_file_names.get(sched, sched.lower())}_{DURATION_SECONDS}s_{timestamp}.log"
             log_file_path = LOG_DIR / log_name
             print(f"Capturing UART metrics on {COM_PORT} for {DURATION_SECONDS} seconds...")
-            
+
             with serial.Serial(COM_PORT, BAUD_RATE, timeout=1) as ser:
                 # Clear any stale data from previous runs
                 ser.reset_input_buffer()
