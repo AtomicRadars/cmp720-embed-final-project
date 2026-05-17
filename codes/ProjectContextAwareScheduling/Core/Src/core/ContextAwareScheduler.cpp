@@ -1,46 +1,10 @@
 #include "core/ContextAwareScheduler.h"
+#include "test/SchedulerTest.h"
+#include "main.h"
 
 ContextAwareScheduler::ContextAwareScheduler(float alpha, float threshold, uint32_t safety_margin)
     : m_alpha(alpha), m_threshold(threshold), m_safety_margin(safety_margin)
 {
-}
-
-bool ContextAwareScheduler::IsTimeReached(const TickType_t current_time, const TickType_t wake_time) const noexcept
-{
-    return static_cast<int32_t>(current_time - wake_time) >= 0;
-}
-
-int32_t ContextAwareScheduler::TimeUntil(const TickType_t future_time, const TickType_t current_time) const noexcept
-{
-    return static_cast<int32_t>(future_time - current_time);
-}
-
-bool ContextAwareScheduler::IsTaskReadyForScheduling(const uint8_t task_id, const TickType_t current_time) const noexcept
-{
-    if (task_id >= TASK_COUNT)
-    {
-        return false;
-    }
-
-    if (!tasks[task_id].is_registered)
-    {
-        return false;
-    }
-
-    if (!IsTimeReached(current_time, tasks[task_id].next_wake_time))
-    {
-        return false;
-    }
-
-    // TODO If overhead is high we might remove this
-    const eTaskState state{eTaskGetState(tasks[task_id].handle)};
-
-    return (state == eReady) || (state == eRunning);
-}
-
-int32_t ContextAwareScheduler::CalculateSlack(const TickType_t current_time, const TickType_t deadline_time, const TickType_t remaining_time) const noexcept
-{
-    return TimeUntil(deadline_time, current_time) - static_cast<int32_t>(remaining_time);
 }
 
 void ContextAwareScheduler::ApplyHeuristicAndUpdatePriorities()
@@ -147,7 +111,12 @@ void ContextAwareScheduler::ApplyHeuristicAndUpdatePriorities()
     UBaseType_t current_priority = count; // Max priority
     for (uint8_t i = 0; i < count; ++i)
     {
-        vTaskPrioritySet(tasks[indices[i]].handle, current_priority--);
+        TaskHandle_t handle = tasks[indices[i]].handle;
+        UBaseType_t desired_priority = current_priority--;
+        if (uxTaskPriorityGet(handle) != desired_priority)
+        {
+            vTaskPrioritySet(handle, desired_priority);
+        }
     }
 }
 
@@ -166,6 +135,23 @@ void ContextAwareScheduler::DelayUntil(TickType_t *pxPreviousWakeTime, TickType_
             tasks[task_id].missed_deadlines++;
         }
 
+        // 1. Response-time Jitter using Welford's Algorithm
+        float response_time = static_cast<float>(current_time - *pxPreviousWakeTime);
+        m_jitter_count[task_id]++;
+        float delta = response_time - m_jitter_mean[task_id];
+        m_jitter_mean[task_id] += delta / m_jitter_count[task_id];
+        float delta2 = response_time - m_jitter_mean[task_id];
+        m_jitter_m2[task_id] += delta * delta2;
+
+        // 2. Cache Contention Penalty tracking
+        if (task_id == eCryptoEncryption || task_id == eVisionProcessing)
+        {
+            if (tasks[m_last_executed_task].memory_intensity > CONTENTION_THRESHOLD)
+            {
+                m_total_contention_penalty_ms += CONTENTION_PENALTY_MS;
+            }
+        }
+
         tasks[task_id].next_wake_time = absolute_deadline;
 
         vTaskSuspendAll(); // Disable context switches during priority calculation
@@ -174,7 +160,11 @@ void ContextAwareScheduler::DelayUntil(TickType_t *pxPreviousWakeTime, TickType_
         tasks[task_id].deadline = absolute_deadline + tasks[task_id].period;
         m_last_executed_task = task_id;
 
+        // 3. Scheduler Decision Overhead tracking via DWT
+        uint32_t start_cycles = DWT->CYCCNT;
         ApplyHeuristicAndUpdatePriorities();
+        m_total_overhead_cycles += (DWT->CYCCNT - start_cycles);
+        m_overhead_call_count++;
 
         xTaskResumeAll(); // Re-enable context switches (preemption may happen here)
     }

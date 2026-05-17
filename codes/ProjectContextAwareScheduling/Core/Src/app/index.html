@@ -65,6 +65,50 @@
             display: none;
         }
 
+        /* Custom scrollbar styling for the terminal console (WebKit + Firefox) */
+        .terminal-bg {
+            scrollbar-width: thin; /* Firefox */
+            scrollbar-color: rgba(99,102,241,0.4) rgba(0,0,0,0.04); /* thumb track for Firefox */
+        }
+
+        .terminal-bg::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        .terminal-bg::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.04);
+            border-radius: 999px;
+        }
+
+        .terminal-bg::-webkit-scrollbar-thumb {
+            background: rgba(99,102,241,0.4);
+            border-radius: 999px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+
+        .terminal-bg::-webkit-scrollbar-thumb:hover {
+            background: rgba(99,102,241,0.6);
+        }
+
+        /* Dark mode scrollbar overrides */
+        .dark .terminal-bg {
+            scrollbar-color: rgba(148,163,184,0.45) rgba(255,255,255,0.03);
+        }
+
+        .dark .terminal-bg::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.03);
+        }
+
+        .dark .terminal-bg::-webkit-scrollbar-thumb {
+            background: rgba(148,163,184,0.25);
+        }
+
+        .dark .terminal-bg::-webkit-scrollbar-thumb:hover {
+            background: rgba(148,163,184,0.45);
+        }
+
         input[type="range"] {
             accent-color: #6366f1;
         }
@@ -135,7 +179,7 @@
                     <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
                     <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
                 </button>
-                <button onclick="document.getElementById('offlineLogUpload').click()"
+                <button id="uploadLogsBtn" onclick="document.getElementById('offlineLogUpload').click()"
                     class="flex items-center gap-2 px-5 py-2.5 glass rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 transition-all font-medium text-slate-700 dark:text-slate-300"
                     title="Upload Offline Log Files">
                     <i data-lucide="upload-cloud" class="w-4 h-4 text-amber-500"></i> Upload Logs
@@ -434,13 +478,17 @@
                                 <i data-lucide="square" class="w-2.5 h-2.5"></i>
                                 Stop
                             </button>
+                            <button id="scrollLockBtn" onclick="toggleScrollLock()"
+                                class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-[9px] uppercase tracking-wider rounded-lg border border-slate-200 dark:border-slate-700 transition-all hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none">
+                                Scroll Lock: Off
+                            </button>
                             <span class="text-slate-300 dark:text-slate-700 text-xs">|</span>
                             <button onclick="document.getElementById('console').innerHTML = ''"
                                 class="text-[10px] uppercase tracking-widest text-slate-500 hover:text-slate-900 dark:text-white transition-colors">Clear</button>
                         </div>
                     </div>
                     <div id="console"
-                        class="terminal-bg p-6 font-mono text-xs overflow-y-auto flex-grow scrollbar-hide text-slate-700 dark:text-slate-300 leading-relaxed">
+                        class="terminal-bg p-6 font-mono text-xs overflow-y-auto flex-grow text-slate-700 dark:text-slate-300 leading-relaxed">
                         <span class="text-indigo-500">system_kernel:</span> Waiting for benchmark signal...
                     </div>
                 </div>
@@ -456,10 +504,13 @@
                             <h2 class="text-xl font-bold text-slate-900 dark:text-white">Performance Analytics</h2>
                         </div>
                         <!-- Benchmark Source Indicator Badge -->
-                        <div id="analyticsSourceBadge" class="flex items-center gap-2 px-3 py-1 rounded-full border bg-amber-500/5 dark:bg-amber-500/10 border-amber-500/20 text-xs font-semibold select-none transition-all duration-300">
-                            <span id="analyticsSourceDot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                            <span id="analyticsSourceText" class="text-slate-600 dark:text-slate-300">Displaying: Previous Benchmark</span>
-                        </div>
+                                <div id="analyticsSourceBadge" class="flex items-center gap-2 px-3 py-1 rounded-full border bg-amber-500/5 dark:bg-amber-500/10 border-amber-500/20 text-xs font-semibold select-none transition-all duration-300">
+                                    <span id="analyticsSourceDot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                                    <div class="flex flex-col">
+                                        <span id="analyticsSourceText" class="text-slate-600 dark:text-slate-300">Displaying: Previous Benchmark</span>
+                                        <span id="analyticsTimestamp" class="text-[10px] text-slate-500 dark:text-slate-400">Timestamp: --</span>
+                                    </div>
+                                </div>
                     </div>
 
                     <!-- Incomplete Benchmarks Warning Banner -->
@@ -485,7 +536,8 @@
                                 <div class="flex items-center gap-2">
                                     <i data-lucide="sliders-horizontal" class="w-4.5 h-4.5 text-indigo-500"></i>
                                     <span class="text-xs font-bold uppercase tracking-wider">Offline Run Parameters & Task Configuration</span>
-                                    <span id="offlineDurationBadge" class="font-mono font-semibold text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full ml-3 hidden"></span>
+                                    <span id="offlineDurationBadge" class="font-mono font-semibold text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full ml-3 hidden whitespace-nowrap"></span>
+                                    <span id="offlineFilesTimeBadge" class="font-mono text-[10px] text-slate-600 dark:text-slate-400 bg-white/5 border border-slate-200 dark:border-slate-800 px-2 py-0.5 rounded-full ml-3 hidden whitespace-nowrap max-w-[170px] overflow-hidden text-ellipsis"></span>
                                 </div>
                                 <div class="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-[10px] font-semibold tracking-wider uppercase">
                                     <span id="offlineParamsCollapseText">Click to expand</span>
@@ -496,6 +548,84 @@
                             <div id="offlineParamsBody" class="px-6 pb-6 hidden transition-all duration-300 ease-in-out">
                                 <div id="offlineParamsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-xs">
                                     <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Evaluation Metrics KPI Grid -->
+                    <div id="metricsKPIGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Card 1: Critical Jitter -->
+                        <div class="glass p-6 rounded-3xl relative overflow-hidden group">
+                            <div class="absolute top-0 right-0 w-16 h-16 bg-amber-500/5 rounded-full -mr-4 -mt-4"></div>
+                            <div class="flex items-center gap-2.5 mb-3">
+                                <div class="p-2 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-xl">
+                                    <i data-lucide="activity" class="w-4 h-4"></i>
+                                </div>
+                                <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Critical Task Jitter (T1)</h4>
+                            </div>
+                            <div class="space-y-2.5">
+                                <div class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
+                                    <span class="text-slate-500 font-medium">Context-Aware:</span>
+                                    <span id="jitterCA" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">0.00 ms</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
+                                    <span class="text-slate-500 font-medium">EDF:</span>
+                                    <span id="jitterEDF" class="font-mono font-bold text-slate-700 dark:text-slate-300">0.00 ms</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-slate-500 font-medium">Native RMS:</span>
+                                    <span id="jitterNative" class="font-mono font-bold text-slate-700 dark:text-slate-300">0.00 ms</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Contention Penalty -->
+                        <div class="glass p-6 rounded-3xl relative overflow-hidden group">
+                            <div class="absolute top-0 right-0 w-16 h-16 bg-rose-500/5 rounded-full -mr-4 -mt-4"></div>
+                            <div class="flex items-center gap-2.5 mb-3">
+                                <div class="p-2 bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-xl">
+                                    <i data-lucide="zap" class="w-4 h-4"></i>
+                                </div>
+                                <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Total Contention Penalty</h4>
+                            </div>
+                            <div class="space-y-2.5">
+                                <div class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
+                                    <span class="text-slate-500 font-medium">Context-Aware:</span>
+                                    <span id="contentionCA" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">0 ms</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
+                                    <span class="text-slate-500 font-medium">EDF:</span>
+                                    <span id="contentionEDF" class="font-mono font-bold text-slate-700 dark:text-slate-300">0 ms</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-slate-500 font-medium">Native RMS:</span>
+                                    <span id="contentionNative" class="font-mono font-bold text-slate-700 dark:text-slate-300">0 ms</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Scheduler Overhead -->
+                        <div class="glass p-6 rounded-3xl relative overflow-hidden group">
+                            <div class="absolute top-0 right-0 w-16 h-16 bg-blue-500/5 rounded-full -mr-4 -mt-4"></div>
+                            <div class="flex items-center gap-2.5 mb-3">
+                                <div class="p-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl">
+                                    <i data-lucide="cpu" class="w-4 h-4"></i>
+                                </div>
+                                <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Avg Decision Overhead</h4>
+                            </div>
+                            <div class="space-y-2.5">
+                                <div class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
+                                    <span class="text-slate-500 font-medium">Context-Aware:</span>
+                                    <span id="overheadCA" class="font-mono font-bold text-amber-600 dark:text-amber-400">0 cyc</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
+                                    <span class="text-slate-500 font-medium">EDF:</span>
+                                    <span id="overheadEDF" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">0 cyc</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-slate-500 font-medium">Native RMS:</span>
+                                    <span id="overheadNative" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">0 cyc</span>
                                 </div>
                             </div>
                         </div>
@@ -750,6 +880,21 @@
             return html;
         }
 
+        let consoleAutoScroll = true;
+
+        function toggleScrollLock() {
+            consoleAutoScroll = !consoleAutoScroll;
+            const btn = document.getElementById('scrollLockBtn');
+            if (!btn) return;
+            if (consoleAutoScroll) {
+                btn.textContent = 'Scroll Lock: Off';
+                btn.className = 'px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-[9px] uppercase tracking-wider rounded-lg border border-slate-200 dark:border-slate-700 transition-all hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none';
+            } else {
+                btn.textContent = 'Scroll Lock: On';
+                btn.className = 'px-2.5 py-1 bg-slate-700 dark:bg-slate-700 text-white font-semibold text-[9px] uppercase tracking-wider rounded-lg border border-slate-700 transition-all hover:bg-slate-800 focus:outline-none';
+            }
+        }
+
         function log(msg, color = 'slate-300') {
             const consoleEl = document.getElementById('console');
             const line = document.createElement('div');
@@ -773,7 +918,9 @@
             line.className = `min-h-[1rem] mb-1 ${colorClass}`;
             line.innerHTML = renderedContent.trim() === "" ? "&nbsp;" : renderedContent;
             consoleEl.appendChild(line);
-            consoleEl.scrollTop = consoleEl.scrollHeight;
+            if (consoleAutoScroll) {
+                consoleEl.scrollTop = consoleEl.scrollHeight;
+            }
         }
 
         async function runTests() {
@@ -798,6 +945,14 @@
                 sourceDot.className = "w-2 h-2 rounded-full bg-blue-500 animate-pulse";
                 sourceText.textContent = "Displaying: Running Benchmark";
             }
+
+            // Clear Evaluation KPI Grid
+            const defaultJitter = "0.00 ms";
+            const defaultContention = "0 ms";
+            const defaultOverhead = "0 cyc";
+            ['jitterCA', 'jitterEDF', 'jitterNative'].forEach(id => { const el = document.getElementById(id); if (el) el.innerText = defaultJitter; });
+            ['contentionCA', 'contentionEDF', 'contentionNative'].forEach(id => { const el = document.getElementById(id); if (el) el.innerText = defaultContention; });
+            ['overheadCA', 'overheadEDF', 'overheadNative'].forEach(id => { const el = document.getElementById(id); if (el) el.innerText = defaultOverhead; });
 
             // Clear global chart data variables to prevent old states from being redrawn
             lastChartData = null;
@@ -838,6 +993,8 @@
             const saveBtn = document.getElementById('saveBtn');
             const btnConsole = document.getElementById('runBtnConsole');
             const stopBtnConsole = document.getElementById('stopBtnConsole');
+            const uploadBtn = document.getElementById('uploadLogsBtn');
+            const offlineInput = document.getElementById('offlineLogUpload');
 
             btn.disabled = true;
             btn.classList.add('opacity-50', 'cursor-not-allowed');
@@ -848,6 +1005,13 @@
             if (saveBtn) {
                 saveBtn.disabled = true;
                 saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+            if (uploadBtn) {
+                uploadBtn.disabled = true;
+                uploadBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+            if (offlineInput) {
+                offlineInput.disabled = true;
             }
             stopBtn.classList.remove('hidden');
             if (stopBtnConsole) {
@@ -871,6 +1035,13 @@
                     if (saveBtn) {
                         saveBtn.disabled = false;
                         saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    }
+                    if (uploadBtn) {
+                        uploadBtn.disabled = false;
+                        uploadBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    }
+                    if (offlineInput) {
+                        offlineInput.disabled = false;
                     }
                     stopBtn.classList.add('hidden');
                     if (stopBtnConsole) {
@@ -911,6 +1082,13 @@
                 if (saveBtn) {
                     saveBtn.disabled = false;
                     saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+                if (uploadBtn) {
+                    uploadBtn.disabled = false;
+                    uploadBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+                if (offlineInput) {
+                    offlineInput.disabled = false;
                 }
                 stopBtn.classList.add('hidden');
                 if (stopBtnConsole) {
@@ -953,6 +1131,7 @@
             const sourceBadge = document.getElementById('analyticsSourceBadge');
             const sourceDot = document.getElementById('analyticsSourceDot');
             const sourceText = document.getElementById('analyticsSourceText');
+            const analyticsTimestampEl = document.getElementById('analyticsTimestamp');
             if (sourceBadge && sourceDot && sourceText) {
                 if (data.timestamp === "Offline Dataset") {
                     sourceBadge.className = "flex items-center gap-2 px-3 py-1 rounded-full border bg-indigo-500/5 dark:bg-indigo-500/10 border-indigo-500/20 text-xs font-semibold select-none transition-all duration-300";
@@ -967,6 +1146,26 @@
                     sourceDot.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
                     sourceText.textContent = "Displaying: Previous Benchmark";
                 }
+            }
+
+            // Helper to format timestamps that may be backend filenames or raw date strings
+            function formatTimestamp(ts) {
+                if (!ts) return '--';
+                // Match YYYYMMDDTHHMMSS or YYYYMMDD_HHMMSS
+                const m = (''+ts).match(/(\d{4})(\d{2})(\d{2})T?(\d{2})(\d{2})(\d{2})/);
+                try {
+                    if (m) {
+                        const d = new Date(`${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}`);
+                        return d.toLocaleString();
+                    }
+                    const d2 = new Date(ts);
+                    if (!isNaN(d2)) return d2.toLocaleString();
+                } catch (e) {}
+                return ts;
+            }
+
+            if (analyticsTimestampEl) {
+                analyticsTimestampEl.textContent = `Timestamp: ${formatTimestamp(data.timestamp)}`;
             }
 
             // Normalize data.data keys to strip duration suffixes (e.g. "EDFSch_test_10s" -> "EDFSch_test")
@@ -1044,6 +1243,74 @@
 
             const tasks = ["Motor", "Sensor", "Crypto", "Vision"];
 
+            // --- EVALUATION METRICS KPI UPDATE ---
+            // Helper to get last valid metric point of a specific task
+            function getLatestMetric(taskData, taskName) {
+                const filtered = (taskData || []).filter(m => m.task === taskName);
+                return filtered.length > 0 ? filtered[filtered.length - 1] : null;
+            }
+
+            const caMotor = getLatestMetric(data.data["ContextAwareSch_test"], "Motor");
+            const edfMotor = getLatestMetric(data.data["EDFSch_test"], "Motor");
+            const nativeMotor = getLatestMetric(data.data["NativeSch_test"], "Motor");
+            // Helper fallbacks: average non-zero jitter, sum contention, average non-zero overhead
+            function avgNonZero(arr, key) {
+                const vals = arr.map(x => (x && x[key] !== undefined) ? Number(x[key]) : 0).filter(v => v && !isNaN(v));
+                if (!vals.length) return 0;
+                return vals.reduce((a,b) => a + b, 0) / vals.length;
+            }
+            function sumVals(arr, key) {
+                return arr.map(x => (x && x[key] !== undefined) ? Number(x[key]) : 0).reduce((a,b) => a + b, 0);
+            }
+
+            const caMotorSeries = (data.data["ContextAwareSch_test"] || []).filter(m => m.task === 'Motor');
+            const edfMotorSeries = (data.data["EDFSch_test"] || []).filter(m => m.task === 'Motor');
+            const nativeMotorSeries = (data.data["NativeSch_test"] || []).filter(m => m.task === 'Motor');
+
+            if (hasRunNewBenchmark) {
+                // After running a new benchmark in this session: show latest if present, otherwise display N/A
+                const formatJitter = (val) => (val !== undefined && val !== null) ? Number(val).toFixed(2) + ' ms' : 'N/A';
+                const formatContention = (val) => (val !== undefined && val !== null) ? Number(val) + ' ms' : 'N/A';
+                const formatOverhead = (val) => (val !== undefined && val !== null) ? Math.round(Number(val)) + ' cyc' : 'N/A';
+
+                document.getElementById('jitterCA').innerText = formatJitter(caMotor ? caMotor.jitter : undefined);
+                document.getElementById('jitterEDF').innerText = formatJitter(edfMotor ? edfMotor.jitter : undefined);
+                document.getElementById('jitterNative').innerText = formatJitter(nativeMotor ? nativeMotor.jitter : undefined);
+
+                document.getElementById('contentionCA').innerText = formatContention(caMotor ? caMotor.contention : undefined);
+                document.getElementById('contentionEDF').innerText = formatContention(edfMotor ? edfMotor.contention : undefined);
+                document.getElementById('contentionNative').innerText = formatContention(nativeMotor ? nativeMotor.contention : undefined);
+
+                document.getElementById('overheadCA').innerText = formatOverhead(caMotor ? caMotor.overhead : undefined);
+                document.getElementById('overheadEDF').innerText = formatOverhead(edfMotor ? edfMotor.overhead : undefined);
+                document.getElementById('overheadNative').innerText = formatOverhead(nativeMotor ? nativeMotor.overhead : undefined);
+            } else {
+                // Initial page load: show previous dataset values using fallbacks
+                const caJitterVal = (caMotor && caMotor.jitter !== undefined && caMotor.jitter !== 0) ? Number(caMotor.jitter) : avgNonZero(caMotorSeries, 'jitter');
+                const edfJitterVal = (edfMotor && edfMotor.jitter !== undefined && edfMotor.jitter !== 0) ? Number(edfMotor.jitter) : avgNonZero(edfMotorSeries, 'jitter');
+                const nativeJitterVal = (nativeMotor && nativeMotor.jitter !== undefined && nativeMotor.jitter !== 0) ? Number(nativeMotor.jitter) : avgNonZero(nativeMotorSeries, 'jitter');
+
+                document.getElementById('jitterCA').innerText = caJitterVal ? caJitterVal.toFixed(2) + " ms" : "0.00 ms";
+                document.getElementById('jitterEDF').innerText = edfJitterVal ? edfJitterVal.toFixed(2) + " ms" : "0.00 ms";
+                document.getElementById('jitterNative').innerText = nativeJitterVal ? nativeJitterVal.toFixed(2) + " ms" : "0.00 ms";
+
+                const caContentionVal = (caMotor && caMotor.contention !== undefined && caMotor.contention !== 0) ? Number(caMotor.contention) : sumVals(caMotorSeries, 'contention');
+                const edfContentionVal = (edfMotor && edfMotor.contention !== undefined && edfMotor.contention !== 0) ? Number(edfMotor.contention) : sumVals(edfMotorSeries, 'contention');
+                const nativeContentionVal = (nativeMotor && nativeMotor.contention !== undefined && nativeMotor.contention !== 0) ? Number(nativeMotor.contention) : sumVals(nativeMotorSeries, 'contention');
+
+                document.getElementById('contentionCA').innerText = caContentionVal ? caContentionVal + " ms" : "0 ms";
+                document.getElementById('contentionEDF').innerText = edfContentionVal ? edfContentionVal + " ms" : "0 ms";
+                document.getElementById('contentionNative').innerText = nativeContentionVal ? nativeContentionVal + " ms" : "0 ms";
+
+                const caOverVal = (caMotor && caMotor.overhead !== undefined && caMotor.overhead !== 0) ? Number(caMotor.overhead) : avgNonZero(caMotorSeries, 'overhead');
+                const edfOverVal = (edfMotor && edfMotor.overhead !== undefined && edfMotor.overhead !== 0) ? Number(edfMotor.overhead) : avgNonZero(edfMotorSeries, 'overhead');
+                const nativeOverVal = (nativeMotor && nativeMotor.overhead !== undefined && nativeMotor.overhead !== 0) ? Number(nativeMotor.overhead) : avgNonZero(nativeMotorSeries, 'overhead');
+
+                document.getElementById('overheadCA').innerText = caOverVal ? Math.round(caOverVal) + " cyc" : "0 cyc";
+                document.getElementById('overheadEDF').innerText = edfOverVal ? Math.round(edfOverVal) + " cyc" : "0 cyc";
+                document.getElementById('overheadNative').innerText = nativeOverVal ? Math.round(nativeOverVal) + " cyc" : "0 cyc";
+            }
+            // ------------------------------------
             // 1. Prepare Bar Chart Data (Final DMR)
             const barDatasets = schedulers.map((sched) => {
                 const taskData = tasks.map(t => {
@@ -1157,6 +1424,7 @@
 
         let inspectChart = null;
         let inspectMode = 'metrics'; // 'metrics' or 'params'
+        const inspectDatasetVisibility = {};
 
         function setInspectMode(mode) {
             inspectMode = mode;
@@ -1291,7 +1559,8 @@
                         backgroundColor: 'rgba(59,130,246,0.05)',
                         borderWidth: 2.5,
                         pointRadius: 2.5,
-                        fill: false
+                        fill: false,
+                        hidden: true
                     },
                     {
                         label: 'Deadline Misses',
@@ -1306,11 +1575,38 @@
                         label: 'Miss Ratio (DMR %)',
                         data: taskMetrics.map(m => m.dmr),
                         borderColor: '#f59e0b', // Amber
-                        backgroundColor: 'rgba(245,158,11,0.08)',
-                        borderWidth: 3,
-                        pointRadius: 3,
-                        fill: true,
-                        tension: 0.2
+                        backgroundColor: 'rgba(245,158,11,0.05)',
+                        borderWidth: 2.5,
+                        pointRadius: 2.5,
+                        fill: false
+                    },
+                    {
+                        label: 'Jitter (ms)',
+                        data: taskMetrics.map(m => m.jitter !== undefined ? m.jitter : 0),
+                        borderColor: '#10b981', // Emerald
+                        backgroundColor: 'rgba(16,185,129,0.05)',
+                        borderWidth: 2.5,
+                        pointRadius: 2.5,
+                        fill: false
+                    },
+                    {
+                        label: 'Contention Penalty (ms)',
+                        data: taskMetrics.map(m => m.contention !== undefined ? m.contention : 0),
+                        borderColor: '#8b5cf6', // Violet
+                        backgroundColor: 'rgba(139,92,246,0.05)',
+                        borderWidth: 2.5,
+                        pointRadius: 2.5,
+                        fill: false
+                    },
+                    {
+                        label: 'Decision Overhead (cyc)',
+                        data: taskMetrics.map(m => m.overhead !== undefined ? m.overhead : 0),
+                        borderColor: '#6366f1', // Indigo
+                        backgroundColor: 'rgba(99,102,241,0.05)',
+                        borderWidth: 2.5,
+                        pointRadius: 2.5,
+                        fill: false,
+                        hidden: true
                     }
                 ];
             } else {
@@ -1371,6 +1667,13 @@
                 }
             }
 
+            // Apply persisted visibility from the previous inspect chart selections
+            datasets.forEach(dataset => {
+                if (inspectDatasetVisibility.hasOwnProperty(dataset.label)) {
+                    dataset.hidden = !inspectDatasetVisibility[dataset.label];
+                }
+            });
+
             if (inspectChart) inspectChart.destroy();
             inspectChart = new Chart(document.getElementById('inspectChart'), {
                 type: 'line',
@@ -1402,6 +1705,7 @@
                     }
                 }
             });
+            inspectChart.update();
 
             // Rebuild Dynamic Legend Toggles
             const legendContainer = document.getElementById('inspectLegendToggles');
@@ -1430,10 +1734,34 @@
                 text.innerText = dataset.label;
                 button.appendChild(text);
 
-                let visible = true;
+                // Initialize visibility to reflect stored state or default hidden flag
+                let visible;
+                if (inspectDatasetVisibility.hasOwnProperty(dataset.label)) {
+                    visible = inspectDatasetVisibility[dataset.label];
+                    dataset.hidden = !visible;
+                } else {
+                    visible = !(dataset.hidden === true);
+                }
+
+                inspectDatasetVisibility[dataset.label] = visible;
+                try { inspectChart.setDatasetVisibility(index, visible); } catch (e) { /* ignore if chart not yet ready */ }
+
+                // Apply initial button styles based on visibility
+                if (visible) {
+                    button.style.backgroundColor = activeBG;
+                    button.style.opacity = '1';
+                    indicator.style.transform = 'scale(1)';
+                    button.style.borderStyle = 'solid';
+                } else {
+                    button.style.backgroundColor = 'transparent';
+                    button.style.opacity = '0.4';
+                    indicator.style.transform = 'scale(0)';
+                    button.style.borderStyle = 'dashed';
+                }
 
                 button.onclick = () => {
                     visible = !visible;
+                    inspectDatasetVisibility[dataset.label] = visible;
                     inspectChart.setDatasetVisibility(index, visible);
                     inspectChart.update(); // Rescales Y-axis automatically!
 
@@ -1515,7 +1843,7 @@
 
             const motorPattern = /Task1_MotorControl!\s+SP:\s*([\d\.-]+),\s*MV:\s*([\d\.-]+)\s*\(x1000\),\s*OUT:\s*([\d\.-]+)/;
             const sensorPattern = /Task2_SensorAcquisition!\s+RAW:\s*([\d\.-]+),\s*FILTERED:\s*([\d\.-]+)/;
-            const metricsPattern = /\[TS:\s*(\d+)\s*ms\]\s*\[Metrics\]\s*Task\s*(\d)\s*-\s*Prio:\s*\d+\s*\|\s*Jobs:\s*(\d+)\s*\|\s*Misses:\s*(\d+)\s*\|\s*DMR:\s*(\d+)%/;
+            const metricsPattern = /\[TS:\s*(\d+)\s*ms\]\s*\[Metrics\]\s*Task\s*(\d)\s*-\s*Prio:\s*\d+\s*\|\s*Jobs:\s*(\d+)\s*\|\s*Misses:\s*(\d+)\s*\|\s*DMR:\s*(\d+)%(?:\s*\|\s*Jitter:\s*([\d\.]+)\s*ms\s*\|\s*Contention:\s*(\d+)\s*ms\s*\|\s*Overhead:\s*(\d+)\s*cycles)?/;
 
             const readFileAsText = (file) => {
                 return new Promise((resolve) => {
@@ -1584,6 +1912,9 @@
                             const jobs = parseInt(metricsMatch[3]);
                             const misses = parseInt(metricsMatch[4]);
                             const dmr = parseInt(metricsMatch[5]);
+                            const jitterVal = metricsMatch[6] !== undefined ? parseFloat(metricsMatch[6]) : undefined;
+                            const contentionVal = metricsMatch[7] !== undefined ? parseInt(metricsMatch[7]) : undefined;
+                            const overheadVal = metricsMatch[8] !== undefined ? parseInt(metricsMatch[8]) : undefined;
 
                             if (ts > maxTS) {
                                 maxTS = ts;
@@ -1594,7 +1925,10 @@
                                 task: taskMap[taskID] || `Task${taskID}`,
                                 jobs: jobs,
                                 misses: misses,
-                                dmr: dmr
+                                dmr: dmr,
+                                jitter: jitterVal !== undefined ? jitterVal : 0.0,
+                                contention: contentionVal !== undefined ? contentionVal : 0,
+                                overhead: overheadVal !== undefined ? overheadVal : 0
                             };
 
                             if (taskID === 0) {
@@ -1657,12 +1991,21 @@
                         }
                     });
 
+                    // Extract log start time if present (e.g. '--- Log started at Sun May 17 18:02:57 2026 for scheduler ...')
+                    let startTimeStr = null;
+                    for (let i = 0; i < lines.length; i++) {
+                        const l = lines[i];
+                        const m = l.match(/---\s*Log started at\s*(.+?)\s*for scheduler/i);
+                        if (m) { startTimeStr = m[1].trim(); break; }
+                    }
+
                     parsedFiles.push({
                         name,
                         schedName,
                         metrics,
                         duration,
-                        paramList
+                        paramList,
+                        startTime: startTimeStr
                     });
                 });
 
@@ -1844,6 +2187,26 @@
                 lucide.createIcons();
 
                 // Plot data
+                // Compute uploaded files time range and display badge
+                const offlineFilesBadge = document.getElementById('offlineFilesTimeBadge');
+                try {
+                    const starts = parsedFiles.map(pf => pf.startTime).filter(s => s);
+                    if (starts.length > 0) {
+                        const parsedDates = starts.map(s => new Date(s)).filter(d => !isNaN(d));
+                        if (parsedDates.length > 0) {
+                            const latestDate = parsedDates.reduce((max, current) => current > max ? current : max, parsedDates[0]);
+                            offlineFilesBadge.textContent = latestDate.toLocaleString();
+                            offlineFilesBadge.classList.remove('hidden');
+                        } else {
+                            offlineFilesBadge.classList.add('hidden');
+                        }
+                    } else {
+                        offlineFilesBadge.classList.add('hidden');
+                    }
+                } catch (e) {
+                    if (offlineFilesBadge) offlineFilesBadge.classList.add('hidden');
+                }
+
                 const offlineData = { timestamp: "Offline Dataset", data: results };
                 renderChartsWithData(offlineData);
 
