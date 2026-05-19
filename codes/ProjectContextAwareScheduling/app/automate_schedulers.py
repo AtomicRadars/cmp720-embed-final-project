@@ -21,7 +21,8 @@ COM_PORT = "COM4"
 BAUD_RATE = 115200
 DURATION_SECONDS = 30  # Capture duration for each scheduler
 SCHEDULERS = ["NATIVE", "EDF", "CONTEXT_AWARE"]
-PROJECT_ROOT = Path(__file__).parent.absolute()
+APP_DIR = Path(__file__).parent.absolute()
+PROJECT_ROOT = APP_DIR.parent.absolute()
 LOG_DIR = PROJECT_ROOT / "logs" / "auto_tests"
 ELF_PATH = PROJECT_ROOT / "build" / "Release" / "ProjectContextAwareScheduling.elf"
 

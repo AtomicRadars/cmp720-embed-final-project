@@ -35,6 +35,7 @@ cmp720-embed-final-project/
 │       │       └── app_main.cpp           # Main C++ entry point
 │       │
 │       ├── app/                           # Web GUI Dashboard application files
+│       │   ├── automate_schedulers.py     # CLI automated build, flash, & log utility
 │       │   ├── gui_server.py              # FastAPI Dashboard Backend
 │       │   ├── index.html                 # Dashboard HTML UI
 │       │   └── scratch.py                 # Styling patch script
@@ -50,7 +51,6 @@ cmp720-embed-final-project/
 │       │   ├── param_sweep.py             # Hyper-parameter sensitivity analyzer
 │       │   └── main.py                    # Offline CLI interface
 │       │
-│       ├── automate_schedulers.py         # CLI automated build, flash, & log utility
 │       └── CMakeLists.txt                 # Project build configuration
 │
 └── docs/                                  # Project documentation
@@ -159,7 +159,7 @@ The FastAPI GUI manages parameters, automates CMake builds, flashes the target b
 If you prefer to run the test suite and log UART outputs directly via the terminal:
 
 ```bash
-python automate_schedulers.py --port COM4 --baud 115200 --duration 30
+python app/automate_schedulers.py --port COM4 --baud 115200 --duration 30
 ```
 This script will sequentially configure, build, flash, and record telemetry logs for the `NATIVE`, `EDF`, and `CONTEXT_AWARE` schedulers in `logs/auto_tests/`.
 

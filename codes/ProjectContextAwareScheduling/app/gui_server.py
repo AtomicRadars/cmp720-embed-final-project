@@ -29,7 +29,7 @@ app = FastAPI()
 APP_DIR = Path(__file__).parent.absolute()
 PROJECT_ROOT = APP_DIR.parent.absolute()
 CONFIG_HEADER = PROJECT_ROOT / "Core" / "Inc" / "core" / "TaskConfig.h"
-AUTOMATION_SCRIPT = PROJECT_ROOT / "automate_schedulers.py"
+AUTOMATION_SCRIPT = APP_DIR / "automate_schedulers.py"
 LOG_DIR = PROJECT_ROOT / "logs" / "auto_tests"
 
 # Add project root to sys.path to resolve offline_aco_baseline imports
