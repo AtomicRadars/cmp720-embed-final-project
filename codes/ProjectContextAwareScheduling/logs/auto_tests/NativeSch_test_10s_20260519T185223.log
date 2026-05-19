@@ -1,0 +1,63 @@
+--- Log started at Tue May 19 18:52:27 2026 for scheduler NATIVE ---
+
+--- System Configuration ---
+T1 (Motor):  Prio: 4, Period: 10 ms, MemIntensity: 0.10
+T2 (Sensor): Prio: 2, Period: 50 ms, MemIntensity: 0.20
+T3 (Crypto): Prio: 1, Period: 500 ms, MemIntensity: 0.90
+T4 (Vision): Prio: 3, Period: 20 ms, MemIntensity: 0.80
+Alpha: 1.00, Safety Margin: 2 ms, Threshold: 0.15
+---------------------------
+Tasks created successfully. Activating [Native RMS Scheduler]...
+
+Task1_MotorControl! SP: 100, MV: -500 (x1000), OUT: 613050 (x1000)
+Task4_VisionProcessing!
+Task2_SensorAcquisition! RAW: 1024, FILTERED: 256
+Task3_CryptoEncryption!
+
+Task1_MotorControl! SP: 100, MV: 103025 (x1000), OUT: 66441 (x1000)
+[TS: 1007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 100 | Misses: 0 | DMR: 0% | Jitter: 0.60 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 1096 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 50 | Misses: 45 | DMR: 90% | Jitter: 19.10 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 102063 (x1000), OUT: 74 (x1000)
+[TS: 2007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 200 | Misses: 1 | DMR: 0% | Jitter: 1.47 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 2182 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 100 | Misses: 95 | DMR: 95% | Jitter: 48.58 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 100637 (x1000), OUT: 9337 (x1000)
+[TS: 3007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 300 | Misses: 2 | DMR: 0% | Jitter: 1.61 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 3268 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 150 | Misses: 145 | DMR: 96% | Jitter: 74.89 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 99713 (x1000), OUT: 13917 (x1000)
+[TS: 4007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 400 | Misses: 3 | DMR: 0% | Jitter: 1.69 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 4354 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 200 | Misses: 195 | DMR: 97% | Jitter: 100.65 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 98941 (x1000), OUT: 13246 (x1000)
+[TS: 5007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 500 | Misses: 4 | DMR: 0% | Jitter: 1.73 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 5441 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 250 | Misses: 245 | DMR: 98% | Jitter: 126.28 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 98515 (x1000), OUT: 8260 (x1000)
+[TS: 6007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 600 | Misses: 5 | DMR: 0% | Jitter: 1.76 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 6526 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 300 | Misses: 295 | DMR: 98% | Jitter: 151.85 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 98570 (x1000), OUT: 621 (x1000)
+[TS: 7007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 700 | Misses: 6 | DMR: 0% | Jitter: 1.78 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 7613 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 350 | Misses: 345 | DMR: 98% | Jitter: 177.31 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 99118 (x1000), OUT: -7226 (x1000)
+[TS: 8007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 800 | Misses: 7 | DMR: 0% | Jitter: 1.79 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 8698 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 400 | Misses: 395 | DMR: 98% | Jitter: 202.72 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 100037 (x1000), OUT: -12651 (x1000)
+[TS: 9007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 900 | Misses: 8 | DMR: 0% | Jitter: 1.80 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 9785 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 450 | Misses: 445 | DMR: 98% | Jitter: 228.11 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 101101 (x1000), OUT: -13541 (x1000)
+[TS: 10007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1000 | Misses: 9 | DMR: 0% | Jitter: 1.82 ms | Contention: 0 ms | Overhead: 0 cycles

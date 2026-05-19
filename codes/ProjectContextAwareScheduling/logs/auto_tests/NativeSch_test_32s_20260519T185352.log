@@ -1,4 +1,4 @@
---- Log started at Sun May 17 22:09:56 2026 for scheduler NATIVE ---
+--- Log started at Tue May 19 18:53:54 2026 for scheduler NATIVE ---
 
 --- System Configuration ---
 T1 (Motor):  Prio: 4, Period: 10 ms, MemIntensity: 0.10
@@ -161,3 +161,8 @@ Task1_MotorControl! SP: 100, MV: 102049 (x1000), OUT: -11804 (x1000)
 [TS: 31007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 3100 | Misses: 29 | DMR: 0% | Jitter: 1.90 ms | Contention: 0 ms | Overhead: 0 cycles
 Task4_VisionProcessing!
 [TS: 31522 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 1450 | Misses: 1445 | DMR: 99% | Jitter: 726.29 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 101653 (x1000), OUT: -969 (x1000)
+[TS: 32007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 3200 | Misses: 30 | DMR: 0% | Jitter: 1.91 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 32608 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 1500 | Misses: 1495 | DMR: 99% | Jitter: 751.46 ms | Contention: 0 ms | Overhead: 0 cycles

@@ -1,4 +1,4 @@
---- Log started at Sun May 17 22:11:05 2026 for scheduler CONTEXT_AWARE ---
+--- Log started at Tue May 19 18:55:06 2026 for scheduler CONTEXT_AWARE ---
 
 --- System Configuration ---
 T1 (Motor):  Prio: 4, Period: 10 ms, MemIntensity: 0.10
@@ -292,3 +292,12 @@ Task2_SensorAcquisition! RAW: 2096, FILTERED: 1925
 [TS: 31053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 620 | Misses: 30 | DMR: 4% | Jitter: 11.01 ms | Contention: 330 ms | Overhead: 1439 cycles
 Task3_CryptoEncryption!
 [TS: 31143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 62 | Misses: 0 | DMR: 0% | Jitter: 38.82 ms | Contention: 330 ms | Overhead: 1440 cycles
+
+Task1_MotorControl! SP: 100, MV: 101693 (x1000), OUT: -1399 (x1000)
+[TS: 32007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 3200 | Misses: 70 | DMR: 2% | Jitter: 2.95 ms | Contention: 330 ms | Overhead: 1439 cycles
+Task4_VisionProcessing!
+[TS: 32026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 1600 | Misses: 62 | DMR: 3% | Jitter: 5.10 ms | Contention: 330 ms | Overhead: 1439 cycles
+Task2_SensorAcquisition! RAW: 1087, FILTERED: 2437
+[TS: 32053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 640 | Misses: 31 | DMR: 4% | Jitter: 11.02 ms | Contention: 330 ms | Overhead: 1439 cycles
+Task3_CryptoEncryption!
+[TS: 32143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 64 | Misses: 0 | DMR: 0% | Jitter: 38.83 ms | Contention: 330 ms | Overhead: 1440 cycles
