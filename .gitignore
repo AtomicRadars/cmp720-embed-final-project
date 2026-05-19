@@ -114,3 +114,6 @@ $RECYCLE.BIN/
 build
 mx.scratch
 !.settings
+
+# Python
+__pycache__/
