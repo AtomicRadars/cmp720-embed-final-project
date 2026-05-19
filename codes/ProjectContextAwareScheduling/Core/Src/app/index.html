@@ -67,8 +67,10 @@
 
         /* Custom scrollbar styling for the terminal console (WebKit + Firefox) */
         .terminal-bg {
-            scrollbar-width: thin; /* Firefox */
-            scrollbar-color: rgba(99,102,241,0.4) rgba(0,0,0,0.04); /* thumb track for Firefox */
+            scrollbar-width: thin;
+            /* Firefox */
+            scrollbar-color: rgba(99, 102, 241, 0.4) rgba(0, 0, 0, 0.04);
+            /* thumb track for Firefox */
         }
 
         .terminal-bg::-webkit-scrollbar {
@@ -77,36 +79,36 @@
         }
 
         .terminal-bg::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.04);
+            background: rgba(0, 0, 0, 0.04);
             border-radius: 999px;
         }
 
         .terminal-bg::-webkit-scrollbar-thumb {
-            background: rgba(99,102,241,0.4);
+            background: rgba(99, 102, 241, 0.4);
             border-radius: 999px;
             border: 2px solid transparent;
             background-clip: content-box;
         }
 
         .terminal-bg::-webkit-scrollbar-thumb:hover {
-            background: rgba(99,102,241,0.6);
+            background: rgba(99, 102, 241, 0.6);
         }
 
         /* Dark mode scrollbar overrides */
         .dark .terminal-bg {
-            scrollbar-color: rgba(148,163,184,0.45) rgba(255,255,255,0.03);
+            scrollbar-color: rgba(148, 163, 184, 0.45) rgba(255, 255, 255, 0.03);
         }
 
         .dark .terminal-bg::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.03);
+            background: rgba(255, 255, 255, 0.03);
         }
 
         .dark .terminal-bg::-webkit-scrollbar-thumb {
-            background: rgba(148,163,184,0.25);
+            background: rgba(148, 163, 184, 0.25);
         }
 
         .dark .terminal-bg::-webkit-scrollbar-thumb:hover {
-            background: rgba(148,163,184,0.45);
+            background: rgba(148, 163, 184, 0.45);
         }
 
         input[type="range"] {
@@ -134,12 +136,15 @@
             z-index: 50 !important;
             margin: 0 !important;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
-            backdrop-filter: none !important; /* Fixes browser rendering blur bug on child elements */
-            background: #ffffff !important; /* Force solid crisp background in light mode */
+            backdrop-filter: none !important;
+            /* Fixes browser rendering blur bug on child elements */
+            background: #ffffff !important;
+            /* Force solid crisp background in light mode */
         }
 
         .dark .card-maximized {
-            background: #1e293b !important; /* Force solid crisp background in dark mode */
+            background: #1e293b !important;
+            /* Force solid crisp background in dark mode */
         }
 
         @keyframes slideUpFade {
@@ -147,6 +152,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -319,180 +325,363 @@
                 <div id="liveContainer" class="flex flex-col gap-5 order-1 transition-all duration-500">
                     <!-- Task Grid -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Task 1 -->
-                    <div class="glass p-4 pb-5 rounded-3xl relative overflow-hidden group">
-                        <div
-                            class="absolute top-0 right-0 w-20 h-20 bg-indigo-500/5 rounded-full -mr-6 -mt-6 group-hover:bg-indigo-500/10 transition-all">
+                        <!-- Task 1 -->
+                        <div class="glass p-4 pb-5 rounded-3xl relative overflow-hidden group">
+                            <div
+                                class="absolute top-0 right-0 w-20 h-20 bg-indigo-500/5 rounded-full -mr-6 -mt-6 group-hover:bg-indigo-500/10 transition-all">
+                            </div>
+                            <div class="flex items-center gap-3 mb-3.5">
+                                <div class="p-2.5 bg-indigo-500/20 rounded-xl text-indigo-600 dark:text-indigo-400">
+                                    <i data-lucide="cpu" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-sm text-slate-900 dark:text-white leading-tight">T1: Motor
+                                        Control</h3>
+                                    <span
+                                        class="text-[10px] text-indigo-600 dark:text-indigo-400/80 font-mono tracking-wider">HIGH
+                                        PRIORITY</span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label
+                                        class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Priority</label>
+                                    <input type="number" id="TASK1_PRIORITY"
+                                        class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 transition-colors">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Period
+                                        (ms)</label>
+                                    <input type="number" id="TASK1_PERIOD_MS"
+                                        class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 transition-colors">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Mem
+                                        Intensity</label>
+                                    <input type="number" id="TASK1_MEMORY_INTENSITY" step="0.1"
+                                        class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 transition-colors">
+                                </div>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-3 mb-3.5">
-                            <div class="p-2.5 bg-indigo-500/20 rounded-xl text-indigo-600 dark:text-indigo-400">
-                                <i data-lucide="cpu" class="w-5 h-5"></i>
+
+                        <!-- Task 4 -->
+                        <div class="glass p-4 pb-5 rounded-3xl relative overflow-hidden group">
+                            <div
+                                class="absolute top-0 right-0 w-20 h-20 bg-purple-500/5 rounded-full -mr-6 -mt-6 group-hover:bg-purple-500/10 transition-all">
                             </div>
-                            <div>
-                                <h3 class="font-bold text-sm text-slate-900 dark:text-white leading-tight">T1: Motor Control</h3>
-                                <span class="text-[10px] text-indigo-600 dark:text-indigo-400/80 font-mono tracking-wider">HIGH PRIORITY</span>
+                            <div class="flex items-center gap-3 mb-3.5">
+                                <div class="p-2.5 bg-purple-500/20 rounded-xl text-purple-600 dark:text-purple-400">
+                                    <i data-lucide="eye" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-sm text-slate-900 dark:text-white leading-tight">T4:
+                                        Vision Processing</h3>
+                                    <span
+                                        class="text-[10px] text-purple-600 dark:text-purple-400/80 font-mono tracking-wider">HIGH
+                                        LOAD</span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label
+                                        class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Priority</label>
+                                    <input type="number" id="TASK4_PRIORITY"
+                                        class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Period
+                                        (ms)</label>
+                                    <input type="number" id="TASK4_PERIOD_MS"
+                                        class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Mem
+                                        Intensity</label>
+                                    <input type="number" id="TASK4_MEMORY_INTENSITY" step="0.1"
+                                        class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors">
+                                </div>
                             </div>
                         </div>
-                        <div class="grid grid-cols-3 gap-3">
-                            <div>
-                                <label
-                                    class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Priority</label>
-                                <input type="number" id="TASK1_PRIORITY"
-                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 transition-colors">
+
+                        <!-- Task 2 -->
+                        <div class="glass p-4 pb-5 rounded-3xl relative overflow-hidden group">
+                            <div
+                                class="absolute top-0 right-0 w-20 h-20 bg-emerald-500/5 rounded-full -mr-6 -mt-6 group-hover:bg-emerald-500/10 transition-all">
                             </div>
-                            <div>
-                                <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Period (ms)</label>
-                                <input type="number" id="TASK1_PERIOD_MS"
-                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 transition-colors">
+                            <div class="flex items-center gap-3 mb-3.5">
+                                <div class="p-2.5 bg-emerald-500/20 rounded-xl text-emerald-600 dark:text-emerald-400">
+                                    <i data-lucide="database" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-sm text-slate-900 dark:text-white leading-tight">T2:
+                                        Sensor Acquisition</h3>
+                                    <span
+                                        class="text-[10px] text-emerald-600 dark:text-emerald-400/80 font-mono tracking-wider">MEDIUM</span>
+                                </div>
                             </div>
-                            <div>
-                                <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Mem Intensity</label>
-                                <input type="number" id="TASK1_MEMORY_INTENSITY" step="0.1"
-                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 transition-colors">
+                            <div class="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label
+                                        class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Priority</label>
+                                    <input type="number" id="TASK2_PRIORITY"
+                                        class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Period
+                                        (ms)</label>
+                                    <input type="number" id="TASK2_PERIOD_MS"
+                                        class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Mem
+                                        Intensity</label>
+                                    <input type="number" id="TASK2_MEMORY_INTENSITY" step="0.1"
+                                        class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Task 3 -->
+                        <div class="glass p-4 pb-5 rounded-3xl relative overflow-hidden group">
+                            <div
+                                class="absolute top-0 right-0 w-20 h-20 bg-amber-500/5 rounded-full -mr-6 -mt-6 group-hover:bg-amber-500/10 transition-all">
+                            </div>
+                            <div class="flex items-center gap-3 mb-3.5">
+                                <div class="p-2.5 bg-amber-500/20 rounded-xl text-amber-600 dark:text-amber-400">
+                                    <i data-lucide="shield" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-sm text-slate-900 dark:text-white leading-tight">T3:
+                                        Crypto Encryption</h3>
+                                    <span
+                                        class="text-[10px] text-amber-600 dark:text-amber-400/80 font-mono tracking-wider">COMPUTE
+                                        INTENSIVE</span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label
+                                        class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Priority</label>
+                                    <input type="number" id="TASK3_PRIORITY"
+                                        class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition-colors">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Period
+                                        (ms)</label>
+                                    <input type="number" id="TASK3_PERIOD_MS"
+                                        class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition-colors">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Mem
+                                        Intensity</label>
+                                    <input type="number" id="TASK3_MEMORY_INTENSITY" step="0.1"
+                                        class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition-colors">
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Task 4 -->
-                    <div class="glass p-4 pb-5 rounded-3xl relative overflow-hidden group">
+                    <!-- Console -->
+                    <div id="consoleCard" class="glass rounded-3xl overflow-hidden flex flex-col h-[280px]">
                         <div
-                            class="absolute top-0 right-0 w-20 h-20 bg-purple-500/5 rounded-full -mr-6 -mt-6 group-hover:bg-purple-500/10 transition-all">
-                        </div>
-                        <div class="flex items-center gap-3 mb-3.5">
-                            <div class="p-2.5 bg-purple-500/20 rounded-xl text-purple-600 dark:text-purple-400">
-                                <i data-lucide="eye" class="w-5 h-5"></i>
+                            class="bg-slate-200/50 dark:bg-slate-800/50 px-6 py-3 flex justify-between items-center border-b border-slate-300/50 dark:border-white/5">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
+                                <span
+                                    class="ml-3 text-xs font-mono text-slate-600 dark:text-slate-400 tracking-wider">OUTPUT_STREAM</span>
                             </div>
-                            <div>
-                                <h3 class="font-bold text-sm text-slate-900 dark:text-white leading-tight">T4: Vision Processing</h3>
-                                <span class="text-[10px] text-purple-600 dark:text-purple-400/80 font-mono tracking-wider">HIGH LOAD</span>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-3">
-                            <div>
-                                <label
-                                    class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Priority</label>
-                                <input type="number" id="TASK4_PRIORITY"
-                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors">
-                            </div>
-                            <div>
-                                <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Period (ms)</label>
-                                <input type="number" id="TASK4_PERIOD_MS"
-                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors">
-                            </div>
-                            <div>
-                                <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Mem Intensity</label>
-                                <input type="number" id="TASK4_MEMORY_INTENSITY" step="0.1"
-                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 transition-colors">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Task 2 -->
-                    <div class="glass p-4 pb-5 rounded-3xl relative overflow-hidden group">
-                        <div
-                            class="absolute top-0 right-0 w-20 h-20 bg-emerald-500/5 rounded-full -mr-6 -mt-6 group-hover:bg-emerald-500/10 transition-all">
-                        </div>
-                        <div class="flex items-center gap-3 mb-3.5">
-                            <div class="p-2.5 bg-emerald-500/20 rounded-xl text-emerald-600 dark:text-emerald-400">
-                                <i data-lucide="database" class="w-5 h-5"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-sm text-slate-900 dark:text-white leading-tight">T2: Sensor Acquisition</h3>
-                                <span class="text-[10px] text-emerald-600 dark:text-emerald-400/80 font-mono tracking-wider">MEDIUM</span>
+                            <div class="flex items-center gap-3">
+                                <button id="runBtnConsole" onclick="runTests()"
+                                    class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-[9px] uppercase tracking-wider rounded-lg shadow-sm hover:shadow-indigo-500/20 transition-all flex items-center gap-1.5 focus:outline-none">
+                                    <i data-lucide="play" class="w-2.5 h-2.5"></i>
+                                    Run
+                                </button>
+                                <button id="stopBtnConsole" onclick="stopTests()"
+                                    class="hidden px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white font-semibold text-[9px] uppercase tracking-wider rounded-lg shadow-sm hover:shadow-rose-500/20 transition-all flex items-center gap-1.5 focus:outline-none animate-pulse">
+                                    <i data-lucide="square" class="w-2.5 h-2.5"></i>
+                                    Stop
+                                </button>
+                                <button id="scrollLockBtn" onclick="toggleScrollLock()"
+                                    class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-[9px] uppercase tracking-wider rounded-lg border border-slate-200 dark:border-slate-700 transition-all hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none">
+                                    Scroll Lock: Off
+                                </button>
+                                <span class="text-slate-300 dark:text-slate-700 text-xs">|</span>
+                                <button onclick="document.getElementById('console').innerHTML = ''"
+                                    class="text-[10px] uppercase tracking-widest text-slate-500 hover:text-slate-900 dark:text-white transition-colors">Clear</button>
                             </div>
                         </div>
-                        <div class="grid grid-cols-3 gap-3">
-                            <div>
-                                <label
-                                    class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Priority</label>
-                                <input type="number" id="TASK2_PRIORITY"
-                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
-                            </div>
-                            <div>
-                                <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Period (ms)</label>
-                                <input type="number" id="TASK2_PERIOD_MS"
-                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
-                            </div>
-                            <div>
-                                <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Mem Intensity</label>
-                                <input type="number" id="TASK2_MEMORY_INTENSITY" step="0.1"
-                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors">
-                            </div>
+                        <div id="console"
+                            class="terminal-bg p-6 font-mono text-xs overflow-y-auto flex-grow text-slate-700 dark:text-slate-300 leading-relaxed">
+                            <span class="text-indigo-500">system_kernel:</span> Waiting for benchmark signal...
                         </div>
                     </div>
-
-                    <!-- Task 3 -->
-                    <div class="glass p-4 pb-5 rounded-3xl relative overflow-hidden group">
-                        <div
-                            class="absolute top-0 right-0 w-20 h-20 bg-amber-500/5 rounded-full -mr-6 -mt-6 group-hover:bg-amber-500/10 transition-all">
-                        </div>
-                        <div class="flex items-center gap-3 mb-3.5">
-                            <div class="p-2.5 bg-amber-500/20 rounded-xl text-amber-600 dark:text-amber-400">
-                                <i data-lucide="shield" class="w-5 h-5"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-sm text-slate-900 dark:text-white leading-tight">T3: Crypto Encryption</h3>
-                                <span class="text-[10px] text-amber-600 dark:text-amber-400/80 font-mono tracking-wider">COMPUTE INTENSIVE</span>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-3">
-                            <div>
-                                <label
-                                    class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Priority</label>
-                                <input type="number" id="TASK3_PRIORITY"
-                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition-colors">
-                            </div>
-                            <div>
-                                <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Period (ms)</label>
-                                <input type="number" id="TASK3_PERIOD_MS"
-                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition-colors">
-                            </div>
-                            <div>
-                                <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">Mem Intensity</label>
-                                <input type="number" id="TASK3_MEMORY_INTENSITY" step="0.1"
-                                    class="w-full bg-white/50 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 transition-colors">
-                            </div>
-                        </div>
-                    </div>
-                    </div>
-
-                <!-- Console -->
-                <div id="consoleCard" class="glass rounded-3xl overflow-hidden flex flex-col h-[280px]">
-                    <div
-                        class="bg-slate-200/50 dark:bg-slate-800/50 px-6 py-3 flex justify-between items-center border-b border-slate-300/50 dark:border-white/5">
-                        <div class="flex items-center gap-2">
-                            <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-                            <div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
-                            <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
-                            <span
-                                class="ml-3 text-xs font-mono text-slate-600 dark:text-slate-400 tracking-wider">OUTPUT_STREAM</span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <button id="runBtnConsole" onclick="runTests()"
-                                class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-[9px] uppercase tracking-wider rounded-lg shadow-sm hover:shadow-indigo-500/20 transition-all flex items-center gap-1.5 focus:outline-none">
-                                <i data-lucide="play" class="w-2.5 h-2.5"></i>
-                                Run
-                            </button>
-                            <button id="stopBtnConsole" onclick="stopTests()"
-                                class="hidden px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white font-semibold text-[9px] uppercase tracking-wider rounded-lg shadow-sm hover:shadow-rose-500/20 transition-all flex items-center gap-1.5 focus:outline-none animate-pulse">
-                                <i data-lucide="square" class="w-2.5 h-2.5"></i>
-                                Stop
-                            </button>
-                            <button id="scrollLockBtn" onclick="toggleScrollLock()"
-                                class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-[9px] uppercase tracking-wider rounded-lg border border-slate-200 dark:border-slate-700 transition-all hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none">
-                                Scroll Lock: Off
-                            </button>
-                            <span class="text-slate-300 dark:text-slate-700 text-xs">|</span>
-                            <button onclick="document.getElementById('console').innerHTML = ''"
-                                class="text-[10px] uppercase tracking-widest text-slate-500 hover:text-slate-900 dark:text-white transition-colors">Clear</button>
-                        </div>
-                    </div>
-                    <div id="console"
-                        class="terminal-bg p-6 font-mono text-xs overflow-y-auto flex-grow text-slate-700 dark:text-slate-300 leading-relaxed">
-                        <span class="text-indigo-500">system_kernel:</span> Waiting for benchmark signal...
-                    </div>
-                </div>
                 </div> <!-- Close liveContainer -->
+
+                <!-- Offline ACO Solver Section -->
+                <section id="acoLab" class="space-y-8 order-2 transition-all duration-500 mt-8">
+                    <div class="flex flex-wrap items-center justify-between gap-4 mb-2">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-purple-500/20 rounded-lg text-purple-600 dark:text-purple-400">
+                                <i data-lucide="network" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Offline ACO Solver</h2>
+                                <p class="text-sm text-slate-600 dark:text-slate-400">
+                                    Run non-preemptive or preemptive Ant Colony Optimization against the offline task
+                                    model.
+                                </p>
+                            </div>
+                        </div>
+                        <div id="acoStatusBadge"
+                            class="px-3 py-1 rounded-full border bg-slate-500/5 dark:bg-slate-500/10 border-slate-500/20 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                            Idle
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                        <!-- ACO Config -->
+                        <div class="glass p-6 rounded-3xl">
+                            <h3
+                                class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-5">
+                                Solver Configuration
+                            </h3>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <label
+                                        class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Solver
+                                        Type</label>
+                                    <select id="acoSolverType"
+                                        class="w-full bg-white/70 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white">
+                                        <option value="non_preemptive">Non-preemptive ACO</option>
+                                        <option value="preemptive">Preemptive ACO</option>
+                                    </select>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label
+                                            class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Ant
+                                            Count</label>
+                                        <input id="acoAntCount" type="number" value="40" min="1"
+                                            class="w-full bg-white/70 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white">
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Iterations</label>
+                                        <input id="acoIterations" type="number" value="150" min="1"
+                                            class="w-full bg-white/70 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label
+                                            class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Lookahead
+                                            ms</label>
+                                        <input id="acoLookahead" type="number" value="20" min="0"
+                                            class="w-full bg-white/70 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white">
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Seed</label>
+                                        <input id="acoSeed" type="number" value="42"
+                                            class="w-full bg-white/70 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white">
+                                    </div>
+                                </div>
+
+                                <button id="runAcoBtn" onclick="runAco()"
+                                    class="w-full flex justify-center items-center gap-2 px-5 py-3 btn-primary rounded-xl font-semibold shadow-lg accent-glow">
+                                    <i data-lucide="play" class="w-4 h-4"></i>
+                                    Run Offline ACO
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ACO Summary -->
+                        <div class="xl:col-span-2 glass p-6 rounded-3xl">
+                            <h3
+                                class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-5">
+                                Result Summary
+                            </h3>
+
+                            <div id="acoSummaryGrid" class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div
+                                    class="p-4 rounded-2xl bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700">
+                                    <div class="text-xs text-slate-500 dark:text-slate-400">Deadline Misses</div>
+                                    <div id="acoMisses" class="text-2xl font-bold text-slate-900 dark:text-white mt-1">-
+                                    </div>
+                                </div>
+                                <div
+                                    class="p-4 rounded-2xl bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700">
+                                    <div class="text-xs text-slate-500 dark:text-slate-400">Total Lateness</div>
+                                    <div id="acoLateness"
+                                        class="text-2xl font-bold text-slate-900 dark:text-white mt-1">-</div>
+                                </div>
+                                <div
+                                    class="p-4 rounded-2xl bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700">
+                                    <div class="text-xs text-slate-500 dark:text-slate-400">Smooth Memory</div>
+                                    <div id="acoSmooth" class="text-2xl font-bold text-slate-900 dark:text-white mt-1">-
+                                    </div>
+                                </div>
+                                <div
+                                    class="p-4 rounded-2xl bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700">
+                                    <div class="text-xs text-slate-500 dark:text-slate-400">Total Cost</div>
+                                    <div id="acoCost"
+                                        class="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white mt-1 truncate"
+                                        title="-">-</div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
+                                <div>
+                                    <h4
+                                        class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
+                                        Convergence
+                                    </h4>
+                                    <div class="h-[260px]">
+                                        <canvas id="acoHistoryChart"></canvas>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4
+                                        class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
+                                        Baseline Comparison
+                                    </h4>
+                                    <div class="h-[260px]">
+                                        <canvas id="acoComparisonChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Schedule Preview -->
+                    <div class="glass p-6 rounded-3xl">
+                        <div class="flex items-center justify-between mb-5">
+                            <h3
+                                class="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-widest">
+                                Schedule / Segment Preview
+                            </h3>
+                            <span id="acoPreviewLabel" class="text-xs text-slate-500 dark:text-slate-400">First 30
+                                entries</span>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead
+                                    class="text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
+                                    <tr id="acoPreviewHead"></tr>
+                                </thead>
+                                <tbody id="acoPreviewBody" class="divide-y divide-slate-200 dark:divide-slate-800">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
 
                 <!-- Analytics Section (Hidden by default) -->
                 <div id="analytics" class="hidden space-y-8 order-2 transition-all duration-500">
@@ -504,49 +693,67 @@
                             <h2 class="text-xl font-bold text-slate-900 dark:text-white">Performance Analytics</h2>
                         </div>
                         <!-- Benchmark Source Indicator Badge -->
-                                <div id="analyticsSourceBadge" class="flex items-center gap-2 px-3 py-1 rounded-full border bg-amber-500/5 dark:bg-amber-500/10 border-amber-500/20 text-xs font-semibold select-none transition-all duration-300">
-                                    <span id="analyticsSourceDot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                                    <div class="flex flex-col">
-                                        <span id="analyticsSourceText" class="text-slate-600 dark:text-slate-300">Displaying: Previous Benchmark</span>
-                                        <span id="analyticsTimestamp" class="text-[10px] text-slate-500 dark:text-slate-400">Timestamp: --</span>
-                                    </div>
-                                </div>
+                        <div id="analyticsSourceBadge"
+                            class="flex items-center gap-2 px-3 py-1 rounded-full border bg-amber-500/5 dark:bg-amber-500/10 border-amber-500/20 text-xs font-semibold select-none transition-all duration-300">
+                            <span id="analyticsSourceDot"
+                                class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                            <div class="flex flex-col">
+                                <span id="analyticsSourceText" class="text-slate-600 dark:text-slate-300">Displaying:
+                                    Previous Benchmark</span>
+                                <span id="analyticsTimestamp"
+                                    class="text-[10px] text-slate-500 dark:text-slate-400">Timestamp: --</span>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Incomplete Benchmarks Warning Banner -->
-                    <div id="incompleteWarningBanner" class="hidden px-6 py-4 rounded-3xl border border-rose-500/20 bg-rose-500/10 backdrop-blur-md text-rose-500 flex flex-col md:flex-row md:items-center gap-4 relative overflow-hidden group">
+                    <div id="incompleteWarningBanner"
+                        class="hidden px-6 py-4 rounded-3xl border border-rose-500/20 bg-rose-500/10 backdrop-blur-md text-rose-500 flex flex-col md:flex-row md:items-center gap-4 relative overflow-hidden group">
                         <div class="absolute inset-0 bg-gradient-to-r from-rose-500/5 to-transparent"></div>
                         <div class="relative z-10 p-2 bg-rose-500/20 rounded-2xl text-rose-500 shrink-0 w-fit">
                             <i data-lucide="alert-triangle" class="w-6 h-6"></i>
                         </div>
                         <div class="relative z-10 flex-grow">
-                            <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-0.5">Incomplete Benchmark Run Detected!</h4>
+                            <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-0.5">Incomplete Benchmark Run
+                                Detected!</h4>
                             <p id="incompleteWarningText" class="text-xs text-slate-600 dark:text-slate-400">
-                                Some scheduler tests are missing or ran for unequal durations (e.g. Native RMS: 5s, EDF: 3s). This may skew relative performance metrics.
+                                Some scheduler tests are missing or ran for unequal durations (e.g. Native RMS: 5s, EDF:
+                                3s). This may skew relative performance metrics.
                             </p>
                         </div>
                     </div>
 
                     <!-- Offline Parameter Summary (Hidden by default, shown in offline mode) -->
-                    <div id="offlineParamsCard" class="hidden glass rounded-3xl border border-indigo-500/20 bg-indigo-500/5 relative overflow-hidden group">
-                        <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 group-hover:from-indigo-500/10 group-hover:to-purple-500/10 transition-all duration-300"></div>
+                    <div id="offlineParamsCard"
+                        class="hidden glass rounded-3xl border border-indigo-500/20 bg-indigo-500/5 relative overflow-hidden group">
+                        <div
+                            class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 group-hover:from-indigo-500/10 group-hover:to-purple-500/10 transition-all duration-300">
+                        </div>
                         <div class="relative z-10">
                             <!-- Collapsible Header button -->
-                            <button onclick="toggleOfflineParams()" class="w-full flex justify-between items-center p-6 text-slate-700 dark:text-slate-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors focus:outline-none">
+                            <button onclick="toggleOfflineParams()"
+                                class="w-full flex justify-between items-center p-6 text-slate-700 dark:text-slate-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors focus:outline-none">
                                 <div class="flex items-center gap-2">
                                     <i data-lucide="sliders-horizontal" class="w-4.5 h-4.5 text-indigo-500"></i>
-                                    <span class="text-xs font-bold uppercase tracking-wider">Offline Run Parameters & Task Configuration</span>
-                                    <span id="offlineDurationBadge" class="font-mono font-semibold text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full ml-3 hidden whitespace-nowrap"></span>
-                                    <span id="offlineFilesTimeBadge" class="font-mono text-[10px] text-slate-600 dark:text-slate-400 bg-white/5 border border-slate-200 dark:border-slate-800 px-2 py-0.5 rounded-full ml-3 hidden whitespace-nowrap max-w-[170px] overflow-hidden text-ellipsis"></span>
+                                    <span class="text-xs font-bold uppercase tracking-wider">Offline Run Parameters &
+                                        Task Configuration</span>
+                                    <span id="offlineDurationBadge"
+                                        class="font-mono font-semibold text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full ml-3 hidden whitespace-nowrap"></span>
+                                    <span id="offlineFilesTimeBadge"
+                                        class="font-mono text-[10px] text-slate-600 dark:text-slate-400 bg-white/5 border border-slate-200 dark:border-slate-800 px-2 py-0.5 rounded-full ml-3 hidden whitespace-nowrap max-w-[170px] overflow-hidden text-ellipsis"></span>
                                 </div>
-                                <div class="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-[10px] font-semibold tracking-wider uppercase">
+                                <div
+                                    class="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-[10px] font-semibold tracking-wider uppercase">
                                     <span id="offlineParamsCollapseText">Click to expand</span>
-                                    <i id="offlineParamsChevron" data-lucide="chevron-up" class="w-4 h-4 rotate-180 transition-transform duration-300"></i>
+                                    <i id="offlineParamsChevron" data-lucide="chevron-up"
+                                        class="w-4 h-4 rotate-180 transition-transform duration-300"></i>
                                 </div>
                             </button>
                             <!-- Collapsible Body container -->
-                            <div id="offlineParamsBody" class="px-6 pb-6 hidden transition-all duration-300 ease-in-out">
-                                <div id="offlineParamsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-xs">
+                            <div id="offlineParamsBody"
+                                class="px-6 pb-6 hidden transition-all duration-300 ease-in-out">
+                                <div id="offlineParamsContainer"
+                                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-xs">
                                     <!-- Populated dynamically -->
                                 </div>
                             </div>
@@ -562,20 +769,27 @@
                                 <div class="p-2 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-xl">
                                     <i data-lucide="activity" class="w-4 h-4"></i>
                                 </div>
-                                <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Critical Task Jitter (T1)</h4>
+                                <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Critical Task
+                                    Jitter (T1)</h4>
                             </div>
                             <div class="space-y-2.5">
-                                <div class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
+                                <div
+                                    class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
                                     <span class="text-slate-500 font-medium">Context-Aware:</span>
-                                    <span id="jitterCA" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">0.00 ms</span>
+                                    <span id="jitterCA"
+                                        class="font-mono font-bold text-emerald-600 dark:text-emerald-400">0.00
+                                        ms</span>
                                 </div>
-                                <div class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
+                                <div
+                                    class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
                                     <span class="text-slate-500 font-medium">EDF:</span>
-                                    <span id="jitterEDF" class="font-mono font-bold text-slate-700 dark:text-slate-300">0.00 ms</span>
+                                    <span id="jitterEDF"
+                                        class="font-mono font-bold text-slate-700 dark:text-slate-300">0.00 ms</span>
                                 </div>
                                 <div class="flex items-center justify-between text-xs">
                                     <span class="text-slate-500 font-medium">Native RMS:</span>
-                                    <span id="jitterNative" class="font-mono font-bold text-slate-700 dark:text-slate-300">0.00 ms</span>
+                                    <span id="jitterNative"
+                                        class="font-mono font-bold text-slate-700 dark:text-slate-300">0.00 ms</span>
                                 </div>
                             </div>
                         </div>
@@ -587,20 +801,26 @@
                                 <div class="p-2 bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-xl">
                                     <i data-lucide="zap" class="w-4 h-4"></i>
                                 </div>
-                                <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Total Contention Penalty</h4>
+                                <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Total
+                                    Contention Penalty</h4>
                             </div>
                             <div class="space-y-2.5">
-                                <div class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
+                                <div
+                                    class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
                                     <span class="text-slate-500 font-medium">Context-Aware:</span>
-                                    <span id="contentionCA" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">0 ms</span>
+                                    <span id="contentionCA"
+                                        class="font-mono font-bold text-emerald-600 dark:text-emerald-400">0 ms</span>
                                 </div>
-                                <div class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
+                                <div
+                                    class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
                                     <span class="text-slate-500 font-medium">EDF:</span>
-                                    <span id="contentionEDF" class="font-mono font-bold text-slate-700 dark:text-slate-300">0 ms</span>
+                                    <span id="contentionEDF"
+                                        class="font-mono font-bold text-slate-700 dark:text-slate-300">0 ms</span>
                                 </div>
                                 <div class="flex items-center justify-between text-xs">
                                     <span class="text-slate-500 font-medium">Native RMS:</span>
-                                    <span id="contentionNative" class="font-mono font-bold text-slate-700 dark:text-slate-300">0 ms</span>
+                                    <span id="contentionNative"
+                                        class="font-mono font-bold text-slate-700 dark:text-slate-300">0 ms</span>
                                 </div>
                             </div>
                         </div>
@@ -612,20 +832,26 @@
                                 <div class="p-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl">
                                     <i data-lucide="cpu" class="w-4 h-4"></i>
                                 </div>
-                                <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Avg Decision Overhead</h4>
+                                <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Avg Decision
+                                    Overhead</h4>
                             </div>
                             <div class="space-y-2.5">
-                                <div class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
+                                <div
+                                    class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
                                     <span class="text-slate-500 font-medium">Context-Aware:</span>
-                                    <span id="overheadCA" class="font-mono font-bold text-amber-600 dark:text-amber-400">0 cyc</span>
+                                    <span id="overheadCA"
+                                        class="font-mono font-bold text-amber-600 dark:text-amber-400">0 cyc</span>
                                 </div>
-                                <div class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
+                                <div
+                                    class="flex items-center justify-between text-xs border-b border-slate-200/50 dark:border-slate-800/50 pb-1.5">
                                     <span class="text-slate-500 font-medium">EDF:</span>
-                                    <span id="overheadEDF" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">0 cyc</span>
+                                    <span id="overheadEDF"
+                                        class="font-mono font-bold text-emerald-600 dark:text-emerald-400">0 cyc</span>
                                 </div>
                                 <div class="flex items-center justify-between text-xs">
                                     <span class="text-slate-500 font-medium">Native RMS:</span>
-                                    <span id="overheadNative" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">0 cyc</span>
+                                    <span id="overheadNative"
+                                        class="font-mono font-bold text-emerald-600 dark:text-emerald-400">0 cyc</span>
                                 </div>
                             </div>
                         </div>
@@ -935,7 +1161,7 @@
             if (analytics) {
                 analytics.classList.remove('hidden');
             }
-            
+
             // Update Source Badge to Running Benchmark
             const sourceBadge = document.getElementById('analyticsSourceBadge');
             const sourceDot = document.getElementById('analyticsSourceDot');
@@ -971,17 +1197,17 @@
                 inspectChart.destroy();
                 inspectChart = null;
             }
-            
+
             // Clear inspect table and legend toggles
             const inspectTableBody = document.getElementById('inspectTableBody');
             if (inspectTableBody) inspectTableBody.innerHTML = '';
-            
+
             const inspectLegendToggles = document.getElementById('inspectLegendToggles');
             if (inspectLegendToggles) inspectLegendToggles.innerHTML = '';
-            
+
             const starvationAlert = document.getElementById('starvationAlert');
             if (starvationAlert) starvationAlert.classList.add('hidden');
-            
+
             // Hide warning banner during benchmark execution
             const warningBanner = document.getElementById('incompleteWarningBanner');
             if (warningBanner) {
@@ -1019,7 +1245,7 @@
             }
 
             log('Initiating test sequence...', 'indigo-400');
-            
+
             let hasError = false;
             const eventSource = new EventSource('/api/run');
 
@@ -1047,7 +1273,7 @@
                     if (stopBtnConsole) {
                         stopBtnConsole.classList.add('hidden');
                     }
-                    
+
                     if (hasError) {
                         log('Benchmark execution failed.', 'red-400');
                         // Scroll to the console logs card so the user easily sees the failure stream centered
@@ -1059,7 +1285,7 @@
                     }
                 } else {
                     log(event.data);
-                    
+
                     // Show a browser alert prompt if any error or exception is streamed
                     const lowerData = event.data.toLowerCase();
                     if (lowerData.includes('error:') || lowerData.includes('exception:')) {
@@ -1110,6 +1336,8 @@
         let trendChart = null;
         let lastChartData = null;
         let hasRunNewBenchmark = false;
+        let acoHistoryChart = null;
+        let acoComparisonChart = null;
 
         async function updateCharts(shouldScroll = false) {
             const res = await fetch('/api/results');
@@ -1152,7 +1380,7 @@
             function formatTimestamp(ts) {
                 if (!ts) return '--';
                 // Match YYYYMMDDTHHMMSS or YYYYMMDD_HHMMSS
-                const m = (''+ts).match(/(\d{4})(\d{2})(\d{2})T?(\d{2})(\d{2})(\d{2})/);
+                const m = ('' + ts).match(/(\d{4})(\d{2})(\d{2})T?(\d{2})(\d{2})(\d{2})/);
                 try {
                     if (m) {
                         const d = new Date(`${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}`);
@@ -1160,7 +1388,7 @@
                     }
                     const d2 = new Date(ts);
                     if (!isNaN(d2)) return d2.toLocaleString();
-                } catch (e) {}
+                } catch (e) { }
                 return ts;
             }
 
@@ -1181,7 +1409,7 @@
             // --- INCOMPLETE OR UNEQUAL BENCHMARK CHECK ---
             const expectedSchedulers = ["NativeSch_test", "EDFSch_test", "ContextAwareSch_test"];
             const missingSchedulers = expectedSchedulers.filter(s => !data.data[s] || data.data[s].length === 0);
-            
+
             const durationValues = [];
             for (let sched in data.data) {
                 const metrics = data.data[sched] || [];
@@ -1214,7 +1442,7 @@
                     hasIncomplete = true;
                     const durStrings = durationValues.map(item => {
                         const label = item.name === 'NativeSch_test' ? 'Native RMS' :
-                                      item.name === 'EDFSch_test' ? 'EDF' : 'Context-Aware';
+                            item.name === 'EDFSch_test' ? 'EDF' : 'Context-Aware';
                         return `${label}: ${Math.round(item.dur)}s`;
                     }).join(", ");
                     warningMsg = `Unequal test durations detected (${durStrings})! The relative performance ratios and DMR percentages on the graphs below may be highly inaccurate due to unequal workloads.`;
@@ -1257,10 +1485,10 @@
             function avgNonZero(arr, key) {
                 const vals = arr.map(x => (x && x[key] !== undefined) ? Number(x[key]) : 0).filter(v => v && !isNaN(v));
                 if (!vals.length) return 0;
-                return vals.reduce((a,b) => a + b, 0) / vals.length;
+                return vals.reduce((a, b) => a + b, 0) / vals.length;
             }
             function sumVals(arr, key) {
-                return arr.map(x => (x && x[key] !== undefined) ? Number(x[key]) : 0).reduce((a,b) => a + b, 0);
+                return arr.map(x => (x && x[key] !== undefined) ? Number(x[key]) : 0).reduce((a, b) => a + b, 0);
             }
 
             const caMotorSeries = (data.data["ContextAwareSch_test"] || []).filter(m => m.task === 'Motor');
@@ -1787,13 +2015,15 @@
             document.documentElement.classList.toggle('dark');
             const isDark = document.documentElement.classList.contains('dark');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            
+
             // Re-render current active charts (live or offline log data) with new theme styling
             if (lastChartData) {
                 renderChartsWithData(lastChartData);
             } else {
                 if (window.updateCharts) updateCharts(false);
             }
+            if (acoHistoryChart) acoHistoryChart.update();
+            if (acoComparisonChart) acoComparisonChart.update();
         }
 
         // Toggle Trend Card Zoom/Maximize
@@ -1974,17 +2204,17 @@
                             const prio = taskMatch[3];
                             const period = taskMatch[4];
                             const mem = taskMatch[5];
-                            
+
                             paramList.push(`T${taskNum} (${taskName}) = Prio: ${prio} • Per: ${period} • Mem: ${mem}`);
                         }
-                        
+
                         // New format: Alpha & Safety Margin (e.g. Alpha: 1.00, Safety Margin: 2 ms, Threshold: 0.15)
                         const alphaMatch = line.match(/Alpha:\s*([\d\.]+),\s*Safety\s+Margin:\s*([^,]+),\s*Threshold:\s*([\d\.]+)/i);
                         if (alphaMatch) {
                             const alpha = alphaMatch[1];
                             const margin = alphaMatch[2];
                             const threshold = alphaMatch[3];
-                            
+
                             paramList.push(`Alpha Coefficient = ${alpha}`);
                             paramList.push(`Safety Margin = ${margin}`);
                             paramList.push(`Memory Intensity Threshold = ${threshold}`);
@@ -2031,7 +2261,7 @@
 
                 if (duplicateSched) {
                     const label = duplicateSched === 'NativeSch_test' ? 'Native RMS' :
-                                  duplicateSched === 'EDFSch_test' ? 'EDF' : 'Context-Aware';
+                        duplicateSched === 'EDFSch_test' ? 'EDF' : 'Context-Aware';
                     alert(`Error: Repeating scheduler log files detected for "${label}"! Please ensure you upload one distinct file for each of the 3 schedulers.`);
                     log(`Error: Upload contains repeating scheduler files for "${label}".`, "red-400");
                     return;
@@ -2070,10 +2300,10 @@
                 // Swap layout order for offline analysis: put analytics at top
                 const liveContainer = document.getElementById('liveContainer');
                 const analytics = document.getElementById('analytics');
-                
+
                 liveContainer.classList.remove('order-1', 'animate-slide-up');
                 liveContainer.classList.add('order-2');
-                
+
                 analytics.classList.remove('order-2', 'animate-slide-up');
                 analytics.classList.add('order-1', 'animate-slide-up');
                 analytics.addEventListener('animationend', () => {
@@ -2090,7 +2320,7 @@
                     });
                 }
                 const durationSeconds = (maxDurationMs / 1000).toFixed(1);
-                
+
                 const durationBadge = document.getElementById('offlineDurationBadge');
                 if (maxDurationMs > 0) {
                     durationBadge.textContent = `⏱️ Run Duration: ${durationSeconds}s`;
@@ -2110,35 +2340,35 @@
                 const paramsContainer = document.getElementById('offlineParamsContainer');
                 const offlineParamsCard = document.getElementById('offlineParamsCard');
                 paramsContainer.innerHTML = '';
-                
+
                 let totalParams = 0;
                 for (const [sched, paramsList] of Object.entries(extractedParams)) {
                     const schedLabel = sched === 'NativeSch_test' ? 'Native RMS' :
-                                       sched === 'EDFSch_test' ? 'EDF' : 'Context-Aware';
-                                       
+                        sched === 'EDFSch_test' ? 'EDF' : 'Context-Aware';
+
                     const schedCard = document.createElement('div');
                     schedCard.className = 'p-4 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800/80 flex flex-col gap-2.5';
-                    
+
                     schedCard.innerHTML = `
                         <div class="flex items-center gap-1.5 font-bold text-indigo-500 dark:text-indigo-400 border-b border-slate-200 dark:border-slate-800 pb-1.5 mb-1 text-xs">
                             <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
                             <span>${schedLabel}</span>
                         </div>
                     `;
-                    
+
                     const paramListEl = document.createElement('div');
                     paramListEl.className = 'space-y-1.5';
-                    
+
                     let globalsHtml = '';
                     let tasksHtml = '';
-                    
+
                     paramsList.forEach(item => {
                         totalParams++;
                         const parts = item.split("=");
                         if (parts.length >= 2) {
                             const key = parts[0].trim();
                             const val = parts[1].trim();
-                            
+
                             if (key.startsWith("T") && (key.includes("(") || key.includes("Task"))) {
                                 tasksHtml += `
                                     <div class="flex justify-between items-center text-[10.5px] py-1 border-b border-slate-300/10 dark:border-white/5 last:border-0">
@@ -2149,7 +2379,7 @@
                             } else {
                                 let prettyKey = key.replace(/_/g, ' ').toLowerCase();
                                 prettyKey = prettyKey.replace(/\bms\b/g, '(ms)');
-                                
+
                                 globalsHtml += `
                                     <div class="flex justify-between items-center text-[10px] py-0.5">
                                         <span class="text-slate-500 dark:text-slate-400 capitalize">${prettyKey}</span>
@@ -2159,7 +2389,7 @@
                             }
                         }
                     });
-                    
+
                     paramListEl.innerHTML = `
                         ${globalsHtml ? `
                         <div class="bg-indigo-500/5 dark:bg-indigo-500/10 p-2.5 rounded-xl border border-indigo-500/10 mb-2 space-y-0.5">
@@ -2167,11 +2397,11 @@
                         </div>` : ''}
                         <div class="space-y-1">${tasksHtml}</div>
                     `;
-                    
+
                     schedCard.appendChild(paramListEl);
                     paramsContainer.appendChild(schedCard);
                 }
-                
+
                 if (totalParams > 0) {
                     offlineParamsCard.classList.remove('hidden');
                 } else {
@@ -2216,6 +2446,319 @@
             }
         }
 
+        function setAcoStatus(text, type = "idle") {
+            const badge = document.getElementById("acoStatusBadge");
+            if (!badge) return;
+
+            const classes = {
+                idle: "px-3 py-1 rounded-full border bg-slate-500/5 dark:bg-slate-500/10 border-slate-500/20 text-xs font-semibold text-slate-600 dark:text-slate-400",
+                running: "px-3 py-1 rounded-full border bg-blue-500/5 dark:bg-blue-500/10 border-blue-500/20 text-xs font-semibold text-blue-600 dark:text-blue-400 animate-pulse",
+                success: "px-3 py-1 rounded-full border bg-emerald-500/5 dark:bg-emerald-500/10 border-emerald-500/20 text-xs font-semibold text-emerald-600 dark:text-emerald-400",
+                error: "px-3 py-1 rounded-full border bg-red-500/5 dark:bg-red-500/10 border-red-500/20 text-xs font-semibold text-red-600 dark:text-red-400"
+            };
+
+            badge.className = classes[type] || classes.idle;
+            badge.textContent = text;
+        }
+
+        async function runAco() {
+            const btn = document.getElementById("runAcoBtn");
+            const solverType = document.getElementById("acoSolverType").value;
+
+            const payload = {
+                solver_type: solverType,
+                ant_count: Number(document.getElementById("acoAntCount").value),
+                iterations: Number(document.getElementById("acoIterations").value),
+                lookahead_ms: Number(document.getElementById("acoLookahead").value),
+                seed: Number(document.getElementById("acoSeed").value)
+            };
+
+            try {
+                btn.disabled = true;
+                btn.classList.add("opacity-50", "cursor-not-allowed");
+                setAcoStatus("Running ACO...", "running");
+                log(`Running ${solverType} ACO with ${payload.ant_count} ants and ${payload.iterations} iterations.`, "indigo-400");
+
+                const res = await fetch("/api/aco/run", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    const err = await res.text();
+                    throw new Error(err);
+                }
+
+                const data = await res.json();
+
+                renderAcoSummary(data);
+                renderAcoHistoryChart(data);
+                renderAcoComparisonChart(data);
+                renderAcoPreview(data);
+
+                setAcoStatus("ACO completed", "success");
+                log("Offline ACO solver completed successfully.", "emerald-400");
+
+                if (window.lucide) lucide.createIcons();
+            } catch (err) {
+                setAcoStatus("ACO failed", "error");
+                log(`ACO error: ${err.message}`, "red-400");
+                alert(`ACO error: ${err.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove("opacity-50", "cursor-not-allowed");
+            }
+        }
+
+        function formatCompactNumber(value) {
+            if (value === undefined || value === null) return "-";
+
+            const n = Number(value);
+
+            if (Math.abs(n) >= 1_000_000) {
+                return `${(n / 1_000_000).toFixed(2)}M`;
+            }
+
+            if (Math.abs(n) >= 1_000) {
+                return `${(n / 1_000).toFixed(2)}K`;
+            }
+
+            return n.toFixed(2);
+        }
+
+        function renderAcoSummary(data) {
+            const summary = data.aco.summary;
+
+            document.getElementById("acoMisses").innerText = summary.deadline_misses ?? "-";
+            document.getElementById("acoLateness").innerText = `${summary.total_lateness_ms ?? 0} ms`;
+
+            const smoothLabel = document.querySelector("#acoSmooth")
+                .parentElement
+                .querySelector(".text-xs");
+
+            if (data.solver_type === "preemptive") {
+                console.log("hell yeee");
+                smoothLabel.innerText = "Segment Smooth";
+            } else {
+                console.log("oh hell nah");
+                smoothLabel.innerText = "Smooth Memory";
+            }
+
+            const smooth =
+                data.solver_type === "preemptive"
+                    ? summary.segment_smooth_memory_penalty
+                    : summary.total_smooth_memory_penalty;
+
+            document.getElementById("acoSmooth").innerText =
+                smooth !== undefined ? Number(smooth).toFixed(2) : "-";
+
+            const costEl = document.getElementById("acoCost");
+            const rawCost = summary.total_cost;
+            costEl.innerText = formatCompactNumber(rawCost);
+            costEl.title = rawCost !== undefined ? Number(rawCost).toFixed(2) : "-";
+        }
+
+        function getAcoChartTheme() {
+            const isDark = document.documentElement.classList.contains("dark");
+            return {
+                textColor: isDark ? "#94a3b8" : "#475569",
+                gridColor: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"
+            };
+        }
+
+        function renderAcoHistoryChart(data) {
+            const canvas = document.getElementById("acoHistoryChart");
+            if (!canvas) return;
+
+            const { textColor, gridColor } = getAcoChartTheme();
+            const history = data.aco.history || [];
+
+            if (acoHistoryChart) {
+                acoHistoryChart.destroy();
+                acoHistoryChart = null;
+            }
+
+            acoHistoryChart = new Chart(canvas, {
+                type: "line",
+                data: {
+                    labels: history.map(h => h.iteration),
+                    datasets: [
+                        {
+                            label: "Best Cost",
+                            data: history.map(h => h.best_cost),
+                            borderColor: "#8b5cf6",
+                            backgroundColor: "rgba(139, 92, 246, 0.12)",
+                            tension: 0.25,
+                            fill: true,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: textColor }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: textColor },
+                            grid: { color: gridColor }
+                        },
+                        y: {
+                            ticks: { color: textColor },
+                            grid: { color: gridColor }
+                        }
+                    }
+                }
+            });
+        }
+
+        function getBaselineSmoothValue(solverType, result) {
+            const s = result.summary;
+            if (solverType === "preemptive") {
+                return s.segment_smooth_memory_penalty ?? 0;
+            }
+            return s.total_smooth_memory_penalty ?? 0;
+        }
+
+        function renderAcoComparisonChart(data) {
+            const canvas = document.getElementById("acoComparisonChart");
+            if (!canvas) return;
+
+            const { textColor, gridColor } = getAcoChartTheme();
+
+            const labels = ["RMS", "EDF", "Context-Aware", "ACO"];
+            const baselines = data.baselines || {};
+
+            const acoSmooth =
+                data.solver_type === "preemptive"
+                    ? data.aco.summary.segment_smooth_memory_penalty
+                    : data.aco.summary.total_smooth_memory_penalty;
+
+            const values = [
+                baselines.rms ? getBaselineSmoothValue(data.solver_type, baselines.rms) : 0,
+                baselines.edf ? getBaselineSmoothValue(data.solver_type, baselines.edf) : 0,
+                baselines.context_aware ? getBaselineSmoothValue(data.solver_type, baselines.context_aware) : 0,
+                acoSmooth ?? 0
+            ];
+
+            if (acoComparisonChart) {
+                acoComparisonChart.destroy();
+                acoComparisonChart = null;
+            }
+
+            acoComparisonChart = new Chart(canvas, {
+                type: "bar",
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: "Smooth Memory Penalty",
+                            data: values,
+                            backgroundColor: ["#94a3b8", "#f59e0b", "#6366f1", "#8b5cf6"],
+                            borderRadius: 8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: textColor }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: textColor },
+                            grid: { color: gridColor }
+                        },
+                        y: {
+                            ticks: { color: textColor },
+                            grid: { color: gridColor }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderAcoPreview(data) {
+            const head = document.getElementById("acoPreviewHead");
+            const body = document.getElementById("acoPreviewBody");
+            const label = document.getElementById("acoPreviewLabel");
+
+            if (!head || !body) return;
+
+            body.innerHTML = "";
+
+            if (data.solver_type === "preemptive") {
+                const segments = (data.aco.segments || []).slice(0, 30);
+                label.innerText = "First 30 execution segments";
+
+                head.innerHTML = `
+            <th class="text-left py-3 pr-4">#</th>
+            <th class="text-left py-3 pr-4">Job</th>
+            <th class="text-left py-3 pr-4">Task</th>
+            <th class="text-right py-3 pr-4">Start</th>
+            <th class="text-right py-3 pr-4">End</th>
+            <th class="text-right py-3 pr-4">Duration</th>
+        `;
+
+                segments.forEach(seg => {
+                    const tr = document.createElement("tr");
+                    tr.className = "text-slate-700 dark:text-slate-300";
+                    tr.innerHTML = `
+                <td class="py-3 pr-4 font-mono">${seg.index}</td>
+                <td class="py-3 pr-4 font-semibold">${seg.job}</td>
+                <td class="py-3 pr-4">${seg.task}</td>
+                <td class="py-3 pr-4 text-right font-mono">${seg.start_ms}</td>
+                <td class="py-3 pr-4 text-right font-mono">${seg.end_ms}</td>
+                <td class="py-3 pr-4 text-right font-mono">${seg.duration_ms}</td>
+            `;
+                    body.appendChild(tr);
+                });
+
+                return;
+            }
+
+            const schedule = (data.aco.schedule || []).slice(0, 30);
+            label.innerText = "First 30 scheduled jobs";
+
+            head.innerHTML = `
+        <th class="text-left py-3 pr-4">#</th>
+        <th class="text-left py-3 pr-4">Job</th>
+        <th class="text-left py-3 pr-4">Task</th>
+        <th class="text-right py-3 pr-4">Release</th>
+        <th class="text-right py-3 pr-4">Start</th>
+        <th class="text-right py-3 pr-4">Finish</th>
+        <th class="text-right py-3 pr-4">Deadline</th>
+        <th class="text-right py-3 pr-4">Lateness</th>
+    `;
+
+            schedule.forEach(job => {
+                const tr = document.createElement("tr");
+                tr.className = job.deadline_missed
+                    ? "text-red-600 dark:text-red-400"
+                    : "text-slate-700 dark:text-slate-300";
+
+                tr.innerHTML = `
+            <td class="py-3 pr-4 font-mono">${job.order}</td>
+            <td class="py-3 pr-4 font-semibold">${job.job}</td>
+            <td class="py-3 pr-4">${job.task}</td>
+            <td class="py-3 pr-4 text-right font-mono">${job.release_ms}</td>
+            <td class="py-3 pr-4 text-right font-mono">${job.start_ms}</td>
+            <td class="py-3 pr-4 text-right font-mono">${job.finish_ms}</td>
+            <td class="py-3 pr-4 text-right font-mono">${job.deadline_ms}</td>
+            <td class="py-3 pr-4 text-right font-mono">${job.lateness_ms}</td>
+        `;
+                body.appendChild(tr);
+            });
+        }
+
         function resetToLiveServer() {
             document.getElementById('offlineBanner').classList.add('hidden');
             document.getElementById('offlineParamsCard').classList.add('hidden');
@@ -2224,13 +2767,13 @@
             // Restore layout order: put liveContainer back at top
             const liveContainer = document.getElementById('liveContainer');
             const analytics = document.getElementById('analytics');
-            
+
             liveContainer.classList.remove('order-2', 'animate-slide-up');
             liveContainer.classList.add('order-1', 'animate-slide-up');
             liveContainer.addEventListener('animationend', () => {
                 liveContainer.classList.remove('animate-slide-up');
             }, { once: true });
-            
+
             analytics.classList.remove('order-1', 'animate-slide-up');
             analytics.classList.add('order-2');
 
@@ -2242,10 +2785,10 @@
             const body = document.getElementById('offlineParamsBody');
             const chevron = document.getElementById('offlineParamsChevron');
             const label = document.getElementById('offlineParamsCollapseText');
-            
+
             body.classList.toggle('hidden');
             chevron.classList.toggle('rotate-180');
-            
+
             if (body.classList.contains('hidden')) {
                 label.textContent = "Click to expand";
             } else {
