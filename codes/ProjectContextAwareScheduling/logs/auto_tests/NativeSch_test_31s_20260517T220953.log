@@ -1,0 +1,163 @@
+--- Log started at Sun May 17 22:09:56 2026 for scheduler NATIVE ---
+
+--- System Configuration ---
+T1 (Motor):  Prio: 4, Period: 10 ms, MemIntensity: 0.10
+T2 (Sensor): Prio: 2, Period: 50 ms, MemIntensity: 0.20
+T3 (Crypto): Prio: 1, Period: 500 ms, MemIntensity: 0.90
+T4 (Vision): Prio: 3, Period: 20 ms, MemIntensity: 0.80
+Alpha: 1.00, Safety Margin: 2 ms, Threshold: 0.15
+---------------------------
+Tasks created successfully. Activating [Native RMS Scheduler]...
+
+Task1_MotorControl! SP: 100, MV: -500 (x1000), OUT: 613050 (x1000)
+Task4_VisionProcessing!
+Task2_SensorAcquisition! RAW: 1024, FILTERED: 256
+Task3_CryptoEncryption!
+
+Task1_MotorControl! SP: 100, MV: 103025 (x1000), OUT: 66441 (x1000)
+[TS: 1007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 100 | Misses: 0 | DMR: 0% | Jitter: 0.60 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 1096 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 50 | Misses: 45 | DMR: 90% | Jitter: 19.10 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 102063 (x1000), OUT: 74 (x1000)
+[TS: 2007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 200 | Misses: 1 | DMR: 0% | Jitter: 1.47 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 2182 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 100 | Misses: 95 | DMR: 95% | Jitter: 48.58 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 100637 (x1000), OUT: 9337 (x1000)
+[TS: 3007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 300 | Misses: 2 | DMR: 0% | Jitter: 1.61 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 3268 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 150 | Misses: 145 | DMR: 96% | Jitter: 74.89 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 99713 (x1000), OUT: 13917 (x1000)
+[TS: 4007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 400 | Misses: 3 | DMR: 0% | Jitter: 1.69 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 4354 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 200 | Misses: 195 | DMR: 97% | Jitter: 100.65 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 98941 (x1000), OUT: 13246 (x1000)
+[TS: 5007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 500 | Misses: 4 | DMR: 0% | Jitter: 1.73 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 5441 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 250 | Misses: 245 | DMR: 98% | Jitter: 126.28 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 98515 (x1000), OUT: 8260 (x1000)
+[TS: 6007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 600 | Misses: 5 | DMR: 0% | Jitter: 1.76 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 6526 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 300 | Misses: 295 | DMR: 98% | Jitter: 151.85 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 98570 (x1000), OUT: 621 (x1000)
+[TS: 7007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 700 | Misses: 6 | DMR: 0% | Jitter: 1.78 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 7613 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 350 | Misses: 345 | DMR: 98% | Jitter: 177.31 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 99118 (x1000), OUT: -7226 (x1000)
+[TS: 8007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 800 | Misses: 7 | DMR: 0% | Jitter: 1.79 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 8698 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 400 | Misses: 395 | DMR: 98% | Jitter: 202.72 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 100037 (x1000), OUT: -12651 (x1000)
+[TS: 9007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 900 | Misses: 8 | DMR: 0% | Jitter: 1.80 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 9785 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 450 | Misses: 445 | DMR: 98% | Jitter: 228.11 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 101101 (x1000), OUT: -13541 (x1000)
+[TS: 10007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1000 | Misses: 9 | DMR: 0% | Jitter: 1.82 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 10872 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 500 | Misses: 495 | DMR: 99% | Jitter: 253.54 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 102030 (x1000), OUT: -8866 (x1000)
+[TS: 11007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1100 | Misses: 10 | DMR: 0% | Jitter: 1.84 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 11958 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 550 | Misses: 545 | DMR: 99% | Jitter: 278.98 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 101506 (x1000), OUT: 2002 (x1000)
+[TS: 12007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1200 | Misses: 11 | DMR: 0% | Jitter: 1.85 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 100625 (x1000), OUT: 11367 (x1000)
+[TS: 13007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1300 | Misses: 12 | DMR: 0% | Jitter: 1.86 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 13048 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 600 | Misses: 595 | DMR: 99% | Jitter: 302.61 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 99696 (x1000), OUT: 14845 (x1000)
+[TS: 14007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1400 | Misses: 13 | DMR: 0% | Jitter: 1.87 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 14134 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 650 | Misses: 645 | DMR: 99% | Jitter: 326.53 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 98864 (x1000), OUT: 14066 (x1000)
+[TS: 15007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1500 | Misses: 14 | DMR: 0% | Jitter: 1.88 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 15221 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 700 | Misses: 695 | DMR: 99% | Jitter: 350.92 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 98404 (x1000), OUT: 8725 (x1000)
+[TS: 16007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1600 | Misses: 15 | DMR: 0% | Jitter: 1.89 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 16307 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 750 | Misses: 745 | DMR: 99% | Jitter: 375.62 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 98453 (x1000), OUT: 524 (x1000)
+[TS: 17007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1700 | Misses: 16 | DMR: 0% | Jitter: 1.89 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 17394 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 800 | Misses: 795 | DMR: 99% | Jitter: 400.52 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 99027 (x1000), OUT: -7945 (x1000)
+[TS: 18007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1800 | Misses: 17 | DMR: 0% | Jitter: 1.90 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 18481 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 850 | Misses: 845 | DMR: 99% | Jitter: 425.60 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 99998 (x1000), OUT: -13887 (x1000)
+[TS: 19007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1900 | Misses: 18 | DMR: 0% | Jitter: 1.90 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 19567 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 900 | Misses: 895 | DMR: 99% | Jitter: 450.80 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 101126 (x1000), OUT: -15037 (x1000)
+[TS: 20007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 2000 | Misses: 19 | DMR: 0% | Jitter: 1.91 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 20654 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 950 | Misses: 945 | DMR: 99% | Jitter: 476.14 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 102117 (x1000), OUT: -10297 (x1000)
+[TS: 21007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 2100 | Misses: 20 | DMR: 0% | Jitter: 1.91 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 21741 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 1000 | Misses: 995 | DMR: 99% | Jitter: 501.56 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 101634 (x1000), OUT: 970 (x1000)
+[TS: 22007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 2200 | Misses: 21 | DMR: 0% | Jitter: 1.91 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 22827 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 1050 | Misses: 1045 | DMR: 99% | Jitter: 527.02 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 100762 (x1000), OUT: 10978 (x1000)
+[TS: 23007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 2300 | Misses: 22 | DMR: 0% | Jitter: 1.92 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 23914 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 1100 | Misses: 1095 | DMR: 99% | Jitter: 552.52 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 99807 (x1000), OUT: 15184 (x1000)
+[TS: 24007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 2400 | Misses: 23 | DMR: 0% | Jitter: 1.92 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 25001 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 1150 | Misses: 1145 | DMR: 99% | Jitter: 578.06 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 98378 (x1000), OUT: 10104 (x1000)
+[TS: 26007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 2600 | Misses: 24 | DMR: 0% | Jitter: 1.89 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 26087 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 1200 | Misses: 1195 | DMR: 99% | Jitter: 602.32 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 98358 (x1000), OUT: 1787 (x1000)
+[TS: 27007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 2700 | Misses: 25 | DMR: 0% | Jitter: 1.89 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 27174 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 1250 | Misses: 1245 | DMR: 99% | Jitter: 626.80 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 98880 (x1000), OUT: -7121 (x1000)
+[TS: 28007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 2800 | Misses: 26 | DMR: 0% | Jitter: 1.89 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 28261 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 1300 | Misses: 1295 | DMR: 99% | Jitter: 651.46 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 99836 (x1000), OUT: -13798 (x1000)
+[TS: 29007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 2900 | Misses: 27 | DMR: 0% | Jitter: 1.90 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 29347 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 1350 | Misses: 1345 | DMR: 99% | Jitter: 676.27 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 100992 (x1000), OUT: -15799 (x1000)
+[TS: 30007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 3000 | Misses: 28 | DMR: 0% | Jitter: 1.90 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 30434 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 1400 | Misses: 1395 | DMR: 99% | Jitter: 701.22 ms | Contention: 0 ms | Overhead: 0 cycles
+
+Task1_MotorControl! SP: 100, MV: 102049 (x1000), OUT: -11804 (x1000)
+[TS: 31007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 3100 | Misses: 29 | DMR: 0% | Jitter: 1.90 ms | Contention: 0 ms | Overhead: 0 cycles
+Task4_VisionProcessing!
+[TS: 31522 ms] [Metrics] Task 3 - Prio: 3 | Jobs: 1450 | Misses: 1445 | DMR: 99% | Jitter: 726.29 ms | Contention: 0 ms | Overhead: 0 cycles

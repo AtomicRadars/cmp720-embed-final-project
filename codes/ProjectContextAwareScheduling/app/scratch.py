@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 
-file_path = Path('Core/Src/app/index.html')
+file_path = Path(__file__).parent / 'index.html'
 content = file_path.read_text(encoding='utf-8')
 
 # 1. Add Tailwind config

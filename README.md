@@ -24,8 +24,6 @@ cmp720-embed-final-project/
 │       │   │   │   └── SchedulerTest.h
 │       │   │   └── ...
 │       │   └── Src/
-│       │       ├── app/                   # Dashboard HTML UI
-│       │       │   └── index.html
 │       │       ├── core/                  # Scheduler implementations
 │       │       │   ├── ContextAwareScheduler.cpp
 │       │       │   ├── EDFScheduler.cpp
@@ -33,9 +31,16 @@ cmp720-embed-final-project/
 │       │       │   ├── NativeScheduler.cpp
 │       │       │   └── TaskConfig.cpp
 │       │       ├── test/                  # Test telemetry & workload emulators
-│       │       │   ├── results/           # Captured serial benchmark logs
 │       │       │   └── SchedulerTest.cpp
 │       │       └── app_main.cpp           # Main C++ entry point
+│       │
+│       ├── app/                           # Web GUI Dashboard application files
+│       │   ├── gui_server.py              # FastAPI Dashboard Backend
+│       │   ├── index.html                 # Dashboard HTML UI
+│       │   └── scratch.py                 # Styling patch script
+│       │
+│       ├── logs/                          # Telemetry logs and benchmark results
+│       │   └── auto_tests/                # Automated run captures
 │       │
 │       ├── offline_aco_baseline/          # Python offline simulator & ACO solver
 │       │   ├── aco_solver.py              # Non-preemptive ACO solver
@@ -46,7 +51,6 @@ cmp720-embed-final-project/
 │       │   └── main.py                    # Offline CLI interface
 │       │
 │       ├── automate_schedulers.py         # CLI automated build, flash, & log utility
-│       ├── gui_server.py                  # FastAPI Dashboard Backend
 │       └── CMakeLists.txt                 # Project build configuration
 │
 └── docs/                                  # Project documentation
@@ -146,7 +150,7 @@ The FastAPI GUI manages parameters, automates CMake builds, flashes the target b
    ```
 2. Launch the GUI server:
    ```bash
-   python gui_server.py
+   python app/gui_server.py
    ```
 3. Open your browser and navigate to `http://127.0.0.1:8000`.
 
@@ -157,7 +161,7 @@ If you prefer to run the test suite and log UART outputs directly via the termin
 ```bash
 python automate_schedulers.py --port COM4 --baud 115200 --duration 30
 ```
-This script will sequentially configure, build, flash, and record telemetry logs for the `NATIVE`, `EDF`, and `CONTEXT_AWARE` schedulers in `Core/Src/test/results/auto_tests/`.
+This script will sequentially configure, build, flash, and record telemetry logs for the `NATIVE`, `EDF`, and `CONTEXT_AWARE` schedulers in `logs/auto_tests/`.
 
 ### 4. Running the Offline ACO Solver CLI
 

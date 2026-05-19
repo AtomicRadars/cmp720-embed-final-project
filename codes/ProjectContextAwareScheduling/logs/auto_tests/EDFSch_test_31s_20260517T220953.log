@@ -1,0 +1,294 @@
+--- Log started at Sun May 17 22:10:31 2026 for scheduler EDF ---
+
+--- System Configuration ---
+T1 (Motor):  Prio: 4, Period: 10 ms, MemIntensity: 0.10
+T2 (Sensor): Prio: 2, Period: 50 ms, MemIntensity: 0.20
+T3 (Crypto): Prio: 1, Period: 500 ms, MemIntensity: 0.90
+T4 (Vision): Prio: 3, Period: 20 ms, MemIntensity: 0.80
+Alpha: 1.00, Safety Margin: 2 ms, Threshold: 0.15
+---------------------------
+Tasks created successfully. Activating [EDF Scheduler]...
+
+Task1_MotorControl! SP: 100, MV: -500 (x1000), OUT: 613050 (x1000)
+Task4_VisionProcessing!
+Task2_SensorAcquisition! RAW: 1024, FILTERED: 256
+Task3_CryptoEncryption!
+
+Task1_MotorControl! SP: 100, MV: 103306 (x1000), OUT: 68825 (x1000)
+[TS: 1007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 100 | Misses: 0 | DMR: 0% | Jitter: 1.02 ms | Contention: 0 ms | Overhead: 1029 cycles
+Task4_VisionProcessing!
+[TS: 1026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 50 | Misses: 0 | DMR: 0% | Jitter: 2.97 ms | Contention: 0 ms | Overhead: 1029 cycles
+Task2_SensorAcquisition! RAW: 2076, FILTERED: 1899
+[TS: 1052 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 20 | Misses: 0 | DMR: 0% | Jitter: 1.34 ms | Contention: 0 ms | Overhead: 1033 cycles
+Task3_CryptoEncryption!
+[TS: 1141 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 2 | Misses: 0 | DMR: 0% | Jitter: 2.12 ms | Contention: 0 ms | Overhead: 1033 cycles
+
+Task1_MotorControl! SP: 100, MV: 102104 (x1000), OUT: -417 (x1000)
+[TS: 2007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 200 | Misses: 2 | DMR: 1% | Jitter: 2.22 ms | Contention: 30 ms | Overhead: 1032 cycles
+Task4_VisionProcessing!
+[TS: 2026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 100 | Misses: 2 | DMR: 2% | Jitter: 4.12 ms | Contention: 30 ms | Overhead: 1032 cycles
+Task2_SensorAcquisition! RAW: 1067, FILTERED: 2423
+[TS: 2052 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 40 | Misses: 1 | DMR: 2% | Jitter: 7.92 ms | Contention: 30 ms | Overhead: 1033 cycles
+Task3_CryptoEncryption!
+[TS: 2142 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 4 | Misses: 0 | DMR: 0% | Jitter: 37.02 ms | Contention: 30 ms | Overhead: 1034 cycles
+
+Task1_MotorControl! SP: 100, MV: 100647 (x1000), OUT: 9058 (x1000)
+[TS: 3007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 300 | Misses: 4 | DMR: 1% | Jitter: 2.49 ms | Contention: 60 ms | Overhead: 1033 cycles
+Task4_VisionProcessing!
+[TS: 3026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 150 | Misses: 4 | DMR: 2% | Jitter: 4.46 ms | Contention: 60 ms | Overhead: 1033 cycles
+Task2_SensorAcquisition! RAW: 2057, FILTERED: 1919
+[TS: 3052 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 60 | Misses: 2 | DMR: 3% | Jitter: 9.03 ms | Contention: 60 ms | Overhead: 1034 cycles
+Task3_CryptoEncryption!
+[TS: 3142 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 6 | Misses: 0 | DMR: 0% | Jitter: 38.36 ms | Contention: 60 ms | Overhead: 1034 cycles
+
+Task1_MotorControl! SP: 100, MV: 99656 (x1000), OUT: 14377 (x1000)
+[TS: 4007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 400 | Misses: 6 | DMR: 1% | Jitter: 2.61 ms | Contention: 90 ms | Overhead: 1033 cycles
+Task4_VisionProcessing!
+[TS: 4026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 200 | Misses: 6 | DMR: 3% | Jitter: 4.62 ms | Contention: 90 ms | Overhead: 1033 cycles
+Task2_SensorAcquisition! RAW: 1048, FILTERED: 2405
+[TS: 4052 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 80 | Misses: 3 | DMR: 3% | Jitter: 9.52 ms | Contention: 90 ms | Overhead: 1034 cycles
+Task3_CryptoEncryption!
+[TS: 4142 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 8 | Misses: 0 | DMR: 0% | Jitter: 38.51 ms | Contention: 90 ms | Overhead: 1034 cycles
+
+Task1_MotorControl! SP: 100, MV: 98954 (x1000), OUT: 13036 (x1000)
+[TS: 5007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 500 | Misses: 8 | DMR: 1% | Jitter: 2.68 ms | Contention: 120 ms | Overhead: 1034 cycles
+Task4_VisionProcessing!
+[TS: 5026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 250 | Misses: 8 | DMR: 3% | Jitter: 4.71 ms | Contention: 120 ms | Overhead: 1033 cycles
+Task2_SensorAcquisition! RAW: 2139, FILTERED: 1926
+[TS: 5053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 100 | Misses: 4 | DMR: 4% | Jitter: 9.80 ms | Contention: 120 ms | Overhead: 1034 cycles
+Task3_CryptoEncryption!
+[TS: 5142 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 10 | Misses: 0 | DMR: 0% | Jitter: 38.48 ms | Contention: 120 ms | Overhead: 1034 cycles
+
+Task1_MotorControl! SP: 100, MV: 98526 (x1000), OUT: 8001 (x1000)
+[TS: 6007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 600 | Misses: 10 | DMR: 1% | Jitter: 2.73 ms | Contention: 150 ms | Overhead: 1034 cycles
+Task4_VisionProcessing!
+[TS: 6026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 300 | Misses: 10 | DMR: 3% | Jitter: 4.77 ms | Contention: 150 ms | Overhead: 1034 cycles
+Task2_SensorAcquisition! RAW: 1132, FILTERED: 2412
+[TS: 6053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 120 | Misses: 5 | DMR: 4% | Jitter: 10.02 ms | Contention: 150 ms | Overhead: 1034 cycles
+Task3_CryptoEncryption!
+[TS: 6142 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 12 | Misses: 0 | DMR: 0% | Jitter: 38.51 ms | Contention: 150 ms | Overhead: 1034 cycles
+
+Task1_MotorControl! SP: 100, MV: 98581 (x1000), OUT: 365 (x1000)
+[TS: 7007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 700 | Misses: 12 | DMR: 1% | Jitter: 2.76 ms | Contention: 180 ms | Overhead: 1034 cycles
+Task4_VisionProcessing!
+[TS: 7026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 350 | Misses: 12 | DMR: 3% | Jitter: 4.82 ms | Contention: 180 ms | Overhead: 1034 cycles
+Task2_SensorAcquisition! RAW: 2122, FILTERED: 1949
+[TS: 7053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 140 | Misses: 6 | DMR: 4% | Jitter: 10.18 ms | Contention: 180 ms | Overhead: 1034 cycles
+Task3_CryptoEncryption!
+[TS: 7142 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 14 | Misses: 0 | DMR: 0% | Jitter: 38.50 ms | Contention: 180 ms | Overhead: 1034 cycles
+
+Task1_MotorControl! SP: 100, MV: 99129 (x1000), OUT: -7483 (x1000)
+[TS: 8007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 800 | Misses: 14 | DMR: 1% | Jitter: 2.79 ms | Contention: 210 ms | Overhead: 1034 cycles
+Task4_VisionProcessing!
+[TS: 8026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 400 | Misses: 14 | DMR: 3% | Jitter: 4.85 ms | Contention: 210 ms | Overhead: 1034 cycles
+Task2_SensorAcquisition! RAW: 1113, FILTERED: 2436
+[TS: 8053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 160 | Misses: 7 | DMR: 4% | Jitter: 10.30 ms | Contention: 210 ms | Overhead: 1034 cycles
+Task3_CryptoEncryption!
+[TS: 8142 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 16 | Misses: 0 | DMR: 0% | Jitter: 38.48 ms | Contention: 210 ms | Overhead: 1034 cycles
+
+Task1_MotorControl! SP: 100, MV: 100049 (x1000), OUT: -12899 (x1000)
+[TS: 9007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 900 | Misses: 16 | DMR: 1% | Jitter: 2.81 ms | Contention: 240 ms | Overhead: 1034 cycles
+Task4_VisionProcessing!
+[TS: 9026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 450 | Misses: 16 | DMR: 3% | Jitter: 4.89 ms | Contention: 240 ms | Overhead: 1034 cycles
+Task2_SensorAcquisition! RAW: 2103, FILTERED: 1932
+[TS: 9053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 180 | Misses: 8 | DMR: 4% | Jitter: 10.39 ms | Contention: 240 ms | Overhead: 1034 cycles
+Task3_CryptoEncryption!
+[TS: 9142 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 18 | Misses: 0 | DMR: 0% | Jitter: 38.45 ms | Contention: 240 ms | Overhead: 1034 cycles
+
+Task1_MotorControl! SP: 100, MV: 101112 (x1000), OUT: -13781 (x1000)
+[TS: 10007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1000 | Misses: 18 | DMR: 1% | Jitter: 2.83 ms | Contention: 270 ms | Overhead: 1034 cycles
+Task4_VisionProcessing!
+[TS: 10026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 500 | Misses: 18 | DMR: 3% | Jitter: 4.92 ms | Contention: 270 ms | Overhead: 1034 cycles
+Task2_SensorAcquisition! RAW: 1094, FILTERED: 2417
+[TS: 10053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 200 | Misses: 9 | DMR: 4% | Jitter: 10.46 ms | Contention: 270 ms | Overhead: 1034 cycles
+Task3_CryptoEncryption!
+[TS: 10143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 20 | Misses: 0 | DMR: 0% | Jitter: 38.43 ms | Contention: 270 ms | Overhead: 1034 cycles
+
+Task1_MotorControl! SP: 100, MV: 102241 (x1000), OUT: -6596 (x1000)
+[TS: 11007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1100 | Misses: 21 | DMR: 1% | Jitter: 2.85 ms | Contention: 300 ms | Overhead: 1034 cycles
+Task4_VisionProcessing!
+[TS: 11026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 550 | Misses: 20 | DMR: 3% | Jitter: 4.94 ms | Contention: 300 ms | Overhead: 1034 cycles
+Task2_SensorAcquisition! RAW: 2084, FILTERED: 1913
+[TS: 11053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 220 | Misses: 10 | DMR: 4% | Jitter: 10.54 ms | Contention: 300 ms | Overhead: 1034 cycles
+Task3_CryptoEncryption!
+[TS: 11143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 22 | Misses: 0 | DMR: 0% | Jitter: 38.40 ms | Contention: 300 ms | Overhead: 1034 cycles
+
+Task1_MotorControl! SP: 100, MV: 101545 (x1000), OUT: 1577 (x1000)
+[TS: 12007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1200 | Misses: 23 | DMR: 1% | Jitter: 2.86 ms | Contention: 330 ms | Overhead: 1034 cycles
+Task4_VisionProcessing!
+[TS: 12026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 600 | Misses: 22 | DMR: 3% | Jitter: 4.96 ms | Contention: 330 ms | Overhead: 1034 cycles
+Task2_SensorAcquisition! RAW: 1075, FILTERED: 2429
+[TS: 12053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 240 | Misses: 11 | DMR: 4% | Jitter: 10.60 ms | Contention: 330 ms | Overhead: 1034 cycles
+Task3_CryptoEncryption!
+[TS: 12143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 24 | Misses: 0 | DMR: 0% | Jitter: 38.38 ms | Contention: 330 ms | Overhead: 1034 cycles
+
+Task1_MotorControl! SP: 100, MV: 100635 (x1000), OUT: 11107 (x1000)
+[TS: 13007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1300 | Misses: 25 | DMR: 1% | Jitter: 2.87 ms | Contention: 360 ms | Overhead: 1034 cycles
+Task4_VisionProcessing!
+[TS: 13026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 650 | Misses: 24 | DMR: 3% | Jitter: 4.98 ms | Contention: 360 ms | Overhead: 1034 cycles
+Task2_SensorAcquisition! RAW: 2065, FILTERED: 1926
+[TS: 13053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 260 | Misses: 12 | DMR: 4% | Jitter: 10.64 ms | Contention: 360 ms | Overhead: 1034 cycles
+Task3_CryptoEncryption!
+[TS: 13143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 26 | Misses: 0 | DMR: 0% | Jitter: 38.36 ms | Contention: 360 ms | Overhead: 1034 cycles
+
+Task1_MotorControl! SP: 100, MV: 99640 (x1000), OUT: 15321 (x1000)
+[TS: 14007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1400 | Misses: 27 | DMR: 1% | Jitter: 2.88 ms | Contention: 390 ms | Overhead: 1034 cycles
+Task4_VisionProcessing!
+[TS: 14026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 700 | Misses: 26 | DMR: 3% | Jitter: 4.99 ms | Contention: 390 ms | Overhead: 1034 cycles
+Task2_SensorAcquisition! RAW: 1056, FILTERED: 2412
+[TS: 14053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 280 | Misses: 13 | DMR: 4% | Jitter: 10.68 ms | Contention: 390 ms | Overhead: 1034 cycles
+Task3_CryptoEncryption!
+[TS: 14143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 28 | Misses: 0 | DMR: 0% | Jitter: 38.34 ms | Contention: 390 ms | Overhead: 1035 cycles
+
+Task1_MotorControl! SP: 100, MV: 98791 (x1000), OUT: 14264 (x1000)
+[TS: 15007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1500 | Misses: 29 | DMR: 1% | Jitter: 2.88 ms | Contention: 420 ms | Overhead: 1034 cycles
+Task4_VisionProcessing!
+[TS: 15026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 750 | Misses: 28 | DMR: 3% | Jitter: 5.01 ms | Contention: 420 ms | Overhead: 1034 cycles
+Task2_SensorAcquisition! RAW: 2147, FILTERED: 1932
+[TS: 15053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 300 | Misses: 14 | DMR: 4% | Jitter: 10.71 ms | Contention: 420 ms | Overhead: 1034 cycles
+Task3_CryptoEncryption!
+[TS: 15143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 30 | Misses: 0 | DMR: 0% | Jitter: 38.32 ms | Contention: 420 ms | Overhead: 1035 cycles
+
+Task1_MotorControl! SP: 100, MV: 98415 (x1000), OUT: 8548 (x1000)
+[TS: 16007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1600 | Misses: 31 | DMR: 1% | Jitter: 2.89 ms | Contention: 450 ms | Overhead: 1034 cycles
+Task4_VisionProcessing!
+[TS: 16026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 800 | Misses: 30 | DMR: 3% | Jitter: 5.02 ms | Contention: 450 ms | Overhead: 1034 cycles
+Task2_SensorAcquisition! RAW: 1138, FILTERED: 2418
+[TS: 16053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 320 | Misses: 15 | DMR: 4% | Jitter: 10.73 ms | Contention: 450 ms | Overhead: 1035 cycles
+Task3_CryptoEncryption!
+[TS: 16142 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 32 | Misses: 0 | DMR: 0% | Jitter: 38.31 ms | Contention: 450 ms | Overhead: 1035 cycles
+
+Task1_MotorControl! SP: 100, MV: 98465 (x1000), OUT: 283 (x1000)
+[TS: 17007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1700 | Misses: 33 | DMR: 1% | Jitter: 2.90 ms | Contention: 480 ms | Overhead: 1034 cycles
+Task4_VisionProcessing!
+[TS: 17026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 850 | Misses: 32 | DMR: 3% | Jitter: 5.03 ms | Contention: 480 ms | Overhead: 1034 cycles
+Task2_SensorAcquisition! RAW: 2128, FILTERED: 1954
+[TS: 17053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 340 | Misses: 16 | DMR: 4% | Jitter: 10.75 ms | Contention: 480 ms | Overhead: 1035 cycles
+Task3_CryptoEncryption!
+[TS: 17142 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 34 | Misses: 0 | DMR: 0% | Jitter: 38.29 ms | Contention: 480 ms | Overhead: 1035 cycles
+
+Task1_MotorControl! SP: 100, MV: 99022 (x1000), OUT: -9038 (x1000)
+[TS: 18007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1800 | Misses: 35 | DMR: 1% | Jitter: 2.90 ms | Contention: 510 ms | Overhead: 1034 cycles
+Task4_VisionProcessing!
+[TS: 18026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 900 | Misses: 34 | DMR: 3% | Jitter: 5.04 ms | Contention: 510 ms | Overhead: 1034 cycles
+Task2_SensorAcquisition! RAW: 1119, FILTERED: 2442
+[TS: 18053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 360 | Misses: 17 | DMR: 4% | Jitter: 10.77 ms | Contention: 510 ms | Overhead: 1035 cycles
+Task3_CryptoEncryption!
+[TS: 18143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 36 | Misses: 0 | DMR: 0% | Jitter: 38.28 ms | Contention: 510 ms | Overhead: 1035 cycles
+
+Task1_MotorControl! SP: 100, MV: 100002 (x1000), OUT: -14105 (x1000)
+[TS: 19007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 1900 | Misses: 37 | DMR: 1% | Jitter: 2.90 ms | Contention: 540 ms | Overhead: 1035 cycles
+Task4_VisionProcessing!
+[TS: 19026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 950 | Misses: 36 | DMR: 3% | Jitter: 5.04 ms | Contention: 540 ms | Overhead: 1034 cycles
+Task2_SensorAcquisition! RAW: 2109, FILTERED: 1938
+[TS: 19053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 380 | Misses: 18 | DMR: 4% | Jitter: 10.79 ms | Contention: 540 ms | Overhead: 1035 cycles
+Task3_CryptoEncryption!
+[TS: 19143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 38 | Misses: 0 | DMR: 0% | Jitter: 38.27 ms | Contention: 540 ms | Overhead: 1035 cycles
+
+Task1_MotorControl! SP: 100, MV: 101138 (x1000), OUT: -15276 (x1000)
+[TS: 20007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 2000 | Misses: 40 | DMR: 2% | Jitter: 2.91 ms | Contention: 540 ms | Overhead: 1035 cycles
+Task4_VisionProcessing!
+[TS: 20026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 1000 | Misses: 38 | DMR: 3% | Jitter: 5.05 ms | Contention: 540 ms | Overhead: 1034 cycles
+Task2_SensorAcquisition! RAW: 1100, FILTERED: 2423
+[TS: 20053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 400 | Misses: 19 | DMR: 4% | Jitter: 10.81 ms | Contention: 540 ms | Overhead: 1035 cycles
+Task3_CryptoEncryption!
+[TS: 20143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 40 | Misses: 0 | DMR: 0% | Jitter: 38.31 ms | Contention: 540 ms | Overhead: 1035 cycles
+
+Task1_MotorControl! SP: 100, MV: 102328 (x1000), OUT: -8035 (x1000)
+[TS: 21007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 2100 | Misses: 43 | DMR: 2% | Jitter: 2.92 ms | Contention: 540 ms | Overhead: 1035 cycles
+Task4_VisionProcessing!
+[TS: 21026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 1050 | Misses: 40 | DMR: 3% | Jitter: 5.06 ms | Contention: 540 ms | Overhead: 1034 cycles
+Task2_SensorAcquisition! RAW: 2090, FILTERED: 1919
+[TS: 21053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 420 | Misses: 20 | DMR: 4% | Jitter: 10.84 ms | Contention: 540 ms | Overhead: 1035 cycles
+Task3_CryptoEncryption!
+[TS: 21143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 42 | Misses: 0 | DMR: 0% | Jitter: 38.35 ms | Contention: 540 ms | Overhead: 1035 cycles
+
+Task1_MotorControl! SP: 100, MV: 101674 (x1000), OUT: 540 (x1000)
+[TS: 22007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 2200 | Misses: 46 | DMR: 2% | Jitter: 2.93 ms | Contention: 540 ms | Overhead: 1034 cycles
+Task4_VisionProcessing!
+[TS: 22026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 1100 | Misses: 42 | DMR: 3% | Jitter: 5.07 ms | Contention: 540 ms | Overhead: 1034 cycles
+Task2_SensorAcquisition! RAW: 1081, FILTERED: 2434
+[TS: 22053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 440 | Misses: 21 | DMR: 4% | Jitter: 10.86 ms | Contention: 540 ms | Overhead: 1035 cycles
+Task3_CryptoEncryption!
+[TS: 22143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 44 | Misses: 0 | DMR: 0% | Jitter: 38.38 ms | Contention: 540 ms | Overhead: 1035 cycles
+
+Task1_MotorControl! SP: 100, MV: 100773 (x1000), OUT: 10718 (x1000)
+[TS: 23007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 2300 | Misses: 48 | DMR: 2% | Jitter: 2.93 ms | Contention: 570 ms | Overhead: 1035 cycles
+Task4_VisionProcessing!
+[TS: 23026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 1150 | Misses: 44 | DMR: 3% | Jitter: 5.07 ms | Contention: 570 ms | Overhead: 1035 cycles
+Task2_SensorAcquisition! RAW: 2071, FILTERED: 1932
+[TS: 23053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 460 | Misses: 22 | DMR: 4% | Jitter: 10.87 ms | Contention: 570 ms | Overhead: 1035 cycles
+Task3_CryptoEncryption!
+[TS: 23143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 46 | Misses: 0 | DMR: 0% | Jitter: 38.37 ms | Contention: 570 ms | Overhead: 1035 cycles
+
+Task1_MotorControl! SP: 100, MV: 99751 (x1000), OUT: 15656 (x1000)
+[TS: 24007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 2400 | Misses: 51 | DMR: 2% | Jitter: 2.93 ms | Contention: 570 ms | Overhead: 1035 cycles
+Task4_VisionProcessing!
+[TS: 24026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 1200 | Misses: 46 | DMR: 3% | Jitter: 5.08 ms | Contention: 570 ms | Overhead: 1034 cycles
+Task2_SensorAcquisition! RAW: 1062, FILTERED: 2418
+[TS: 24053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 480 | Misses: 23 | DMR: 4% | Jitter: 10.88 ms | Contention: 570 ms | Overhead: 1035 cycles
+Task3_CryptoEncryption!
+[TS: 24143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 48 | Misses: 0 | DMR: 0% | Jitter: 38.40 ms | Contention: 570 ms | Overhead: 1035 cycles
+
+Task1_MotorControl! SP: 100, MV: 98776 (x1000), OUT: 15940 (x1000)
+[TS: 25007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 2500 | Misses: 53 | DMR: 2% | Jitter: 2.94 ms | Contention: 600 ms | Overhead: 1035 cycles
+Task4_VisionProcessing!
+[TS: 25026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 1250 | Misses: 48 | DMR: 3% | Jitter: 5.08 ms | Contention: 600 ms | Overhead: 1034 cycles
+Task2_SensorAcquisition! RAW: 2153, FILTERED: 1938
+[TS: 25053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 500 | Misses: 24 | DMR: 4% | Jitter: 10.90 ms | Contention: 600 ms | Overhead: 1035 cycles
+Task3_CryptoEncryption!
+[TS: 25143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 50 | Misses: 0 | DMR: 0% | Jitter: 38.38 ms | Contention: 600 ms | Overhead: 1035 cycles
+
+Task1_MotorControl! SP: 100, MV: 98396 (x1000), OUT: 9898 (x1000)
+[TS: 26007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 2600 | Misses: 55 | DMR: 2% | Jitter: 2.94 ms | Contention: 630 ms | Overhead: 1035 cycles
+Task4_VisionProcessing!
+[TS: 26026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 1300 | Misses: 50 | DMR: 3% | Jitter: 5.08 ms | Contention: 630 ms | Overhead: 1034 cycles
+Task2_SensorAcquisition! RAW: 1144, FILTERED: 2424
+[TS: 26053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 520 | Misses: 25 | DMR: 4% | Jitter: 10.91 ms | Contention: 630 ms | Overhead: 1035 cycles
+Task3_CryptoEncryption!
+[TS: 26143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 52 | Misses: 0 | DMR: 0% | Jitter: 38.37 ms | Contention: 630 ms | Overhead: 1035 cycles
+
+Task1_MotorControl! SP: 100, MV: 98370 (x1000), OUT: 1541 (x1000)
+[TS: 27007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 2700 | Misses: 57 | DMR: 2% | Jitter: 2.94 ms | Contention: 660 ms | Overhead: 1035 cycles
+Task4_VisionProcessing!
+[TS: 27026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 1350 | Misses: 52 | DMR: 3% | Jitter: 5.09 ms | Contention: 660 ms | Overhead: 1035 cycles
+Task2_SensorAcquisition! RAW: 2134, FILTERED: 1958
+[TS: 27053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 540 | Misses: 26 | DMR: 4% | Jitter: 10.92 ms | Contention: 660 ms | Overhead: 1035 cycles
+Task3_CryptoEncryption!
+[TS: 27143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 54 | Misses: 0 | DMR: 0% | Jitter: 38.36 ms | Contention: 660 ms | Overhead: 1035 cycles
+
+Task1_MotorControl! SP: 100, MV: 98875 (x1000), OUT: -8215 (x1000)
+[TS: 28007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 2800 | Misses: 59 | DMR: 2% | Jitter: 2.94 ms | Contention: 690 ms | Overhead: 1035 cycles
+Task4_VisionProcessing!
+[TS: 28026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 1400 | Misses: 54 | DMR: 3% | Jitter: 5.09 ms | Contention: 690 ms | Overhead: 1035 cycles
+Task2_SensorAcquisition! RAW: 1125, FILTERED: 2448
+[TS: 28053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 560 | Misses: 27 | DMR: 4% | Jitter: 10.93 ms | Contention: 690 ms | Overhead: 1035 cycles
+Task3_CryptoEncryption!
+[TS: 28143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 56 | Misses: 0 | DMR: 0% | Jitter: 38.34 ms | Contention: 690 ms | Overhead: 1035 cycles
+
+Task1_MotorControl! SP: 100, MV: 99840 (x1000), OUT: -14017 (x1000)
+[TS: 29007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 2900 | Misses: 61 | DMR: 2% | Jitter: 2.94 ms | Contention: 720 ms | Overhead: 1035 cycles
+Task4_VisionProcessing!
+[TS: 29026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 1450 | Misses: 56 | DMR: 3% | Jitter: 5.09 ms | Contention: 720 ms | Overhead: 1035 cycles
+Task2_SensorAcquisition! RAW: 2115, FILTERED: 1944
+[TS: 29053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 580 | Misses: 28 | DMR: 4% | Jitter: 10.94 ms | Contention: 720 ms | Overhead: 1035 cycles
+Task3_CryptoEncryption!
+[TS: 29143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 58 | Misses: 0 | DMR: 0% | Jitter: 38.33 ms | Contention: 720 ms | Overhead: 1035 cycles
+
+Task1_MotorControl! SP: 100, MV: 101004 (x1000), OUT: -16037 (x1000)
+[TS: 30007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 3000 | Misses: 64 | DMR: 2% | Jitter: 2.95 ms | Contention: 720 ms | Overhead: 1035 cycles
+Task4_VisionProcessing!
+[TS: 30026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 1500 | Misses: 58 | DMR: 3% | Jitter: 5.10 ms | Contention: 720 ms | Overhead: 1035 cycles
+Task2_SensorAcquisition! RAW: 1106, FILTERED: 2429
+[TS: 30053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 600 | Misses: 29 | DMR: 4% | Jitter: 10.95 ms | Contention: 720 ms | Overhead: 1035 cycles
+Task3_CryptoEncryption!
+[TS: 30143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 60 | Misses: 0 | DMR: 0% | Jitter: 38.36 ms | Contention: 720 ms | Overhead: 1035 cycles
+
+Task1_MotorControl! SP: 100, MV: 102260 (x1000), OUT: -9542 (x1000)
+[TS: 31007 ms] [Metrics] Task 0 - Prio: 4 | Jobs: 3100 | Misses: 67 | DMR: 2% | Jitter: 2.95 ms | Contention: 720 ms | Overhead: 1035 cycles
+Task4_VisionProcessing!
+[TS: 31026 ms] [Metrics] Task 3 - Prio: 4 | Jobs: 1550 | Misses: 60 | DMR: 3% | Jitter: 5.10 ms | Contention: 720 ms | Overhead: 1035 cycles
+Task2_SensorAcquisition! RAW: 2096, FILTERED: 1925
+[TS: 31053 ms] [Metrics] Task 1 - Prio: 4 | Jobs: 620 | Misses: 30 | DMR: 4% | Jitter: 10.96 ms | Contention: 720 ms | Overhead: 1035 cycles
+Task3_CryptoEncryption!
+[TS: 31143 ms] [Metrics] Task 2 - Prio: 1 | Jobs: 62 | Misses: 0 | DMR: 0% | Jitter: 38.38 ms | Contention: 720 ms | Overhead: 1035 cycles

@@ -22,7 +22,7 @@ BAUD_RATE = 115200
 DURATION_SECONDS = 30  # Capture duration for each scheduler
 SCHEDULERS = ["NATIVE", "EDF", "CONTEXT_AWARE"]
 PROJECT_ROOT = Path(__file__).parent.absolute()
-LOG_DIR = PROJECT_ROOT / "Core" / "Src" / "test" / "results" / "auto_tests"
+LOG_DIR = PROJECT_ROOT / "logs" / "auto_tests"
 ELF_PATH = PROJECT_ROOT / "build" / "Release" / "ProjectContextAwareScheduling.elf"
 
 def parse_args():

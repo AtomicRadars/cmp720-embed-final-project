@@ -26,10 +26,15 @@ except ImportError:
 
 app = FastAPI()
 
-PROJECT_ROOT = Path(__file__).parent.absolute()
+APP_DIR = Path(__file__).parent.absolute()
+PROJECT_ROOT = APP_DIR.parent.absolute()
 CONFIG_HEADER = PROJECT_ROOT / "Core" / "Inc" / "core" / "TaskConfig.h"
 AUTOMATION_SCRIPT = PROJECT_ROOT / "automate_schedulers.py"
-LOG_DIR = PROJECT_ROOT / "Core" / "Src" / "test" / "results" / "auto_tests"
+LOG_DIR = PROJECT_ROOT / "logs" / "auto_tests"
+
+# Add project root to sys.path to resolve offline_aco_baseline imports
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.append(str(PROJECT_ROOT))
 
 
 from offline_aco_baseline.scheduler_model import (
@@ -620,7 +625,7 @@ async def stop_tests():
 
 @app.get("/", response_class=HTMLResponse)
 async def get_index():
-    index_path = PROJECT_ROOT / "Core" / "Src" / "app" / "index.html"
+    index_path = APP_DIR / "index.html"
     return index_path.read_text(encoding='utf-8')
 
 @app.post("/api/aco/run")
