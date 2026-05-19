@@ -560,6 +560,18 @@
                                     </select>
                                 </div>
 
+                                <div>
+                                    <label
+                                        class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Workload
+                                        Profile</label>
+                                    <select id="acoWorkloadProfile"
+                                        class="w-full bg-white/70 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white">
+                                        <option value="default">Default Project Workload</option>
+                                        <option value="memory_stress">Memory Stress Workload</option>
+                                        <option value="high_utilization">High Utilization Workload</option>
+                                    </select>
+                                </div>
+
                                 <div class="grid grid-cols-2 gap-3">
                                     <div>
                                         <label
@@ -737,6 +749,11 @@
                                 </div>
                             </div>
 
+                            <div id="acoTaskSetInfo"
+                                class="mt-4 p-4 rounded-2xl bg-white/40 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700 text-sm text-slate-600 dark:text-slate-400">
+                                Select a workload and run ACO to see task-set details.
+                            </div>
+
                             <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
                                 <div>
                                     <h4
@@ -765,8 +782,9 @@
                                     Numeric Comparison
                                 </h4>
 
-                                <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700">
-                                    <table class="w-full text-sm">
+                                <div
+                                    class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700 w-full">
+                                    <table class="w-full min-w-[640px] text-sm">
                                         <thead
                                             class="text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400 bg-slate-100/60 dark:bg-slate-900/40">
                                             <tr>
@@ -2700,12 +2718,55 @@
 
         }
 
+        function renderAcoTaskSetInfo(data) {
+            const el = document.getElementById("acoTaskSetInfo");
+            if (!el || !data.task_set) return;
+
+            const utilPercent = (data.task_set.total_utilization * 100).toFixed(1);
+
+            const taskChips = data.task_set.tasks.map(task => {
+                const u = (task.utilization * 100).toFixed(1);
+                return `
+            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                <span class="font-semibold text-slate-800 dark:text-slate-200">${task.task_name}</span>
+                <span>T=${task.period_ms}</span>
+                <span>C=${task.wcet_ms}</span>
+                <span>M=${Number(task.memory_intensity).toFixed(2)}</span>
+                <span>U=${u}%</span>
+            </span>
+        `;
+            }).join("");
+
+            el.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div>
+                <span class="font-semibold text-slate-800 dark:text-slate-200">Workload:</span>
+                ${data.workload_profile}
+            </div>
+            <div>
+                <span class="font-semibold text-slate-800 dark:text-slate-200">Hyperperiod:</span>
+                ${data.hyperperiod_ms} ms
+                <span class="mx-2">•</span>
+                <span class="font-semibold text-slate-800 dark:text-slate-200">Jobs:</span>
+                ${data.job_count}
+                <span class="mx-2">•</span>
+                <span class="font-semibold text-slate-800 dark:text-slate-200">Utilization:</span>
+                ${utilPercent}%
+            </div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            ${taskChips}
+        </div>
+    `;
+        }
+
         async function runAco() {
             const btn = document.getElementById("runAcoBtn");
             const solverType = document.getElementById("acoSolverType").value;
 
             const payload = {
                 solver_type: solverType,
+                workload_profile: document.getElementById("acoWorkloadProfile").value,
                 ant_count: Number(document.getElementById("acoAntCount").value),
                 iterations: Number(document.getElementById("acoIterations").value),
                 lookahead_ms: Number(document.getElementById("acoLookahead").value),
@@ -2745,6 +2806,7 @@
                 const data = await res.json();
 
                 renderAcoSummary(data);
+                renderAcoTaskSetInfo(data);
                 renderAcoHistoryChart(data);
                 renderAcoComparisonChart(data);
                 renderAcoComparisonTable(data);

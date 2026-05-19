@@ -107,6 +107,28 @@ class ACORequest(BaseModel):
     segment_contention_penalty_ms: int = 2
     enable_segment_contention_time: bool = True
 
+def task_model_to_dict(task) -> Dict[str, Any]:
+    return {
+        "task_id": task.task_id,
+        "task_name": task.name,
+        "period_ms": task.period_ms,
+        "deadline_ms": task.deadline_ms,
+        "wcet_ms": task.wcet_ms,
+        "memory_intensity": task.memory_intensity,
+        "utilization": task.wcet_ms / task.period_ms,
+    }
+
+
+def task_set_summary_to_dict(tasks) -> Dict[str, Any]:
+    total_utilization = sum(task.wcet_ms / task.period_ms for task in tasks)
+
+    return {
+        "task_count": len(tasks),
+        "total_utilization": total_utilization,
+        "tasks": [task_model_to_dict(task) for task in tasks],
+    }
+
+
 def scheduled_job_to_dict(scheduled_job) -> Dict[str, Any]:
     return {
         "order": scheduled_job.order,
@@ -255,6 +277,113 @@ def preemptive_aco_result_to_dict(result) -> Dict[str, Any]:
             for record in result.history
         ],
     }
+
+def get_tasks_for_workload_profile(profile: str):
+    """
+    Returns a task set for the offline ACO solver.
+
+    Profiles:
+      - default: mirrors the current embedded project task set
+      - memory_stress: creates more memory-heavy interactions and more low-memory filler opportunities
+      - high_utilization: increases CPU load to make scheduling tighter
+    """
+    profile = profile.strip().lower()
+
+    if profile == "default":
+        return default_project_tasks()
+
+    # Import TaskModel locally to avoid breaking startup if file layout changes.
+    from offline_aco_baseline.scheduler_model import TaskModel
+
+    if profile == "memory_stress":
+        return [
+            TaskModel(
+                task_id=0,
+                name="Motor",
+                period_ms=10,
+                deadline_ms=10,
+                wcet_ms=2,
+                memory_intensity=0.10,
+            ),
+            TaskModel(
+                task_id=1,
+                name="Sensor",
+                period_ms=25,
+                deadline_ms=25,
+                wcet_ms=2,
+                memory_intensity=0.20,
+            ),
+            TaskModel(
+                task_id=2,
+                name="Crypto",
+                period_ms=500,
+                deadline_ms=500,
+                wcet_ms=75,
+                memory_intensity=0.90,
+            ),
+            TaskModel(
+                task_id=3,
+                name="Vision",
+                period_ms=20,
+                deadline_ms=20,
+                wcet_ms=4,
+                memory_intensity=0.80,
+            ),
+            TaskModel(
+                task_id=4,
+                name="Logger",
+                period_ms=50,
+                deadline_ms=50,
+                wcet_ms=2,
+                memory_intensity=0.05,
+            ),
+            TaskModel(
+                task_id=5,
+                name="Compress",
+                period_ms=100,
+                deadline_ms=100,
+                wcet_ms=10,
+                memory_intensity=0.85,
+            ),
+        ]
+
+    if profile == "high_utilization":
+        return [
+            TaskModel(
+                task_id=0,
+                name="Motor",
+                period_ms=10,
+                deadline_ms=10,
+                wcet_ms=3,
+                memory_intensity=0.10,
+            ),
+            TaskModel(
+                task_id=1,
+                name="Sensor",
+                period_ms=50,
+                deadline_ms=50,
+                wcet_ms=7,
+                memory_intensity=0.20,
+            ),
+            TaskModel(
+                task_id=2,
+                name="Crypto",
+                period_ms=500,
+                deadline_ms=500,
+                wcet_ms=100,
+                memory_intensity=0.90,
+            ),
+            TaskModel(
+                task_id=3,
+                name="Vision",
+                period_ms=20,
+                deadline_ms=20,
+                wcet_ms=6,
+                memory_intensity=0.80,
+            ),
+        ]
+
+    raise ValueError(f"Unknown workload profile: {profile}")
 
 # Global state to store runtime settings and process
 runtime_settings = {
@@ -497,7 +626,7 @@ async def get_index():
 @app.post("/api/aco/run")
 async def run_aco_solver(params: ACORequest):
     try:
-        tasks = default_project_tasks()
+        tasks = get_tasks_for_workload_profile(params.workload_profile)
         hyperperiod_ms = compute_hyperperiod_ms(tasks)
         jobs = generate_jobs(tasks, hyperperiod_ms)
 
@@ -561,6 +690,7 @@ async def run_aco_solver(params: ACORequest):
                 "workload_profile": params.workload_profile,
                 "hyperperiod_ms": hyperperiod_ms,
                 "job_count": len(jobs),
+                "task_set": task_set_summary_to_dict(tasks),
                 "baselines": {
                     "rms": non_preemptive_evaluation_to_dict(rms_result.evaluation),
                     "edf": non_preemptive_evaluation_to_dict(edf_result.evaluation),
@@ -628,6 +758,7 @@ async def run_aco_solver(params: ACORequest):
             "workload_profile": params.workload_profile,
             "hyperperiod_ms": hyperperiod_ms,
             "job_count": len(jobs),
+            "task_set": task_set_summary_to_dict(tasks),
             "baselines": {
                 "rms": preemptive_evaluation_to_dict(rms_preemptive.evaluation),
                 "edf": preemptive_evaluation_to_dict(edf_preemptive.evaluation),
