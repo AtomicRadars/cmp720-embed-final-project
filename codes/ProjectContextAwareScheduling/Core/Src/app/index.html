@@ -553,7 +553,7 @@
                                     <label
                                         class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Solver
                                         Type</label>
-                                    <select id="acoSolverType"
+                                    <select id="acoSolverType" onchange="updateAcoFieldVisibility()"
                                         class="w-full bg-white/70 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white">
                                         <option value="non_preemptive">Non-preemptive ACO</option>
                                         <option value="preemptive">Preemptive ACO</option>
@@ -589,6 +589,108 @@
                                             class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Seed</label>
                                         <input id="acoSeed" type="number" value="42"
                                             class="w-full bg-white/70 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white">
+
+                                    </div>
+                                </div>
+
+                                <button type="button" onclick="toggleAcoAdvanced()"
+                                    class="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-slate-100/60 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 text-sm text-slate-700 dark:text-slate-300">
+                                    <span>Advanced Parameters</span>
+                                    <i id="acoAdvancedIcon" data-lucide="chevron-down" class="w-4 h-4"></i>
+                                </button>
+
+                                <div id="acoAdvancedPanel" class="hidden space-y-4 pt-2">
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div id="acoPheromoneAlphaDiv">
+                                            <label class=" block text-xs font-semibold text-slate-600 dark:text-slate-400
+                                            mb-2">Pheromone
+                                                α</label>
+                                            <input id="acoPheromoneAlpha" type="number" value="1.0" step="0.1"
+                                                class="w-full bg-white/70 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white">
+                                        </div>
+                                        <div id="acoHeuristicBetaDiv">
+                                            <label
+                                                class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Heuristic
+                                                β</label>
+                                            <input id="acoHeuristicBeta" type="number" value="3.0" step="0.1"
+                                                class="w-full bg-white/70 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white">
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div id="acoEvaporationDiv">
+                                            <label
+                                                class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Evaporation</label>
+                                            <input id="acoEvaporation" type="number" value="0.20" min="0" max="1"
+                                                step="0.05"
+                                                class="w-full bg-white/70 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white">
+                                        </div>
+                                        <div id="acoDepositWeightDiv">
+                                            <label
+                                                class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Deposit
+                                                Weight</label>
+                                            <input id="acoDepositWeight" type="number" value="1000" step="100"
+                                                class="w-full bg-white/70 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white">
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div id="acoMemoryWeightDiv">
+                                            <label
+                                                class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Memory
+                                                Weight</label>
+                                            <input id="acoMemoryWeight" type="number" value="2.0" step="0.1"
+                                                class="w-full bg-white/70 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white">
+                                        </div>
+                                        <div id="acoIdleWeightDiv">
+                                            <label
+                                                class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Idle
+                                                Weight</label>
+                                            <input id="acoIdleWeight" type="number" value="0.20" step="0.05"
+                                                class="w-full bg-white/70 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white">
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div id="acoDeadlineWeightDiv">
+                                            <label class=" block text-xs font-semibold text-slate-600 dark:text-slate-400
+                                            mb-2">Deadline
+                                                Weight</label>
+                                            <input id="acoDeadlineWeight" type="number" value="4.0" step="0.1"
+                                                class="w-full bg-white/70 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white">
+                                        </div>
+                                        <div id="acoResponseWeightDiv">
+                                            <label
+                                                class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Response
+                                                Weight</label>
+                                            <input id="acoResponseWeight" type="number" value="0.05" step="0.01"
+                                                class="w-full bg-white/70 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white">
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div id="acoSwitchWeightDiv">
+                                            <label
+                                                class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Switch
+                                                Weight</label>
+                                            <input id="acoSwitchWeight" type="number" value="0.10" step="0.05"
+                                                class="w-full bg-white/70 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white">
+                                        </div>
+                                        <div id="acoSegmentPenaltyDiv">
+                                            <label
+                                                class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Seg.
+                                                Penalty ms</label>
+                                            <input id="acoSegmentPenalty" type="number" value="2" min="0"
+                                                class="w-full bg-white/70 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white">
+                                        </div>
+                                    </div>
+                                    <div id="acoSegmentContentionTimeDiv">
+                                        <label
+                                            class="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+                                            <input id="acoEnableSegmentTime" type="checkbox" checked
+                                                class="rounded border-slate-300 dark:border-slate-700">
+                                            Enable segment contention time
+                                        </label>
                                     </div>
                                 </div>
 
@@ -654,6 +756,31 @@
                                     <div class="h-[260px]">
                                         <canvas id="acoComparisonChart"></canvas>
                                     </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-8">
+                                <h4
+                                    class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
+                                    Numeric Comparison
+                                </h4>
+
+                                <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700">
+                                    <table class="w-full text-sm">
+                                        <thead
+                                            class="text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400 bg-slate-100/60 dark:bg-slate-900/40">
+                                            <tr>
+                                                <th class="text-left py-3 px-4">Scheduler</th>
+                                                <th class="text-right py-3 px-4">Misses</th>
+                                                <th class="text-right py-3 px-4">Lateness</th>
+                                                <th class="text-right py-3 px-4">Contention</th>
+                                                <th class="text-right py-3 px-4">Smooth</th>
+                                                <th class="text-right py-3 px-4">Cost</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="acoComparisonTableBody"
+                                            class="divide-y divide-slate-200 dark:divide-slate-800"></tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -1338,6 +1465,80 @@
         let hasRunNewBenchmark = false;
         let acoHistoryChart = null;
         let acoComparisonChart = null;
+
+        function formatCompactNumber(value) {
+            if (value === undefined || value === null) return "-";
+
+            const n = Number(value);
+
+            if (Math.abs(n) >= 1_000_000) {
+                return `${(n / 1_000_000).toFixed(2)}M`;
+            }
+
+            if (Math.abs(n) >= 1_000) {
+                return `${(n / 1_000).toFixed(2)}K`;
+            }
+
+            return n.toFixed(2);
+        }
+
+        function getSmoothMetric(data, result) {
+            const s = result.summary;
+
+            if (data.solver_type === "preemptive") {
+                return s.segment_smooth_memory_penalty ?? 0;
+            }
+
+            return s.total_smooth_memory_penalty ?? 0;
+        }
+
+        function getContentionMetric(data, result) {
+            const s = result.summary;
+
+            if (data.solver_type === "preemptive") {
+                return s.segment_contention_penalty_ms ?? 0;
+            }
+
+            return s.total_contention_penalty_ms ?? 0;
+        }
+
+        function renderAcoComparisonTable(data) {
+            const body = document.getElementById("acoComparisonTableBody");
+            if (!body) return;
+
+            body.innerHTML = "";
+
+            const rows = [
+                ["RMS", data.baselines?.rms],
+                ["EDF", data.baselines?.edf],
+                ["Context-Aware", data.baselines?.context_aware],
+                ["ACO", { summary: data.aco.summary }]
+            ];
+
+            rows.forEach(([name, result]) => {
+                if (!result || !result.summary) return;
+
+                const s = result.summary;
+                const smooth = getSmoothMetric(data, result);
+                const contention = getContentionMetric(data, result);
+
+                const tr = document.createElement("tr");
+                tr.className = name === "ACO"
+                    ? "text-purple-600 dark:text-purple-400 font-semibold"
+                    : "text-slate-700 dark:text-slate-300";
+
+                tr.innerHTML = `
+            <td class="py-3 px-4">${name}</td>
+            <td class="py-3 px-4 text-right font-mono">${s.deadline_misses ?? "-"}</td>
+            <td class="py-3 px-4 text-right font-mono">${s.total_lateness_ms ?? 0} ms</td>
+            <td class="py-3 px-4 text-right font-mono">${contention}</td>
+            <td class="py-3 px-4 text-right font-mono">${Number(smooth).toFixed(2)}</td>
+            <td class="py-3 px-4 text-right font-mono" title="${s.total_cost ?? "-"}">${formatCompactNumber(s.total_cost)}</td>
+        `;
+
+                body.appendChild(tr);
+            });
+        }
 
         async function updateCharts(shouldScroll = false) {
             const res = await fetch('/api/results');
@@ -2461,6 +2662,44 @@
             badge.textContent = text;
         }
 
+        function toggleAcoAdvanced() {
+            const panel = document.getElementById("acoAdvancedPanel");
+            const icon = document.getElementById("acoAdvancedIcon");
+
+            if (!panel) return;
+
+            panel.classList.toggle("hidden");
+
+            if (icon) {
+                icon.setAttribute(
+                    "data-lucide",
+                    panel.classList.contains("hidden") ? "chevron-down" : "chevron-up"
+                );
+                if (window.lucide) lucide.createIcons();
+            }
+        }
+
+        function updateAcoFieldVisibility() {
+            const solverType = document.getElementById("acoSolverType").value;
+            const isPreemptive = solverType === "preemptive";
+
+            console.log("is preemptive laaa: ", isPreemptive);
+            const preemptiveOnly = [
+                "acoDeadlineWeightDiv",
+                "acoResponseWeightDiv",
+                "acoSwitchWeightDiv",
+                "acoSegmentPenaltyDiv",
+                "acoEnableSegmentTimeDiv",
+                "acoSegmentContentionTimeDiv"
+            ];
+
+            preemptiveOnly.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.hidden = !isPreemptive;
+            });
+
+        }
+
         async function runAco() {
             const btn = document.getElementById("runAcoBtn");
             const solverType = document.getElementById("acoSolverType").value;
@@ -2470,7 +2709,20 @@
                 ant_count: Number(document.getElementById("acoAntCount").value),
                 iterations: Number(document.getElementById("acoIterations").value),
                 lookahead_ms: Number(document.getElementById("acoLookahead").value),
-                seed: Number(document.getElementById("acoSeed").value)
+                seed: Number(document.getElementById("acoSeed").value),
+
+                pheromone_alpha: Number(document.getElementById("acoPheromoneAlpha").value),
+                heuristic_beta: Number(document.getElementById("acoHeuristicBeta").value),
+                evaporation_rate: Number(document.getElementById("acoEvaporation").value),
+                deposit_weight: Number(document.getElementById("acoDepositWeight").value),
+                memory_weight: Number(document.getElementById("acoMemoryWeight").value),
+                idle_weight: Number(document.getElementById("acoIdleWeight").value),
+
+                deadline_weight: Number(document.getElementById("acoDeadlineWeight").value),
+                response_weight: Number(document.getElementById("acoResponseWeight").value),
+                switch_weight: Number(document.getElementById("acoSwitchWeight").value),
+                segment_contention_penalty_ms: Number(document.getElementById("acoSegmentPenalty").value),
+                enable_segment_contention_time: document.getElementById("acoEnableSegmentTime").checked
             };
 
             try {
@@ -2495,6 +2747,7 @@
                 renderAcoSummary(data);
                 renderAcoHistoryChart(data);
                 renderAcoComparisonChart(data);
+                renderAcoComparisonTable(data);
                 renderAcoPreview(data);
 
                 setAcoStatus("ACO completed", "success");
@@ -2807,6 +3060,7 @@
             loadParams();
             lucide.createIcons();
             updateCharts();
+            updateAcoFieldVisibility();
             // Force viewport scroll to the absolute top on launch
             setTimeout(() => {
                 window.scrollTo({ top: 0, behavior: 'instant' });
