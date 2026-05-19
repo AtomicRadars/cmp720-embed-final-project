@@ -6,7 +6,7 @@ import subprocess
 import webbrowser
 import threading
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Any, Literal
 
 # Dependency Check
 try:
@@ -31,6 +31,36 @@ CONFIG_HEADER = PROJECT_ROOT / "Core" / "Inc" / "core" / "TaskConfig.h"
 AUTOMATION_SCRIPT = PROJECT_ROOT / "automate_schedulers.py"
 LOG_DIR = PROJECT_ROOT / "Core" / "Src" / "test" / "results" / "auto_tests"
 
+
+from offline_aco_baseline.scheduler_model import (
+    compute_hyperperiod_ms,
+    default_project_tasks,
+    generate_jobs,
+)
+
+from offline_aco_baseline.baselines import (
+    pick_edf_job,
+    pick_rms_job,
+    run_baseline,
+    pick_edf_runtime_job,
+    pick_rms_runtime_job,
+    run_preemptive_baseline,
+    make_context_aware_picker,
+    make_context_aware_runtime_picker,
+    ContextAwareParams,
+    ContextAwareStats,
+)
+
+from offline_aco_baseline.aco_solver import (
+    ACOParams,
+    ACOSolver,
+)
+
+from offline_aco_baseline.preemptive_aco_solver import (
+    PreemptiveACOParams,
+    PreemptiveACOSolver,
+)
+
 class SchedulerParams(BaseModel):
     TASK1_PRIORITY: int
     TASK2_PRIORITY: int
@@ -50,6 +80,181 @@ class SchedulerParams(BaseModel):
     COM_PORT: str = "COM4"
     BAUD_RATE: int = 115200
     DURATION_SECONDS: int = 10
+
+
+class ACORequest(BaseModel):
+    solver_type: str = "non_preemptive"  # "non_preemptive" or "preemptive"
+    workload_profile: str = "default"
+
+    ant_count: int = 40
+    iterations: int = 150
+
+    pheromone_alpha: float = 1.0
+    heuristic_beta: float = 3.0
+    evaporation_rate: float = 0.20
+    deposit_weight: float = 1000.0
+    seed: int = 42
+
+    # Non-preemptive ACO parameters
+    lookahead_ms: int = 20
+    memory_weight: float = 2.0
+    idle_weight: float = 0.20
+
+    # Preemptive ACO parameters
+    deadline_weight: float = 4.0
+    response_weight: float = 0.05
+    switch_weight: float = 0.10
+    segment_contention_penalty_ms: int = 2
+    enable_segment_contention_time: bool = True
+
+def scheduled_job_to_dict(scheduled_job) -> Dict[str, Any]:
+    return {
+        "order": scheduled_job.order,
+        "job": scheduled_job.job.label,
+        "task": scheduled_job.job.task_name,
+        "release_ms": scheduled_job.job.release_ms,
+        "start_ms": scheduled_job.start_ms,
+        "finish_ms": scheduled_job.finish_ms,
+        "deadline_ms": scheduled_job.job.deadline_ms,
+        "contention_penalty_ms": scheduled_job.contention_penalty_ms,
+        "smooth_memory_penalty": scheduled_job.smooth_memory_penalty,
+        "deadline_missed": scheduled_job.deadline_missed,
+        "lateness_ms": scheduled_job.lateness_ms,
+    }
+
+
+def preemptive_scheduled_job_to_dict(scheduled_job) -> Dict[str, Any]:
+    return {
+        "order": scheduled_job.order,
+        "job": scheduled_job.job.label,
+        "task": scheduled_job.job.task_name,
+        "release_ms": scheduled_job.job.release_ms,
+        "start_ms": scheduled_job.start_ms,
+        "finish_ms": scheduled_job.finish_ms,
+        "deadline_ms": scheduled_job.job.deadline_ms,
+        "contention_penalty_ms": scheduled_job.contention_penalty_ms,
+        "smooth_memory_penalty": scheduled_job.smooth_memory_penalty,
+        "deadline_missed": scheduled_job.deadline_missed,
+        "lateness_ms": scheduled_job.lateness_ms,
+        "start_delay_ms": scheduled_job.start_delay_ms,
+        "response_time_ms": scheduled_job.response_time_ms,
+    }
+
+
+def segment_to_dict(index: int, segment) -> Dict[str, Any]:
+    return {
+        "index": index,
+        "job": segment.job.label,
+        "task": segment.job.task_name,
+        "start_ms": segment.start_ms,
+        "end_ms": segment.end_ms,
+        "duration_ms": segment.end_ms - segment.start_ms,
+    }
+
+
+def non_preemptive_evaluation_to_dict(evaluation) -> Dict[str, Any]:
+    return {
+        "summary": {
+            "deadline_misses": evaluation.deadline_misses,
+            "total_lateness_ms": evaluation.total_lateness_ms,
+            "total_contention_penalty_ms": evaluation.total_contention_penalty_ms,
+            "total_smooth_memory_penalty": evaluation.total_smooth_memory_penalty,
+            "total_cost": evaluation.total_cost,
+            "total_time_ms": evaluation.total_time_ms,
+        },
+        "schedule": [
+            scheduled_job_to_dict(job)
+            for job in evaluation.scheduled_jobs
+        ],
+    }
+
+
+def preemptive_evaluation_to_dict(evaluation) -> Dict[str, Any]:
+    completed = evaluation.scheduled_jobs
+
+    if completed:
+        avg_start_delay = sum(job.start_delay_ms for job in completed) / len(completed)
+        max_start_delay = max(job.start_delay_ms for job in completed)
+        avg_response_time = sum(job.response_time_ms for job in completed) / len(completed)
+        max_response_time = max(job.response_time_ms for job in completed)
+    else:
+        avg_start_delay = 0.0
+        max_start_delay = 0
+        avg_response_time = 0.0
+        max_response_time = 0
+
+    return {
+        "summary": {
+            "deadline_misses": evaluation.deadline_misses,
+            "total_lateness_ms": evaluation.total_lateness_ms,
+
+            "job_start_contention_penalty_ms": evaluation.total_contention_penalty_ms,
+            "job_start_smooth_memory_penalty": evaluation.total_smooth_memory_penalty,
+
+            "segment_contention_events": evaluation.segment_contention_events,
+            "segment_contention_penalty_ms": evaluation.total_segment_contention_penalty_ms,
+            "segment_smooth_memory_penalty": evaluation.total_segment_smooth_memory_penalty,
+
+            "scheduler_decisions": evaluation.scheduler_decisions,
+            "preemptions": evaluation.preemptions,
+
+            "avg_start_delay_ms": avg_start_delay,
+            "max_start_delay_ms": max_start_delay,
+            "avg_response_time_ms": avg_response_time,
+            "max_response_time_ms": max_response_time,
+
+            "total_cost": evaluation.total_cost,
+            "total_time_ms": evaluation.total_time_ms,
+        },
+        "completed_jobs": [
+            preemptive_scheduled_job_to_dict(job)
+            for job in evaluation.scheduled_jobs
+        ],
+        "segments": [
+            segment_to_dict(index, segment)
+            for index, segment in enumerate(evaluation.execution_segments)
+        ],
+    }
+
+
+def non_preemptive_aco_result_to_dict(result) -> Dict[str, Any]:
+    return {
+        "summary": non_preemptive_evaluation_to_dict(result.best_evaluation)["summary"],
+        "schedule": non_preemptive_evaluation_to_dict(result.best_evaluation)["schedule"],
+        "history": [
+            {
+                "iteration": record.iteration,
+                "best_cost": record.best_cost,
+                "deadline_misses": record.best_deadline_misses,
+                "lateness_ms": record.best_lateness_ms,
+                "contention_penalty_ms": record.best_contention_penalty_ms,
+                "smooth_memory_penalty": record.best_smooth_memory_penalty,
+            }
+            for record in result.history
+        ],
+    }
+
+
+def preemptive_aco_result_to_dict(result) -> Dict[str, Any]:
+    evaluation_dict = preemptive_evaluation_to_dict(result.best_evaluation)
+
+    return {
+        "summary": evaluation_dict["summary"],
+        "completed_jobs": evaluation_dict["completed_jobs"],
+        "segments": evaluation_dict["segments"],
+        "history": [
+            {
+                "iteration": record.iteration,
+                "best_cost": record.best_cost,
+                "deadline_misses": record.best_deadline_misses,
+                "lateness_ms": record.best_lateness_ms,
+                "segment_contention_penalty_ms": record.best_segment_contention_penalty_ms,
+                "segment_smooth_memory_penalty": record.best_segment_smooth_memory_penalty,
+                "total_time_ms": record.best_total_time_ms,
+            }
+            for record in result.history
+        ],
+    }
 
 # Global state to store runtime settings and process
 runtime_settings = {
@@ -288,6 +493,153 @@ async def stop_tests():
 async def get_index():
     index_path = PROJECT_ROOT / "Core" / "Src" / "app" / "index.html"
     return index_path.read_text(encoding='utf-8')
+
+@app.post("/api/aco/run")
+async def run_aco_solver(params: ACORequest):
+    try:
+        tasks = default_project_tasks()
+        hyperperiod_ms = compute_hyperperiod_ms(tasks)
+        jobs = generate_jobs(tasks, hyperperiod_ms)
+
+        solver_type = params.solver_type.strip().lower()
+
+        if solver_type not in ["non_preemptive", "preemptive"]:
+            return HTMLResponse(
+                content=f"Invalid solver_type: {params.solver_type}",
+                status_code=400,
+            )
+
+        if solver_type == "non_preemptive":
+            # Baselines
+            rms_result = run_baseline(
+                name="Native / RMS baseline",
+                jobs=jobs,
+                picker=pick_rms_job,
+            )
+
+            edf_result = run_baseline(
+                name="EDF baseline",
+                jobs=jobs,
+                picker=pick_edf_job,
+            )
+
+            ca_stats = ContextAwareStats()
+            ca_picker = make_context_aware_picker(
+                ContextAwareParams(
+                    memory_alpha=1.0,
+                    penalty_threshold=0.15,
+                    safety_margin_ms=2,
+                ),
+                ca_stats,
+            )
+
+            ca_result = run_baseline(
+                name="Context-Aware baseline",
+                jobs=jobs,
+                picker=ca_picker,
+            )
+
+            aco_params = ACOParams(
+                ant_count=params.ant_count,
+                iterations=params.iterations,
+                pheromone_alpha=params.pheromone_alpha,
+                heuristic_beta=params.heuristic_beta,
+                evaporation_rate=params.evaporation_rate,
+                deposit_weight=params.deposit_weight,
+                lookahead_ms=params.lookahead_ms,
+                memory_weight=params.memory_weight,
+                idle_weight=params.idle_weight,
+                seed=params.seed,
+            )
+
+            solver = ACOSolver(jobs=jobs, params=aco_params)
+            aco_result = solver.run()
+
+            return {
+                "status": "success",
+                "solver_type": "non_preemptive",
+                "workload_profile": params.workload_profile,
+                "hyperperiod_ms": hyperperiod_ms,
+                "job_count": len(jobs),
+                "baselines": {
+                    "rms": non_preemptive_evaluation_to_dict(rms_result.evaluation),
+                    "edf": non_preemptive_evaluation_to_dict(edf_result.evaluation),
+                    "context_aware": non_preemptive_evaluation_to_dict(ca_result.evaluation),
+                },
+                "aco": non_preemptive_aco_result_to_dict(aco_result),
+                "context_aware_stats": ca_stats.__dict__,
+            }
+
+        # Preemptive mode
+        rms_preemptive = run_preemptive_baseline(
+            name="Preemptive Native / RMS baseline",
+            jobs=jobs,
+            picker=pick_rms_runtime_job,
+        )
+
+        edf_preemptive = run_preemptive_baseline(
+            name="Preemptive EDF baseline",
+            jobs=jobs,
+            picker=pick_edf_runtime_job,
+        )
+
+        ca_preemptive_stats = ContextAwareStats()
+        ca_runtime_picker = make_context_aware_runtime_picker(
+            ContextAwareParams(
+                memory_alpha=1.0,
+                penalty_threshold=0.15,
+                safety_margin_ms=2,
+            ),
+            ca_preemptive_stats,
+        )
+
+        ca_preemptive = run_preemptive_baseline(
+            name="Preemptive Context-Aware baseline",
+            jobs=jobs,
+            picker=ca_runtime_picker,
+        )
+
+        preemptive_aco_params = PreemptiveACOParams(
+            ant_count=params.ant_count,
+            iterations=params.iterations,
+            pheromone_alpha=params.pheromone_alpha,
+            heuristic_beta=params.heuristic_beta,
+            evaporation_rate=params.evaporation_rate,
+            deposit_weight=params.deposit_weight,
+            memory_weight=params.memory_weight,
+            deadline_weight=params.deadline_weight,
+            response_weight=params.response_weight,
+            switch_weight=params.switch_weight,
+            segment_contention_penalty_ms=params.segment_contention_penalty_ms,
+            enable_segment_contention_time=params.enable_segment_contention_time,
+            seed=params.seed,
+        )
+
+        preemptive_solver = PreemptiveACOSolver(
+            jobs=jobs,
+            params=preemptive_aco_params,
+        )
+
+        preemptive_aco_result = preemptive_solver.run()
+
+        return {
+            "status": "success",
+            "solver_type": "preemptive",
+            "workload_profile": params.workload_profile,
+            "hyperperiod_ms": hyperperiod_ms,
+            "job_count": len(jobs),
+            "baselines": {
+                "rms": preemptive_evaluation_to_dict(rms_preemptive.evaluation),
+                "edf": preemptive_evaluation_to_dict(edf_preemptive.evaluation),
+                "context_aware": preemptive_evaluation_to_dict(ca_preemptive.evaluation),
+            },
+            "aco": preemptive_aco_result_to_dict(preemptive_aco_result),
+            "context_aware_stats": ca_preemptive_stats.__dict__,
+        }
+
+    except Exception as e:
+        print(f"Error running ACO solver: {e}")
+        return HTMLResponse(content=str(e), status_code=500)
 
 def open_browser():
     time.sleep(1.5)
