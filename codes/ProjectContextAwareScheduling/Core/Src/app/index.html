@@ -815,6 +815,52 @@
                                 entries</span>
                         </div>
 
+                        <div class="mb-8">
+                            <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 mb-4">
+                                <div>
+                                    <h4
+                                        class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+                                        Scheduler Comparison Gantt
+                                    </h4>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                        Compare execution order across RMS, EDF, Context-Aware and ACO.
+                                    </p>
+                                </div>
+
+                                <div class="flex flex-wrap items-center gap-2 text-xs">
+                                    <button onclick="setTimelineWindow(0, 50)"
+                                        class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
+                                        0–50 ms
+                                    </button>
+                                    <button onclick="setTimelineWindow(0, 100)"
+                                        class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
+                                        0–100 ms
+                                    </button>
+                                    <button onclick="setTimelineWindow(0, 250)"
+                                        class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
+                                        0–250 ms
+                                    </button>
+                                    <button onclick="resetTimelineWindow()"
+                                        class="px-3 py-1.5 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20">
+                                        All
+                                    </button>
+
+                                    <select id="timelineEntryLimit" onchange="rerenderAcoTimeline('active')"
+                                        class="ml-2 bg-white/70 dark:bg-slate-900/50 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-900 dark:text-white">
+                                        <option value="30">30 entries</option>
+                                        <option value="50">50 entries</option>
+                                        <option value="100">100 entries</option>
+                                        <option value="9999">All entries</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div
+                                class="h-[520px] rounded-2xl bg-white/30 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700 p-4">
+                                <canvas id="acoTimelineChart"></canvas>
+                            </div>
+                        </div>
+
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm">
                                 <thead
@@ -1483,6 +1529,10 @@
         let hasRunNewBenchmark = false;
         let acoHistoryChart = null;
         let acoComparisonChart = null;
+        let acoTimelineChart = null;
+        let lastAcoData = null;
+        let timelineWindowStart = null;
+        let timelineWindowEnd = null;
 
         function formatCompactNumber(value) {
             if (value === undefined || value === null) return "-";
@@ -2243,6 +2293,11 @@
             }
             if (acoHistoryChart) acoHistoryChart.update();
             if (acoComparisonChart) acoComparisonChart.update();
+            if (lastAcoData) {
+                renderAcoHistoryChart(lastAcoData);
+                renderAcoComparisonChart(lastAcoData);
+                renderAcoTimeline(lastAcoData);
+            }
         }
 
         // Toggle Trend Card Zoom/Maximize
@@ -2701,7 +2756,6 @@
             const solverType = document.getElementById("acoSolverType").value;
             const isPreemptive = solverType === "preemptive";
 
-            console.log("is preemptive laaa: ", isPreemptive);
             const preemptiveOnly = [
                 "acoDeadlineWeightDiv",
                 "acoResponseWeightDiv",
@@ -2760,6 +2814,361 @@
     `;
         }
 
+        function getTaskColor(taskName) {
+            const normalized = String(taskName || "").toLowerCase();
+
+            if (normalized.includes("motor")) return "#60a5fa";
+            if (normalized.includes("sensor")) return "#34d399";
+            if (normalized.includes("crypto")) return "#f59e0b";
+            if (normalized.includes("vision")) return "#8b5cf6";
+            if (normalized.includes("logger")) return "#94a3b8";
+            if (normalized.includes("compress")) return "#ef4444";
+
+            return "#64748b";
+        }
+
+        function getTaskOrder(taskName) {
+            const normalized = String(taskName || "").toLowerCase();
+
+            if (normalized.includes("motor")) return 0;
+            if (normalized.includes("sensor")) return 1;
+            if (normalized.includes("crypto")) return 2;
+            if (normalized.includes("vision")) return 3;
+            if (normalized.includes("logger")) return 4;
+            if (normalized.includes("compress")) return 5;
+
+            return 99;
+        }
+
+        function getSchedulerDisplayName(key) {
+            const names = {
+                rms: "RMS",
+                edf: "EDF",
+                context_aware: "Context-Aware",
+                aco: "ACO"
+            };
+
+            return names[key] || key;
+        }
+
+        function getTimelineEntryLimit() {
+            const limitEl = document.getElementById("timelineEntryLimit");
+            return limitEl ? Number(limitEl.value) : 30;
+        }
+
+        function getSchedulerResultEntries(data, schedulerKey, result) {
+            const schedulerName = getSchedulerDisplayName(schedulerKey);
+
+            if (!result) return [];
+
+            const limit = getTimelineEntryLimit();
+
+            if (data.solver_type === "preemptive") {
+                const segments = result.segments || [];
+
+                return segments.slice(0, limit).map(seg => ({
+                    scheduler: schedulerName,
+                    job: seg.job,
+                    task: seg.task,
+                    start: seg.start_ms,
+                    end: seg.end_ms,
+                    duration: seg.duration_ms,
+                    missed: false,
+                    type: "segment"
+                }));
+            }
+
+            const schedule = result.schedule || [];
+
+            return schedule.slice(0, limit).map(job => ({
+                scheduler: schedulerName,
+                job: job.job,
+                task: job.task,
+                start: job.start_ms,
+                end: job.finish_ms,
+                duration: job.finish_ms - job.start_ms,
+                release: job.release_ms,
+                deadline: job.deadline_ms,
+                lateness: job.lateness_ms,
+                missed: job.deadline_missed,
+                type: "job"
+            }));
+        }
+
+        function buildComparisonTimelineEntries(data) {
+            const entries = [];
+
+            entries.push(
+                ...getSchedulerResultEntries(data, "rms", data.baselines?.rms),
+                ...getSchedulerResultEntries(data, "edf", data.baselines?.edf),
+                ...getSchedulerResultEntries(data, "context_aware", data.baselines?.context_aware)
+            );
+
+            const acoResult = data.solver_type === "preemptive"
+                ? { segments: data.aco.segments || [] }
+                : { schedule: data.aco.schedule || [] };
+
+            entries.push(...getSchedulerResultEntries(data, "aco", acoResult));
+
+            return entries;
+        }
+
+        function groupTimelineEntriesByTask(entries) {
+            const grouped = {};
+
+            entries.forEach(entry => {
+                const task = entry.task || "Unknown";
+
+                if (!grouped[task]) {
+                    grouped[task] = [];
+                }
+
+                grouped[task].push({
+                    x: [entry.start, entry.end],
+                    y: entry.scheduler,
+                    entry
+                });
+            });
+
+            return Object.entries(grouped)
+                .sort(([taskA], [taskB]) => getTaskOrder(taskA) - getTaskOrder(taskB));
+        }
+
+        const ganttLabelPlugin = {
+            id: "ganttLabelPlugin",
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
+
+                ctx.save();
+                ctx.font = "10px Inter, sans-serif";
+                ctx.textBaseline = "middle";
+
+                chart.data.datasets.forEach((dataset, datasetIndex) => {
+                    const meta = chart.getDatasetMeta(datasetIndex);
+
+                    meta.data.forEach((bar, index) => {
+                        const raw = dataset.data[index];
+                        const entry = raw?.entry;
+
+                        if (!entry) return;
+
+                        const props = bar.getProps(["x", "y", "base", "width", "height"], true);
+                        const left = Math.min(props.x, props.base);
+                        const right = Math.max(props.x, props.base);
+                        const barWidth = right - left;
+
+                        if (barWidth < 45) return;
+
+                        ctx.fillStyle = "#ffffff";
+                        ctx.textAlign = "left";
+                        ctx.shadowColor = "rgba(0, 0, 0, 0.65)";
+                        ctx.shadowBlur = 3;
+                        ctx.shadowOffsetX = 1;
+                        ctx.shadowOffsetY = 1;
+
+                        const text = entry.job;
+                        const x = left + 6;
+                        const y = props.y;
+
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.rect(left, props.y - props.height / 2, barWidth, props.height);
+                        ctx.clip();
+                        ctx.fillText(text, x, y);
+                        ctx.restore();
+                    });
+                });
+
+                ctx.restore();
+            }
+        };
+
+        function setTimelineWindow(startMs, endMs) {
+            timelineWindowStart = startMs;
+            timelineWindowEnd = endMs;
+            rerenderAcoTimeline("active");
+        }
+
+        function resetTimelineWindow() {
+            timelineWindowStart = null;
+            timelineWindowEnd = null;
+            rerenderAcoTimeline("active");
+        }
+
+        function rerenderAcoTimeline(updateMode = "active") {
+            console.log("Rerender timeline", {
+                updateMode,
+                limit: getTimelineEntryLimit(),
+                start: timelineWindowStart,
+                end: timelineWindowEnd,
+                hasData: !!lastAcoData
+            });
+
+            if (lastAcoData) {
+                renderAcoTimeline(lastAcoData, updateMode);
+                renderAcoPreview(lastAcoData);
+            }
+        }
+
+        function renderAcoTimeline(data, updateMode = "active") {
+            const canvas = document.getElementById("acoTimelineChart");
+            if (!canvas) return;
+
+            const { textColor, gridColor } = getAcoChartTheme();
+
+            const entries = buildComparisonTimelineEntries(data);
+            const groupedEntries = groupTimelineEntriesByTask(entries);
+
+            const schedulerLabels = ["RMS", "EDF", "Context-Aware", "ACO"];
+
+            const maxEnd = entries.length > 0
+                ? Math.max(...entries.map(e => e.end))
+                : 0;
+
+            const xMin = timelineWindowStart !== null ? timelineWindowStart : 0;
+            const xMax = timelineWindowEnd !== null
+                ? timelineWindowEnd
+                : Math.max(20, maxEnd + 5);
+
+            const datasets = groupedEntries.map(([taskName, taskEntries]) => ({
+                label: taskName,
+                data: taskEntries,
+                parsing: {
+                    xAxisKey: "x",
+                    yAxisKey: "y"
+                },
+                backgroundColor: getTaskColor(taskName),
+                borderColor: taskEntries.some(item => item.entry.missed)
+                    ? "#ef4444"
+                    : "rgba(255,255,255,0.25)",
+                borderWidth: 1,
+                borderRadius: 6,
+                borderSkipped: false,
+                barPercentage: 0.75,
+                categoryPercentage: 0.72
+            }));
+
+            const options = {
+                indexAxis: "y",
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 650,
+                    easing: "easeOutQuart"
+                },
+                transitions: {
+                    active: {
+                        animation: {
+                            duration: 650,
+                            easing: "easeOutQuart"
+                        }
+                    },
+                    resize: {
+                        animation: {
+                            duration: 400
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: "bottom",
+                        labels: {
+                            color: textColor,
+                            usePointStyle: true,
+                            boxWidth: 10,
+                            boxHeight: 10
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: items => {
+                                const entry = items[0].raw.entry;
+                                return `${entry.scheduler} · ${entry.job}`;
+                            },
+                            label: item => {
+                                const entry = item.raw.entry;
+
+                                const base =
+                                    `${entry.task}: ${entry.start} → ${entry.end} ms` +
+                                    `, duration ${entry.duration} ms`;
+
+                                if (entry.type === "job") {
+                                    const missText = entry.missed ? " MISSED" : " OK";
+                                    return `${base}, deadline ${entry.deadline} ms, lateness ${entry.lateness ?? 0} ms, ${missText}`;
+                                }
+
+                                return base;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        min: xMin,
+                        max: xMax,
+                        title: {
+                            display: true,
+                            text: "Time (ms)",
+                            color: textColor
+                        },
+                        ticks: {
+                            color: textColor
+                        },
+                        grid: {
+                            color: gridColor
+                        }
+                    },
+                    y: {
+                        type: "category",
+                        labels: schedulerLabels,
+                        ticks: {
+                            color: textColor,
+                            font: {
+                                size: 12,
+                                weight: "600"
+                            }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            };
+
+            if (!acoTimelineChart) {
+                acoTimelineChart = new Chart(canvas, {
+                    type: "bar",
+                    data: {
+                        labels: schedulerLabels,
+                        datasets
+                    },
+                    plugins: [ganttLabelPlugin],
+                    options
+                });
+                return;
+            }
+
+            // Existing chart varsa destroy etme. Data/options'ı güncelle.
+            acoTimelineChart.data.labels = schedulerLabels;
+            acoTimelineChart.data.datasets = datasets;
+
+            acoTimelineChart.options.scales.x.min = xMin;
+            acoTimelineChart.options.scales.x.max = xMax;
+            acoTimelineChart.options.scales.x.ticks.color = textColor;
+            acoTimelineChart.options.scales.x.grid.color = gridColor;
+            acoTimelineChart.options.scales.x.title.color = textColor;
+
+            acoTimelineChart.options.scales.y.labels = schedulerLabels;
+            acoTimelineChart.options.scales.y.ticks.color = textColor;
+
+            acoTimelineChart.options.plugins.legend.labels.color = textColor;
+
+            // updateMode = "active" olursa scale geçişleri animasyonlu olur.
+            // updateMode = "none" dersen direkt değişir.
+            acoTimelineChart.update(updateMode);
+        }
+
         async function runAco() {
             const btn = document.getElementById("runAcoBtn");
             const solverType = document.getElementById("acoSolverType").value;
@@ -2805,11 +3214,16 @@
 
                 const data = await res.json();
 
+                timelineWindowStart = null;
+                timelineWindowEnd = null;
+                lastAcoData = data;
+
                 renderAcoSummary(data);
                 renderAcoTaskSetInfo(data);
                 renderAcoHistoryChart(data);
                 renderAcoComparisonChart(data);
                 renderAcoComparisonTable(data);
+                renderAcoTimeline(data, "active");
                 renderAcoPreview(data);
 
                 setAcoStatus("ACO completed", "success");
@@ -2853,10 +3267,8 @@
                 .querySelector(".text-xs");
 
             if (data.solver_type === "preemptive") {
-                console.log("hell yeee");
                 smoothLabel.innerText = "Segment Smooth";
             } else {
-                console.log("oh hell nah");
                 smoothLabel.innerText = "Smooth Memory";
             }
 
@@ -3005,14 +3417,15 @@
             const head = document.getElementById("acoPreviewHead");
             const body = document.getElementById("acoPreviewBody");
             const label = document.getElementById("acoPreviewLabel");
+            const limit = getTimelineEntryLimit();
 
             if (!head || !body) return;
 
             body.innerHTML = "";
 
             if (data.solver_type === "preemptive") {
-                const segments = (data.aco.segments || []).slice(0, 30);
-                label.innerText = "First 30 execution segments";
+                const segments = (data.aco.segments || []).slice(0, limit);
+                label.innerText = `First ${limit === 9999 ? "all" : limit} execution segments`;
 
                 head.innerHTML = `
             <th class="text-left py-3 pr-4">#</th>
@@ -3040,8 +3453,8 @@
                 return;
             }
 
-            const schedule = (data.aco.schedule || []).slice(0, 30);
-            label.innerText = "First 30 scheduled jobs";
+            const schedule = (data.aco.schedule || []).slice(0, limit);
+            label.innerText = `First ${limit === 9999 ? "all" : limit} scheduled jobs`;
 
             head.innerHTML = `
         <th class="text-left py-3 pr-4">#</th>
